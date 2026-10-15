@@ -96,6 +96,10 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
 .pillars b{display:block;font-size:13px;color:var(--moss-d);font-weight:500}.pillars span{font-size:13px;color:var(--soft)}
 .heart{font-family:'Amatic SC',cursive;font-size:30px;color:#a0736a;margin-top:18px}
 @media(max-width:700px){.pillars{grid-template-columns:1fr 1fr}}
+.why{padding:70px 0;background:#fff}.why h2{font-size:clamp(34px,4vw,50px)}
+.whygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:28px}
+.whygrid div{border-top:2px solid var(--blush);padding-top:14px}.whygrid b{display:block;font-family:'Frank Ruhl Libre',serif;font-size:22px;color:var(--moss-d);line-height:1.15;margin-bottom:6px}.whygrid span{font-size:15px;color:var(--soft)}
+@media(max-width:900px){.whygrid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.whygrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -118,6 +122,17 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  <div class="photo" role="img" aria-label="יעל ליד הים"></div>
 </header>
 
+<section class="why" id="why" data-name="למה יעל"><div class="wrap">
+ <div class="kicker">למה דווקא יעל</div><div class="rule"></div>
+ <h2>המטפלת שרוצה שתסיימו טיפול.</h2>
+ <div class="whygrid">
+  <div><b>קצר מועד מתוך בחירה</b><span>כלים שנשארים איתכם — ואז ממשיכים הלאה. המטופלים צוחקים שאני ״מפטרת״ אותם.</span></div>
+  <div><b>הרבה כלים, חלקם נדירים</b><span>CBT, ‏EMDR, ‏VR, אמנות וסיפור בשישה חלקים — לפי מה שמתאים לכם.</span></div>
+  <div><b>בלי גבולות, מניסיון</b><span>ישראלית בסידני. עברית ואנגלית. אני יודעת מה מעבר עושה למשפחה.</span></div>
+  <div><b>האדם הנכון, גם אם זו לא אני</b><span>רשת מטפלים שבדקתי אישית.</span></div>
+  <div><b>ישירות, בלי סוכנות</b><span>קובעים איתי. בלי מתווך ובלי עמלות.</span></div>
+ </div>
+</div></section>
 <section class="short" id="short" data-name="Short-term therapy"><div class="wrap">
  <div>
   <div class="kicker">איך אני עובדת</div><div class="rule"></div>
@@ -240,7 +255,7 @@ function fbOpen(x,y,el){target=el;document.querySelectorAll('.fbmark').forEach(e
  document.getElementById('fbwhere').textContent=where(el);box.style.display='block';
  box.style.left=Math.min(x,innerWidth-340)+'px';box.style.top=Math.min(y,innerHeight-230)+'px';document.getElementById('fbtext').value='';document.getElementById('fbtext').focus();}
 function fbClose(){box.style.display='none';document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));}
-function fbSave(){const t=document.getElementById('fbtext').value.trim();if(t){notes.push({where:where(target),note:t});localStorage.setItem(KEY,JSON.stringify(notes));}fbClose();render();}
+function fbSave(){const t=document.getElementById('fbtext').value.trim();if(t){const n={where:where(target),note:t,page:location.pathname,at:new Date().toISOString()};notes.push(n);localStorage.setItem(KEY,JSON.stringify(notes));fetch('/api/note',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).then(r=>{if(r.ok){n.saved=1;localStorage.setItem(KEY,JSON.stringify(notes));render();}}).catch(()=>{});}fbClose();render();}
 function render(){document.getElementById('fbn').textContent=notes.length;bar.style.display=notes.length?'flex':'none';}
 function fbSend(){const msg='הערות של יעל על האתר (עברית):\n\n'+notes.map((n,i)=>(i+1)+'. '+n.where+'\n   '+n.note).join('\n\n');
  try{navigator.clipboard&&navigator.clipboard.writeText(msg);}catch(e){}window.open('https://wa.me/'+FB_TO+'?text='+encodeURIComponent(msg),'_blank');if(confirm('נשלח? למחוק את ההערות?')){notes=[];localStorage.setItem(KEY,'[]');render();}}
