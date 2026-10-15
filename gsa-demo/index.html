@@ -120,6 +120,16 @@
   .sum{max-width:1000px;margin:14vh auto 0;text-align:center}
   .sum h1{font-size:46px;line-height:1.22;letter-spacing:-.02em;font-weight:600;margin:0}
   .sum h1 em{font-style:normal;color:var(--brand)}
+  .offer{max-width:1240px;margin:5vh auto 0;padding:0 32px}
+  .offer h1{font-size:42px;letter-spacing:-.02em;font-weight:600;margin:0 0 28px;text-align:center}
+  .og{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .oc{background:var(--panel,#fff);border:1px solid var(--line,#e5e7eb);border-radius:18px;padding:22px 22px 16px;font-size:18px;line-height:1.5}
+  .oc h3{margin:0 0 12px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#6b7280)}
+  .oc p{margin:0 0 12px}.oc ul{margin:0;padding-left:20px}.oc li{margin-bottom:6px}
+  .oc .big{font-size:40px;font-weight:600;line-height:1.1;color:var(--brand)}
+  .oc .pay{list-style:none;padding:0}.oc .pay li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line,#e5e7eb)}
+  .oc .pay b{white-space:nowrap}.oc .note{margin-top:12px;font-size:15px;color:var(--muted,#6b7280)}
+  @media (max-width:1100px){.og{grid-template-columns:repeat(2,1fr)}}
   .sum .found{margin-top:34px;font-size:17px;padding:9px 18px 9px 14px}
   .sum .found svg{width:18px;height:18px}
 
@@ -257,22 +267,43 @@
         <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found, not written</span>
       </div>
     </section>
+
+    <section class="view" id="v-offer">
+      <div class="offer">
+        <h1>What we'll build together</h1>
+        <div class="og">
+          <div class="oc"><h3>What we build</h3>
+            <p><b>Stage A · The job board.</b> Every matter, its stage, who is on it, and who has capacity — one view for the whole office.</p>
+            <p><b>Stage B · GSAI.</b> Ask in plain words and get the closest past matters and what carried them. It finds and quotes your own work. It never writes.</p></div>
+          <div class="oc"><h3>How long</h3>
+            <p class="big">6–8 weeks</p>
+            <p>Stage A first, in use in the office early. Stage B follows on the same system.</p>
+            <p>You own it. No per-seat fees.</p></div>
+          <div class="oc"><h3>What it depends on</h3>
+            <p>A short scoping session answers a few questions:</p>
+            <ul><li>How many past files, and in what formats</li><li>Where they live today</li><li>How much of Abtrac's job data we connect</li><li>Who uses it day to day</li></ul></div>
+          <div class="oc"><h3>How it works</h3>
+            <ul class="pay"><li><span>To start</span><b>$9,000</b></li><li><span>On delivery</span><b>$9,000</b></li><li><span>Set by the scoping answers (files, data size)</span><b>the rest</b></li></ul>
+            <p class="note">Total between $18,000 and $27,000 + GST, fixed after scoping, before anything more is billed.</p></div>
+        </div>
+      </div>
+    </section>
   </main>
 
 <div class="demo">Demo · illustrative data</div>
 <div class="ctl">
   <button class="rs" onclick="restart()">Restart</button>
-  <span class="stp" id="stp">1 / 7</span>
+  <span class="stp" id="stp">1 / 8</span>
   <button class="pv2" onclick="prev()" title="Back (←)">‹</button>
   <button class="nx" id="nx" onclick="next()">Next <span style="font-size:14px">▸</span></button>
 </div>
 
 <script>
 (function(){
-  const TOTAL = 7;
+  const TOTAL = 8;
   let step = 0, timers = [];
   const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
-  const views = { board: $('#v-board'), chat: $('#v-chat'), sum: $('#v-sum') };
+  const views = { board: $('#v-board'), chat: $('#v-chat'), sum: $('#v-sum'), offer: $('#v-offer') };
   const cin = $('#cintxt'), send = $('#send'), PH = 'Ask about past matters…';
 
   function clearTimers(){ timers.forEach(t => clearTimeout(t)); timers = []; }
@@ -314,6 +345,7 @@
     if (n <= 2){ show('board'); newrow.classList.toggle('show', n === 2 && !!fast); if (n === 2 && !fast) after(400, () => newrow.classList.add('show')); }
     if (n >= 3 && n <= 6){ show('chat'); newrow.classList.add('show'); }
     if (n === 7){ show('sum'); }
+    if (n === 8){ show('offer'); }
     // Messages of earlier steps still in range show at once; this step's own messages play in (or show at once when fast).
     $$('.msg').forEach(m => { m.hidden = !(inRange(m, n) && (+m.dataset.at < n || fast) && !m.classList.contains('s')); });
     if (n >= 3 && n <= 6 && !fast) after(600, () => play(n));
