@@ -1,42 +1,57 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cleopatra — start with one project you need</title><meta name="description" content="We build the project you need, fast, with AI, then grow it with your business."><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cleopatra — start with one project your business needs</title>
+<meta name="description" content="Built by two people from Canva and Atlassian. One project first. Nothing reaches your customers or spends money without your approval.">
+<meta property="og:title" content="Cleopatra — start with one project your business needs">
+<meta property="og:description" content="Built by two people from Canva and Atlassian. One project first. Nothing reaches your customers or spends money without your approval.">
+<meta property="og:image" content="https://oren-and-elad.github.io/pages/start/share.png">
+<meta property="og:url" content="https://oren-and-elad.github.io/pages/start/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../logo.svg">
+<style>
 body{margin:0;background:#efe9df;font-family:-apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif;color:#1d1b18}
-.wrap{width:min(1000px,94vw);margin:0 auto;padding:40px 0;display:flex;flex-direction:column;gap:32px}
-.card{width:100%;min-height:560px;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden;position:relative}
-.front{background:linear-gradient(135deg,#1f2a44 0%,#2d3f66 60%,#c9824a 140%);color:#fff;padding:64px 72px;box-sizing:border-box}
-.brand{display:flex;align-items:center;gap:14px;font-weight:700;letter-spacing:.18em;font-size:22px}
-.brand img{width:46px;height:46px;background:#fff;border-radius:50%;padding:6px}
-.front h1{font-size:64px;line-height:1.05;margin:70px 0 18px;font-weight:800}
-.front p{font-size:26px;opacity:.9;margin:0;max-width:760px}
-.front .foot{position:absolute;bottom:48px;left:72px;font-size:20px;opacity:.85}
-.back{background:#fffaf3;padding:48px 64px;box-sizing:border-box}
-.back h2{margin:0 0 22px;font-size:28px}
-.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.col{border-radius:16px;padding:20px 22px;background:#fff;border:1px solid #eadfcd}
-.col .size{font-weight:800;font-size:20px;color:#c9824a}.col .time{font-size:15px;color:#7a7268;margin-bottom:12px}
-.col ul{margin:0;padding-left:18px;font-size:18px;line-height:1.55}
-.trust{margin-top:22px;font-size:18px;color:#3c3732}
-.cta{margin-top:28px;flex-wrap:wrap;gap:14px;display:flex;justify-content:space-between;align-items:center;font-size:19px}
-.cta span{font-size:15px;color:#5a534b}.cta b{white-space:nowrap;background:#1f2a44;color:#fff;padding:12px 22px;border-radius:30px}
-@media (max-width:700px){.front,.back{padding:32px 26px}.front h1{font-size:40px;margin:40px 0 14px}.front p{font-size:20px}.front .foot{position:static;margin-top:40px}.card{min-height:0}.cols{grid-template-columns:1fr}.cta{font-size:16px}}
-.cta b a{color:#fff;text-decoration:none}.doors{display:flex;gap:10px;flex-wrap:wrap}.cta b.alt{background:#fff;border:1.5px solid #1f2a44}.cta b.alt a{color:#1f2a44}
+.wrap{width:min(1000px,94vw);margin:0 auto;padding:32px 0;display:flex;flex-direction:column;gap:24px}
+.card{border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden;box-sizing:border-box}
+.front{background:linear-gradient(135deg,#1f2a44 0%,#2d3f66 60%,#c9824a 140%);color:#fff;padding:56px 64px}
+.brand{display:flex;align-items:center;gap:14px;font-weight:700;letter-spacing:.18em;font-size:20px}
+.brand img{width:44px;height:44px;background:#fff;border-radius:50%;padding:6px}
+h1{font-size:58px;line-height:1.05;margin:48px 0 16px;font-weight:800}
+.sub{font-size:22px;opacity:.92;margin:0 0 10px;line-height:1.4}
+.who{font-size:17px;opacity:.8;margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:30px;background:#fff;color:#1f2a44;font-weight:800;font-size:17px;text-decoration:none}
+.btn.alt{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.8)}
+.back .btn{background:#1f2a44;color:#fff}.back .btn.alt{background:#fff;color:#1f2a44;border:2px solid #1f2a44}
+.hours{font-size:14px;opacity:.75;width:100%}
+.back{background:#fffaf3;padding:44px 56px}
+h2{margin:0 0 18px;font-size:26px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.col{border-radius:16px;padding:18px 20px;background:#fff;border:1px solid #eadfcd}
+.size{font-weight:800;font-size:19px;color:#b86f37}.time{font-size:14px;color:#7a7268;margin-bottom:10px}
+.col ul{margin:0;padding-left:18px;font-size:17px;line-height:1.55}
+.trust{margin:22px 0 0;font-size:17px;color:#3c3732}
+.result{margin:22px 0 0;padding:18px 22px;border-left:4px solid #c9824a;background:#fff;border-radius:10px;font-size:16.5px;line-height:1.55}
+.result b{display:block;font-size:15px;color:#7a7268;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.people{margin:22px 0 0;font-size:15px;color:#5a534b}
+@media (max-width:700px){.front,.back{padding:30px 24px}h1{font-size:38px;margin:32px 0 12px}.sub{font-size:18px}.cols{grid-template-columns:1fr}.btn{width:100%;justify-content:center}}
 </style></head><body><div class="wrap">
-<div class="card front">
- <div class="brand"><img src="logo.svg">CLEOPATRA</div>
- <h1>Start with one project<br>you need.</h1>
- <p>We build it fast, with AI — then grow it with your business.</p>
- <div class="foot">Sydney · Shultz &amp; Weiss Pty Ltd</div>
-</div>
-<div class="card back">
+<section class="card front">
+ <div class="brand"><img src="logo.svg" alt="Cleopatra logo">CLEOPATRA</div>
+ <h1>Start with one project<br>your business needs.</h1>
+ <p class="sub">Built by two people from Canva and Atlassian.<br>One project first. When it is in use, the next.</p>
+ <p class="who">For owners who still do the routine work themselves.</p>
+ <div class="btns"><a class="btn" href="https://calendar.app.google/QPiFU4qhbfeud8hA8">Book a 30-minute call</a><a class="btn alt" href="https://wa.me/61494821341?text=Hi%20Cleopatra%2C%20I%20saw%20your%20one-project%20page%20and%20would%20like%20a%20quick%20chat.">WhatsApp us</a><span class="hours">Mon–Fri, 9–5 Sydney. Pick any time.</span></div>
+</section>
+<section class="card back">
  <h2>What a first project can be</h2>
  <div class="cols">
-  <div class="col"><div class="size">Small</div><div class="time">days</div><ul>
-   <li>Invoice chasing</li><li>Quote templates &amp; follow-ups</li><li>Booking reminders on WhatsApp</li><li>Weekly reports, done for you</li></ul></div>
-  <div class="col"><div class="size">Medium</div><div class="time">weeks</div><ul>
-   <li>Staff rostering</li><li>Job &amp; stock tracking</li><li>A customer portal</li><li>A CRM that updates itself</li></ul></div>
-  <div class="col"><div class="size">Large</div><div class="time">months</div><ul>
-   <li>An operations system for a factory or yard</li><li>Replacing old software end to end</li><li>An AI chief of staff for the owner</li></ul></div>
+  <div class="col"><div class="size">Small</div><div class="time">days</div><ul><li>Invoice chasing</li><li>Booking reminders on WhatsApp</li></ul></div>
+  <div class="col"><div class="size">Medium</div><div class="time">weeks</div><ul><li>Staff rostering</li><li>Job &amp; stock tracking</li></ul></div>
+  <div class="col"><div class="size">Large</div><div class="time">months</div><ul><li>An operations system for a factory or yard</li><li>An AI chief of staff for the owner</li></ul></div>
  </div>
- <div class="trust">Nothing reaches your customers or spends money without your approval.</div>
- <div class="cta"><span>Oren Weiss · Product (ex-Canva) &nbsp;·&nbsp; Elad Shultz · Engineering (ex-Atlassian)</span><span class="doors"><b><a href="https://calendar.app.google/QPiFU4qhbfeud8hA8" target="_blank" rel="noopener">Book a 30-minute call</a></b> <b class="alt"><a href="https://wa.me/61494821341" target="_blank" rel="noopener">WhatsApp us</a></b></span></div>
-</div>
+ <p class="trust">Nothing reaches your customers or spends money without your approval.</p>
+ <div class="result"><b>The last one</b>A system we built for a building-materials business replaced their old one in August 2026. Invoices and payments sync to Xero. Staff have filed 644 requests from inside it since April 2026, and 627 were closed as done. The median time from request to closed was 29 hours.</div>
+ <p class="people">Oren Weiss · Product (ex-Canva) &nbsp;·&nbsp; Elad Shultz · Engineering (ex-Atlassian) &nbsp;·&nbsp; Sydney · Shultz &amp; Weiss Pty Ltd</p>
+ <div class="btns"><a class="btn" href="https://calendar.app.google/QPiFU4qhbfeud8hA8">Book a 30-minute call</a><a class="btn alt" href="https://wa.me/61494821341?text=Hi%20Cleopatra%2C%20I%20saw%20your%20one-project%20page%20and%20would%20like%20a%20quick%20chat.">WhatsApp us</a></div>
+</section>
 </div></body></html>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#0c1220"/>
+
+  <!-- Egyptian headdress stripes at top — nemes pattern -->
+  <rect x="176" y="52" width="160" height="16" rx="8" fill="#d4a53e" opacity=".9"/>
+  <rect x="152" y="78" width="208" height="12" rx="6" fill="#10a37f" opacity=".8"/>
+  <rect x="168" y="100" width="176" height="10" rx="5" fill="#d4a53e" opacity=".7"/>
+
+  <!-- Eye of Horus — simplified kohl eye -->
+  <!-- Almond eye outline -->
+  <path d="M96 256 C170 188 342 188 416 256 C342 324 170 324 96 256 Z" fill="#1a2840"/>
+  <path d="M96 256 C170 188 342 188 416 256 C342 324 170 324 96 256 Z"
+    fill="none" stroke="#10a37f" stroke-width="10"/>
+
+  <!-- Iris -->
+  <circle cx="256" cy="256" r="52" fill="#10a37f"/>
+  <!-- Pupil -->
+  <circle cx="256" cy="256" r="26" fill="#0c1220"/>
+  <!-- Pupil highlight -->
+  <circle cx="244" cy="244" r="8" fill="rgba(255,255,255,.35)"/>
+
+  <!-- Kohl tail (right — iconic Egyptian extension) -->
+  <path d="M416 256 Q448 256 472 284 Q460 268 452 256" fill="none"
+    stroke="#d4a53e" stroke-width="10" stroke-linecap="round"/>
+  <!-- Left hook -->
+  <path d="M96 256 Q68 256 52 232" fill="none"
+    stroke="#d4a53e" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- "CLEO" wordmark at bottom -->
+  <text x="256" y="434" text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="72" font-weight="700" letter-spacing="14"
+    fill="#e2e6f0">CLEO</text>
+
+  <!-- Decorative bottom bar -->
+  <rect x="152" y="452" width="208" height="6" rx="3" fill="#10a37f" opacity=".6"/>
+</svg>
