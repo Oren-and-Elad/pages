@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yael Kario — Psychotherapist for children, teens, adults and families · In clinic and online</title>
+<meta name="description" content="Yael Kario, CBT psychotherapist and art therapist with 20+ years of experience. Anxiety, depression, trauma and PTSD, relocation, parenting. In-person or online, wherever you are.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#fbf6ef;--sand:#f1e7da;--ink:#2b2622;--soft:#6b6058;--clay:#c2714f;--sage:#6f8f6a;--sky:#5b8fb0;--card:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:17px/1.6 Inter,-apple-system,Helvetica,Arial,sans-serif}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.12;margin:0 0 .5em}
+a{color:inherit}
+.wrap{width:min(1120px,92vw);margin:0 auto}
+nav{position:sticky;top:0;z-index:10;background:rgba(251,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,.05)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:Fraunces,serif;font-size:21px;text-decoration:none}.logo span{color:var(--clay)}
+.links{display:flex;gap:22px;font-size:15px;color:var(--soft)}.links a{text-decoration:none}.links a:hover{color:var(--ink)}
+.lang{border:1px solid rgba(0,0,0,.15);border-radius:20px;padding:3px 10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:40px;background:var(--clay);color:#fff;text-decoration:none;font-weight:600;font-size:16px;border:0;cursor:pointer}
+.btn.wa{background:#25a35a}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid rgba(0,0,0,.2)}
+.hero{padding:64px 0 40px}.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.eyebrow{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);font-weight:600}
+.hero h1{font-size:clamp(40px,5.4vw,66px);margin:.2em 0 .35em}
+.hero p.lead{font-size:20px;color:var(--soft);max-width:560px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.hero .portrait{position:relative}.hero .portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:220px 220px 28px 28px;box-shadow:0 30px 60px rgba(80,50,30,.18)}
+.badge{position:absolute;left:-28px;bottom:36px;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 12px 30px rgba(0,0,0,.1);font-size:14px}.badge b{display:block;font-family:Fraunces,serif;font-size:26px;color:var(--clay)}
+.trust{display:flex;gap:28px;flex-wrap:wrap;margin-top:34px;color:var(--soft);font-size:14px}.trust span::before{content:"✓ ";color:var(--sage);font-weight:700}
+section{padding:72px 0}
+.finder{background:var(--sand)}
+.finder h2{font-size:clamp(30px,3.6vw,44px)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 26px}
+.chip{border:1.5px solid rgba(0,0,0,.14);background:#fff;border-radius:40px;padding:11px 18px;font:500 15px Inter,sans-serif;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--clay)}.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.answer{background:#fff;border-radius:22px;padding:28px 30px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;box-shadow:0 10px 30px rgba(0,0,0,.05);min-height:150px}
+.answer .yes{font-family:Fraunces,serif;font-size:22px;color:var(--sage);white-space:nowrap}
+.answer h3{font-size:24px;margin-bottom:.3em}.answer p{margin:0 0 12px;color:var(--soft)}
+.tags{display:flex;gap:8px;flex-wrap:wrap}.tag{font-size:13px;background:var(--cream);border-radius:20px;padding:4px 11px}
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+.who div{background:var(--card);border-radius:20px;padding:24px;border:1px solid rgba(0,0,0,.05)}.who b{font-family:Fraunces,serif;font-size:21px;display:block;margin-bottom:4px}.who p{margin:0;color:var(--soft);font-size:15px}
+.paths{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
+.path{border-radius:22px;padding:26px;color:#fff}.path h3{font-size:24px}.path p{margin:0;font-size:15px;opacity:.95}
+.p1{background:#b8664a}.p2{background:#5b8fb0}.p3{background:#6f8f6a}.p4{background:#8a6aa8}
+.intro{max-width:720px;font-size:19px;color:var(--soft)}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:28px}.gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px}
+.about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+.about img{width:100%;border-radius:28px;aspect-ratio:3/4;object-fit:cover;object-position:top}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}.facts div{background:var(--sand);border-radius:16px;padding:16px 18px;font-size:15px}.facts b{display:block;font-family:Fraunces,serif;font-size:19px}
+.where{background:var(--sand)}.where .wrap{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}.where img{width:100%;border-radius:22px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.two div{background:#fff;border-radius:18px;padding:22px}.two b{font-family:Fraunces,serif;font-size:21px}
+.contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+form{background:#fff;border-radius:24px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.05);display:grid;gap:14px}
+input,textarea,select{font:16px Inter,sans-serif;padding:13px 15px;border:1.5px solid rgba(0,0,0,.12);border-radius:12px;width:100%;background:var(--cream)}
+textarea{min-height:96px;resize:vertical}
+.note{font-size:14px;color:var(--soft)}
+footer{padding:36px 0;color:var(--soft);font-size:14px;border-top:1px solid rgba(0,0,0,.06)}
+.float{position:fixed;right:20px;bottom:20px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.preview{background:#2b2622;color:#fbf6ef;text-align:center;font-size:13px;padding:7px}
+@media(max-width:900px){.hero .wrap,.about .wrap,.where .wrap,.contact .wrap{grid-template-columns:1fr}.links{display:none}.who{grid-template-columns:1fr 1fr}.paths{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:repeat(3,1fr)}.badge{left:12px}.answer{grid-template-columns:1fr}}
+@media(max-width:560px){.who,.paths,.facts,.two{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}section{padding:52px 0}}
+</style>
+</head>
+<body>
+<div class="preview">Design preview for Yael · not live · contact details are placeholders</div>
+<nav><div class="wrap"><a class="logo" href="#">Yael Kario <span>·</span> Psychotherapy</a>
+<div class="links"><a href="#find">Who I help</a><a href="#how">How I work</a><a href="#art">Art</a><a href="#about">About</a><a href="#where">Clinic &amp; online</a><a href="#contact">Contact</a><a class="lang">עברית</a></div></div></nav>
+
+<header class="hero"><div class="wrap">
+ <div>
+  <div class="eyebrow">CBT · EMDR · VR · Art therapy</div>
+  <h1>One therapist.<br>Many paths to change.</h1>
+  <p class="lead">For children, teens, adults and parents — in my clinic or online, wherever in the world you are. I don't fit you into one method; together we find what actually helps.</p>
+  <div class="ctas"><a class="btn wa" href="#contact">💬 Message me on WhatsApp</a><a class="btn ghost" href="#contact">Book a first conversation</a></div>
+  <div class="trust"><span>20+ years of practice</span><span>Children to adults</span><span>English · עברית</span></div>
+ </div>
+ <div class="portrait"><img src="img/office.jpg" alt="Yael Kario"><div class="badge"><b>20+</b>years helping people<br>find their way</div></div>
+</div></header>
+
+<section class="finder" id="find"><div class="wrap">
+ <div class="eyebrow">Not sure if I'm the right fit?</div>
+ <h2>What brings you here?</h2>
+ <div class="chips" id="chips"></div>
+ <div class="answer" id="answer"></div>
+ <div class="who">
+  <div><b>Children</b><p>Anxiety, fears, behaviour, school difficulties — often through play and art.</p></div>
+  <div><b>Teens</b><p>Social anxiety, low mood, pressure at school, finding themselves.</p></div>
+  <div><b>Adults</b><p>Anxiety, depression, life changes, old wounds that still hurt.</p></div>
+  <div><b>Parents</b><p>Guidance for raising a child who is struggling — and looking after yourself.</p></div>
+  <div><b>Families abroad</b><p>Moving countries, a new language, a new school, a new life.</p></div>
+  <div><b>Trauma &amp; PTSD</b><p>Including soldiers and reservists, with EMDR and CBT.</p></div>
+ </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+ <div class="eyebrow">How I work</div>
+ <h2>Not one method. The right mix for you.</h2>
+ <p class="intro">Every person has real potential for change, even after hard times. I combine evidence-based approaches and choose them around you — not the other way round.</p>
+ <div class="paths">
+  <div class="path p1"><h3>CBT</h3><p>Practical tools to untangle the link between thoughts, feelings and behaviour.</p></div>
+  <div class="path p2"><h3>EMDR</h3><p>For trauma and memories that keep coming back, gently and safely.</p></div>
+  <div class="path p3"><h3>VR therapy</h3><p>Practise facing fears step by step, in a safe virtual space.</p></div>
+  <div class="path p4"><h3>Art therapy</h3><p>For what is hard to put into words — especially with children.</p></div>
+ </div>
+</div></section>
+
+<section id="art" style="padding-top:0"><div class="wrap">
+ <div class="eyebrow">From the therapy room</div>
+ <h2>Some things are easier to draw than to say.</h2>
+ <div class="gallery"><img src="img/artwork1.jpg" alt="Artwork from therapy"><img src="img/artwork2.jpg" alt="Artwork from therapy"><img src="img/artwork3.jpg" alt="Artwork from therapy"><img src="img/artwork4.jpg" alt="Artwork from therapy"><img src="img/artwork5.jpg" alt="Artwork from therapy"></div>
+</div></section>
+
+<section class="about" id="about"><div class="wrap">
+ <img src="img/profile.jpg" alt="Yael in her clinic">
+ <div>
+  <div class="eyebrow">About me</div>
+  <h2>Hi, I'm Yael.</h2>
+  <p>I'm a certified CBT psychotherapist with a Master's degree in Arts Therapy, and a mother of three. For over twenty years I've worked with children, teenagers, adults and parents — in schools, clinics, councils and online.</p>
+  <p>People sometimes tell me, "I didn't know you also work with that." That's the point of this page: if you're struggling, there's a good chance I can help — and if I can't, I'll tell you honestly and point you to someone who can.</p>
+  <div class="facts">
+   <div><b>CBT certified</b>Cognitive Behavioural Psychotherapy</div>
+   <div><b>MA Arts Therapy</b>Art as a way in</div>
+   <div><b>Australia &amp; Israel</b>Ministry of Education, local councils</div>
+   <div><b>Online worldwide</b>Clients across four continents</div>
+  </div>
+ </div>
+</div></section>
+
+<section class="where" id="where"><div class="wrap">
+ <img src="img/map.jpg" alt="Where my clients are">
+ <div>
+  <div class="eyebrow">Clinic &amp; online</div>
+  <h2>Here, or wherever you are.</h2>
+  <p>Come to my clinic, or meet online from anywhere — I already work with people across the US, Europe, Africa and Australia.</p>
+  <div class="two"><div><b>In my clinic</b><p class="note">A quiet, warm room. Parking nearby.</p></div><div><b>Online</b><p class="note">Any time zone. In English or Hebrew.</p></div></div>
+ </div>
+</div></section>
+
+<section class="contact" id="contact"><div class="wrap">
+ <div>
+  <div class="eyebrow">Let's talk</div>
+  <h2>The first step can be one message.</h2>
+  <p>You don't need the right words yet. Write a line about what's going on, and I'll get back to you personally to find a time.</p>
+  <p><a class="btn wa" href="#">💬 WhatsApp Yael</a></p>
+  <p class="note">Prefer email? yael@example.com</p>
+ </div>
+ <form onsubmit="event.preventDefault();this.innerHTML='<h3>Thank you.</h3><p class=note>Yael will be in touch personally.</p>'">
+  <input placeholder="Your name" required>
+  <input placeholder="Phone or email" required>
+  <select><option>Who is it for?</option><option>Me</option><option>My child</option><option>My teen</option><option>Our family</option></select>
+  <textarea placeholder="In one line — what's going on?"></textarea>
+  <select><option>In clinic or online?</option><option>In clinic</option><option>Online</option><option>Not sure yet</option></select>
+  <button class="btn" type="submit">Send to Yael</button>
+  <p class="note">Your message goes only to Yael.</p>
+ </form>
+</div></section>
+
+<footer><div class="wrap">Yael Kario · CBT Psychotherapist &amp; Art Therapist · In clinic and online · English · עברית</div></footer>
+<a class="btn wa float" href="#contact">💬 WhatsApp</a>
+
+<script>
+const needs=[
+ ['My child is anxious','Yes — anxious children are a big part of my work.','We work through play, drawing and small brave steps, with CBT tools adapted for children. Parents are part of the process.',['Children','CBT','Art therapy','Parent guidance']],
+ ['My teen is struggling socially or at school','Yes — I work with teens on social anxiety, low mood and school pressure.','Teens need someone who gets them. We build confidence step by step, sometimes with VR to practise real situations safely.',['Teens','Social anxiety','CBT','VR']],
+ ['Depression or low mood','Yes — I work with adults and teens with depression.','We look at the thoughts and patterns that keep you stuck, and build small, practical steps back toward yourself.',['Adults','Teens','CBT']],
+ ['Trauma, PTSD or a hard event','Yes — including soldiers and reservists.','EMDR and CBT help the memory lose its grip, at a pace that feels safe for you.',['EMDR','CBT','PTSD']],
+ ['We moved countries','Yes — I help families and individuals adjust to life abroad.','A new country touches everyone: kids at school, parents, the couple. I’ve worked with families on four continents.',['Relocation','Families','Online']],
+ ['I need help as a parent','Yes — parent guidance is part of my work.','Sometimes the most effective help for a child goes through the parents. We work on what’s happening at home, practically.',['Parents','Guidance']],
+ ['Something else','Write to me — there’s a good chance I can help.','My practice is wide on purpose. If it isn’t something I work with, I’ll tell you honestly and point you to the right person.',['Ask Yael']],
+];
+const chips=document.getElementById('chips'),ans=document.getElementById('answer');
+function show(i){[...chips.children].forEach((c,j)=>c.classList.toggle('on',i===j));const n=needs[i];
+ ans.innerHTML='<div class="yes">✓</div><div><h3>'+n[1]+'</h3><p>'+n[2]+'</p><div class="tags">'+n[3].map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><p style="margin-top:14px"><a class="btn" href="#contact">Talk to Yael about this</a></p></div>';}
+needs.forEach((n,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=n[0];b.onclick=()=>show(i);chips.appendChild(b);});
+show(0);
+</script>
+</body>
+</html>

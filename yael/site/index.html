@@ -3,178 +3,245 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Yael Kario — Psychotherapist for children, teens, adults and families · In clinic and online</title>
-<meta name="description" content="Yael Kario, CBT psychotherapist and art therapist with 20+ years of experience. Anxiety, depression, trauma and PTSD, relocation, parenting. In-person or online, wherever you are.">
+<title>Yael Kario — Therapy Across Borders · Short-term therapy in Sydney and online</title>
+<meta name="description" content="Yael Kario, psychotherapist. Short-term, practical therapy for children, teens, adults and parents — relocation, anxiety, depression, trauma and PTSD. In her Sydney clinic or online, in English or Hebrew.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#fbf6ef;--sand:#f1e7da;--ink:#2b2622;--soft:#6b6058;--clay:#c2714f;--sage:#6f8f6a;--sky:#5b8fb0;--card:#fff}
+:root{--paper:#f7f3ec;--linen:#efe9df;--moss:#4f6b4a;--moss-d:#3c5338;--ink:#2e332c;--soft:#6d7268;--blush:#d9a99a;--line:rgba(46,51,44,.12)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--cream);color:var(--ink);font:17px/1.6 Inter,-apple-system,Helvetica,Arial,sans-serif}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.12;margin:0 0 .5em}
-a{color:inherit}
-.wrap{width:min(1120px,92vw);margin:0 auto}
-nav{position:sticky;top:0;z-index:10;background:rgba(251,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,.05)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{font-family:Fraunces,serif;font-size:21px;text-decoration:none}.logo span{color:var(--clay)}
-.links{display:flex;gap:22px;font-size:15px;color:var(--soft)}.links a{text-decoration:none}.links a:hover{color:var(--ink)}
-.lang{border:1px solid rgba(0,0,0,.15);border-radius:20px;padding:3px 10px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:40px;background:var(--clay);color:#fff;text-decoration:none;font-weight:600;font-size:16px;border:0;cursor:pointer}
-.btn.wa{background:#25a35a}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid rgba(0,0,0,.2)}
-.hero{padding:64px 0 40px}.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
-.eyebrow{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);font-weight:600}
-.hero h1{font-size:clamp(40px,5.4vw,66px);margin:.2em 0 .35em}
-.hero p.lead{font-size:20px;color:var(--soft);max-width:560px}
-.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-.hero .portrait{position:relative}.hero .portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:220px 220px 28px 28px;box-shadow:0 30px 60px rgba(80,50,30,.18)}
-.badge{position:absolute;left:-28px;bottom:36px;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 12px 30px rgba(0,0,0,.1);font-size:14px}.badge b{display:block;font-family:Fraunces,serif;font-size:26px;color:var(--clay)}
-.trust{display:flex;gap:28px;flex-wrap:wrap;margin-top:34px;color:var(--soft);font-size:14px}.trust span::before{content:"✓ ";color:var(--sage);font-weight:700}
-section{padding:72px 0}
-.finder{background:var(--sand)}
-.finder h2{font-size:clamp(30px,3.6vw,44px)}
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 26px}
-.chip{border:1.5px solid rgba(0,0,0,.14);background:#fff;border-radius:40px;padding:11px 18px;font:500 15px Inter,sans-serif;cursor:pointer;transition:.15s}
-.chip:hover{border-color:var(--clay)}.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.answer{background:#fff;border-radius:22px;padding:28px 30px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;box-shadow:0 10px 30px rgba(0,0,0,.05);min-height:150px}
-.answer .yes{font-family:Fraunces,serif;font-size:22px;color:var(--sage);white-space:nowrap}
-.answer h3{font-size:24px;margin-bottom:.3em}.answer p{margin:0 0 12px;color:var(--soft)}
-.tags{display:flex;gap:8px;flex-wrap:wrap}.tag{font-size:13px;background:var(--cream);border-radius:20px;padding:4px 11px}
-.who{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-.who div{background:var(--card);border-radius:20px;padding:24px;border:1px solid rgba(0,0,0,.05)}.who b{font-family:Fraunces,serif;font-size:21px;display:block;margin-bottom:4px}.who p{margin:0;color:var(--soft);font-size:15px}
-.paths{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
-.path{border-radius:22px;padding:26px;color:#fff}.path h3{font-size:24px}.path p{margin:0;font-size:15px;opacity:.95}
-.p1{background:#b8664a}.p2{background:#5b8fb0}.p3{background:#6f8f6a}.p4{background:#8a6aa8}
-.intro{max-width:720px;font-size:19px;color:var(--soft)}
-.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:28px}.gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px}
-.about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
-.about img{width:100%;border-radius:28px;aspect-ratio:3/4;object-fit:cover;object-position:top}
-.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}.facts div{background:var(--sand);border-radius:16px;padding:16px 18px;font-size:15px}.facts b{display:block;font-family:Fraunces,serif;font-size:19px}
-.where{background:var(--sand)}.where .wrap{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}.where img{width:100%;border-radius:22px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.two div{background:#fff;border-radius:18px;padding:22px}.two b{font-family:Fraunces,serif;font-size:21px}
-.contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px}
-form{background:#fff;border-radius:24px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.05);display:grid;gap:14px}
-input,textarea,select{font:16px Inter,sans-serif;padding:13px 15px;border:1.5px solid rgba(0,0,0,.12);border-radius:12px;width:100%;background:var(--cream)}
-textarea{min-height:96px;resize:vertical}
-.note{font-size:14px;color:var(--soft)}
-footer{padding:36px 0;color:var(--soft);font-size:14px;border-top:1px solid rgba(0,0,0,.06)}
-.float{position:fixed;right:20px;bottom:20px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-.preview{background:#2b2622;color:#fbf6ef;text-align:center;font-size:13px;padding:7px}
-@media(max-width:900px){.hero .wrap,.about .wrap,.where .wrap,.contact .wrap{grid-template-columns:1fr}.links{display:none}.who{grid-template-columns:1fr 1fr}.paths{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:repeat(3,1fr)}.badge{left:12px}.answer{grid-template-columns:1fr}}
-@media(max-width:560px){.who,.paths,.facts,.two{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}section{padding:52px 0}}
+body{margin:0;background:var(--paper);color:var(--ink);font:300 17px/1.7 Jost,-apple-system,Helvetica,Arial,sans-serif}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height:1.08;margin:0 0 .45em;color:var(--moss-d)}
+.wrap{width:min(1140px,90vw);margin:0 auto}
+.kicker{font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft);font-weight:400}
+.rule{width:56px;height:1px;background:var(--blush);margin:18px 0 22px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:40px;background:var(--moss);color:#fff;text-decoration:none;font:400 14px Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;border:0;cursor:pointer}
+.btn:hover{background:var(--moss-d)}.btn.line{background:transparent;color:var(--moss-d);border:1px solid var(--moss)}
+.preview{background:var(--moss-d);color:#f7f3ec;text-align:center;font-size:13px;padding:7px 10px;letter-spacing:.04em}
+nav{position:sticky;top:0;z-index:20;background:rgba(247,243,236,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{line-height:1.05;text-decoration:none;color:var(--ink)}.brand b{font:500 26px 'Cormorant Garamond',serif;display:block}.brand span{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--soft)}
+.links{display:flex;gap:26px;font-size:15px}.links a{text-decoration:none;color:var(--soft)}.links a:hover{color:var(--ink)}
+.lang{font-size:14px;color:var(--soft)}.lang b{color:var(--ink);font-weight:500}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:86vh}
+.hero .copy{display:flex;flex-direction:column;justify-content:center;padding:8vh 6vw 8vh max(5vw,calc((100vw - 1140px)/2))}
+.hero h1{font-size:clamp(46px,6vw,82px)}
+.hero p{font-size:19px;color:var(--soft);max-width:470px}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:22px}
+.hero .photo{background:url(img/office.jpg) center 35%/cover}
+.promise{display:flex;gap:26px;flex-wrap:wrap;margin-top:34px;font-size:14px;color:var(--soft)}.promise span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blush);margin-right:9px;vertical-align:middle}
+section{padding:96px 0}
+/* short term */
+.short{background:var(--linen)}.short .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center}
+.short h2{font-size:clamp(36px,4.2vw,56px)}
+.short blockquote{margin:0;font:500 26px/1.35 'Cormorant Garamond',serif;color:var(--moss-d);border-left:2px solid var(--blush);padding-left:22px}
+.steps{display:grid;gap:14px;margin-top:26px}.steps div{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}.steps i{font:italic 500 30px 'Cormorant Garamond',serif;color:var(--blush)}.steps b{font-weight:500}
+/* support */
+.support h2{font-size:clamp(36px,4.2vw,54px)}
+.areas{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:40px;border-top:1px solid var(--line)}
+.area{padding:30px 26px 30px 0;border-bottom:1px solid var(--line)}.area:not(:nth-child(3n)){border-right:1px solid var(--line);padding-right:26px}.area:not(:nth-child(3n+1)){padding-left:26px}
+.area .ico{width:52px;height:52px;border-radius:50%;background:var(--linen);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.area h3{font-size:25px;margin-bottom:.25em}.area p{margin:0;color:var(--soft);font-size:15.5px}
+.fit{margin-top:40px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;color:var(--soft)}
+/* across borders */
+.borders{display:grid;grid-template-columns:.95fr 1.05fr;min-height:640px}
+.borders .img{background:url(img/bridge.jpg) center/cover}
+.borders .copy{padding:9vh 6vw;display:flex;flex-direction:column;justify-content:center}
+.borders h2{font-size:clamp(38px,4.4vw,58px)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}.duo div{background:#fff;border-radius:18px;padding:20px 22px}.duo b{font:500 22px 'Cormorant Garamond',serif;color:var(--moss-d);display:block}
+.script{font-family:'Dancing Script',cursive;font-size:clamp(34px,4vw,50px);color:var(--moss-d);line-height:1.25;text-align:center}
+.quote{position:relative;padding:110px 0;text-align:center;background:var(--linen) url(img/leaves.jpg) left center/auto 100% no-repeat}
+.quote .sig{margin-top:22px;font-size:13px;letter-spacing:.28em;color:var(--soft)}
+/* approach */
+.approach{display:grid;grid-template-columns:1fr 1fr;min-height:620px}
+.approach .img{background:url(img/sprout.jpg) center/cover}
+.approach .copy{padding:9vh 6vw;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,var(--paper),#fbf9f4)}
+.approach h2{font-size:clamp(38px,4.4vw,58px)}
+.methods{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px}
+.m{text-align:center;width:96px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}.m .c{width:66px;height:66px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.c1{background:#e3ead9}.c2{background:#f3dcd5}.c3{background:#dde6ee}.c4{background:#ece3d2}.c5{background:#e8dff0}
+/* art */
+.art .wrap>p{max-width:640px;color:var(--soft)}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:30px}.gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;filter:saturate(.9)}
+/* about */
+.about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:center}
+.about img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border-radius:200px 200px 16px 16px}
+.creds{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}.creds div{border-top:1px solid var(--line);padding-top:12px;font-size:15px;color:var(--soft)}.creds b{display:block;font:500 21px 'Cormorant Garamond',serif;color:var(--moss-d)}
+/* network */
+.network{background:var(--moss-d);color:#eef0ea}.network h2{color:#fff;font-size:clamp(34px,4vw,50px)}.network p{max-width:700px;color:#d8ddd4}
+.network .btn{background:#f7f3ec;color:var(--moss-d)}
+/* contact */
+.contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.contact h2{font-size:clamp(38px,4.4vw,58px)}
+form{background:#fff;border-radius:22px;padding:32px;display:grid;gap:14px;box-shadow:0 20px 50px rgba(60,83,56,.08)}
+input,textarea,select{font:300 16px Jost,sans-serif;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:var(--paper);width:100%}
+textarea{min-height:100px;resize:vertical}
+.small{font-size:14px;color:var(--soft)}
+.price{display:inline-block;margin-top:14px;background:#fff;border-radius:14px;padding:14px 18px;font-size:15px}
+footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(--soft)}
+.wa{position:fixed;right:20px;bottom:20px;z-index:30;background:#3f7a4f;color:#fff;border-radius:40px;padding:13px 20px;text-decoration:none;font:400 14px Jost,sans-serif;letter-spacing:.08em;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+/* feedback */
+#fb{position:fixed;z-index:50;display:none;width:320px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:16px;font-size:14px}
+#fb h4{margin:0 0 6px;font:500 18px 'Cormorant Garamond',serif;color:var(--moss-d)}#fb .where{color:var(--soft);font-size:12px;margin-bottom:8px}
+#fb textarea{min-height:90px;font-size:15px}#fb .row{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+#fb button{font:400 13px Jost,sans-serif;border-radius:20px;padding:8px 14px;border:1px solid var(--line);background:#fff;cursor:pointer}#fb button.go{background:var(--moss);color:#fff;border-color:var(--moss)}
+#fbbar{position:fixed;left:20px;bottom:20px;z-index:30;background:#fff;border-radius:30px;padding:10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.15);font-size:13px;display:flex;gap:10px;align-items:center}
+#fbbar b{color:var(--moss-d)}#fbbar button{font:400 13px Jost,sans-serif;border:0;background:var(--moss);color:#fff;border-radius:20px;padding:7px 12px;cursor:pointer}
+.fbmark{outline:2px dashed var(--blush);outline-offset:4px}
+@media(max-width:900px){.hero,.borders,.approach,.short .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr}.hero .photo{min-height:60vh;order:-1}.borders .img,.approach .img{min-height:46vh}.links{display:none}.areas{grid-template-columns:1fr 1fr}.area{border-right:0!important;padding-left:0!important}.gallery{grid-template-columns:repeat(3,1fr)}.quote{background-image:none}}
+@media(max-width:560px){.areas,.duo,.creds{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}section{padding:64px 0}}
 </style>
 </head>
 <body>
-<div class="preview">Design preview for Yael · not live · contact details are placeholders</div>
-<nav><div class="wrap"><a class="logo" href="#">Yael Kario <span>·</span> Psychotherapy</a>
-<div class="links"><a href="#find">Who I help</a><a href="#how">How I work</a><a href="#art">Art</a><a href="#about">About</a><a href="#where">Clinic &amp; online</a><a href="#contact">Contact</a><a class="lang">עברית</a></div></div></nav>
+<div class="preview">Design preview for Yael · right-click anything (long-press on a phone) to leave a note · prices and contact details are placeholders</div>
+<nav data-name="Menu"><div class="wrap">
+ <a class="brand" href="#"><b>Yael Kario</b><span>Psychotherapist</span></a>
+ <div class="links"><a href="#short">How I work</a><a href="#support">Areas of support</a><a href="#borders">Across borders</a><a href="#about">About</a><a href="#contact">Contact</a></div>
+ <div class="lang"><b>EN</b> | עברית</div>
+</div></nav>
 
-<header class="hero"><div class="wrap">
+<header class="hero" data-name="Top of the page (hero)">
+ <div class="copy">
+  <div class="kicker">Therapy across borders</div>
+  <div class="rule"></div>
+  <h1>Real change,<br>in a short time.</h1>
+  <p>Practical, warm therapy for children, teens, adults and parents — in my Sydney clinic or online, wherever life has taken you.</p>
+  <div class="ctas"><a class="btn" href="#contact">Let's talk →</a><a class="btn line" href="#support">Is this for me?</a></div>
+  <div class="promise"><span>Short-term by design</span><span>English · עברית</span><span>Clinic &amp; online</span></div>
+ </div>
+ <div class="photo" role="img" aria-label="Yael by the sea"></div>
+</header>
+
+<section class="short" id="short" data-name="Short-term therapy"><div class="wrap">
  <div>
-  <div class="eyebrow">CBT · EMDR · VR · Art therapy</div>
-  <h1>One therapist.<br>Many paths to change.</h1>
-  <p class="lead">For children, teens, adults and parents — in my clinic or online, wherever in the world you are. I don't fit you into one method; together we find what actually helps.</p>
-  <div class="ctas"><a class="btn wa" href="#contact">💬 Message me on WhatsApp</a><a class="btn ghost" href="#contact">Book a first conversation</a></div>
-  <div class="trust"><span>20+ years of practice</span><span>Children to adults</span><span>English · עברית</span></div>
+  <div class="kicker">How I work</div><div class="rule"></div>
+  <h2>I'm not here to keep you in therapy.</h2>
+  <p>I'm here to give you my knowledge and my tools — and see you move on. My clients laugh that I "fire" them. If we're going in circles, I'll tell you, and we'll change course or find you someone who fits better.</p>
+  <div class="steps">
+   <div><i>1</i><span><b>We understand what's going on</b> — together, in plain words.</span></div>
+   <div><i>2</i><span><b>We choose the tools that fit you</b> — not one method for everyone.</span></div>
+   <div><i>3</i><span><b>You practise, you grow, you go</b> — with tools you keep for life.</span></div>
+  </div>
  </div>
- <div class="portrait"><img src="img/office.jpg" alt="Yael Kario"><div class="badge"><b>20+</b>years helping people<br>find their way</div></div>
-</div></header>
-
-<section class="finder" id="find"><div class="wrap">
- <div class="eyebrow">Not sure if I'm the right fit?</div>
- <h2>What brings you here?</h2>
- <div class="chips" id="chips"></div>
- <div class="answer" id="answer"></div>
- <div class="who">
-  <div><b>Children</b><p>Anxiety, fears, behaviour, school difficulties — often through play and art.</p></div>
-  <div><b>Teens</b><p>Social anxiety, low mood, pressure at school, finding themselves.</p></div>
-  <div><b>Adults</b><p>Anxiety, depression, life changes, old wounds that still hurt.</p></div>
-  <div><b>Parents</b><p>Guidance for raising a child who is struggling — and looking after yourself.</p></div>
-  <div><b>Families abroad</b><p>Moving countries, a new language, a new school, a new life.</p></div>
-  <div><b>Trauma &amp; PTSD</b><p>Including soldiers and reservists, with EMDR and CBT.</p></div>
- </div>
+ <blockquote>“Difficulties are gateways to healing. The healing powers already lie within us.”</blockquote>
 </div></section>
 
-<section id="how"><div class="wrap">
- <div class="eyebrow">How I work</div>
- <h2>Not one method. The right mix for you.</h2>
- <p class="intro">Every person has real potential for change, even after hard times. I combine evidence-based approaches and choose them around you — not the other way round.</p>
- <div class="paths">
-  <div class="path p1"><h3>CBT</h3><p>Practical tools to untangle the link between thoughts, feelings and behaviour.</p></div>
-  <div class="path p2"><h3>EMDR</h3><p>For trauma and memories that keep coming back, gently and safely.</p></div>
-  <div class="path p3"><h3>VR therapy</h3><p>Practise facing fears step by step, in a safe virtual space.</p></div>
-  <div class="path p4"><h3>Art therapy</h3><p>For what is hard to put into words — especially with children.</p></div>
+<section class="support" id="support" data-name="Areas of support"><div class="wrap">
+ <div class="kicker">Areas of support</div><div class="rule"></div>
+ <h2>People are often surprised how wide this is.</h2>
+ <div class="areas">
+  <div class="area"><div class="ico">🧳</div><h3>Relocation &amp; life transitions</h3><p>A new country, a new language, a new school — for the whole family.</p></div>
+  <div class="area"><div class="ico">🌿</div><h3>Anxiety</h3><p>Social anxiety, worry, fears and panic, in children and adults.</p></div>
+  <div class="area"><div class="ico">☁️</div><h3>Depression &amp; low mood</h3><p>Finding small, practical steps back to yourself.</p></div>
+  <div class="area"><div class="ico">🕊️</div><h3>Trauma &amp; PTSD</h3><p>Including soldiers and reservists, with EMDR and CBT.</p></div>
+  <div class="area"><div class="ico">🧸</div><h3>Children &amp; teens</h3><p>Through play, stories and art — with parents alongside.</p></div>
+  <div class="area"><div class="ico">🤝</div><h3>Parent guidance</h3><p>Sometimes the best help for a child goes through the parents.</p></div>
  </div>
+ <div class="fit"><span>Not on the list? Ask me — and if I'm not the right fit, I'll connect you with someone I trust.</span><a class="btn line" href="#contact">Ask Yael</a></div>
 </div></section>
 
-<section id="art" style="padding-top:0"><div class="wrap">
- <div class="eyebrow">From the therapy room</div>
+<section class="borders" id="borders" data-name="Across borders (relocation)" style="padding:0">
+ <div class="img" role="img" aria-label="A woman walking over a wooden bridge"></div>
+ <div class="copy">
+  <div class="kicker">For relocation</div><div class="rule"></div>
+  <h2>Finding your footing in a new place.</h2>
+  <p>Moving can be exciting and hard at the same time. I've walked this road myself and with families on four continents. Together we build a sense of belonging — wherever you are.</p>
+  <div class="duo"><div><b>In my clinic</b><span class="small">Sydney · a quiet, warm room</span></div><div><b>Online</b><span class="small">Any time zone · English or Hebrew</span></div></div>
+ </div>
+</section>
+
+<div class="quote" data-name="Quote band"><div class="script">New places.<br>Same you.<br>More possibilities.</div><div class="sig">THERAPY ACROSS BORDERS</div></div>
+
+<section class="approach" id="approach" data-name="My approach (methods)" style="padding:0">
+ <div class="img" role="img" aria-label="A green sprout growing from an old stump"></div>
+ <div class="copy">
+  <div class="kicker">My approach</div><div class="rule"></div>
+  <h2>Every person can change.</h2>
+  <p>I'm eclectic on purpose: I bring the right mix for you from evidence-based methods, and some creative ones few therapists hold.</p>
+  <div class="methods">
+   <div class="m"><div class="c c1">🌱</div>CBT</div>
+   <div class="m"><div class="c c2">👁️</div>EMDR</div>
+   <div class="m"><div class="c c3">🥽</div>VR</div>
+   <div class="m"><div class="c c4">🎨</div>Art</div>
+   <div class="m"><div class="c c5">📖</div>Six-part story</div>
+  </div>
+ </div>
+</section>
+
+<section class="art" data-name="Art gallery"><div class="wrap">
+ <div class="kicker">From the therapy room</div><div class="rule"></div>
  <h2>Some things are easier to draw than to say.</h2>
- <div class="gallery"><img src="img/artwork1.jpg" alt="Artwork from therapy"><img src="img/artwork2.jpg" alt="Artwork from therapy"><img src="img/artwork3.jpg" alt="Artwork from therapy"><img src="img/artwork4.jpg" alt="Artwork from therapy"><img src="img/artwork5.jpg" alt="Artwork from therapy"></div>
+ <p>With my background in art therapy, drawing and story are often where the real conversation starts — for a three-year-old and for a soldier alike.</p>
+ <div class="gallery"><img src="img/artwork1.jpg" alt=""><img src="img/artwork2.jpg" alt=""><img src="img/artwork3.jpg" alt=""><img src="img/artwork4.jpg" alt=""><img src="img/artwork5.jpg" alt=""></div>
 </div></section>
 
-<section class="about" id="about"><div class="wrap">
+<section class="about" id="about" data-name="About Yael"><div class="wrap">
  <img src="img/profile.jpg" alt="Yael in her clinic">
  <div>
-  <div class="eyebrow">About me</div>
+  <div class="kicker">About me</div><div class="rule"></div>
   <h2>Hi, I'm Yael.</h2>
-  <p>I'm a certified CBT psychotherapist with a Master's degree in Arts Therapy, and a mother of three. For over twenty years I've worked with children, teenagers, adults and parents — in schools, clinics, councils and online.</p>
-  <p>People sometimes tell me, "I didn't know you also work with that." That's the point of this page: if you're struggling, there's a good chance I can help — and if I can't, I'll tell you honestly and point you to someone who can.</p>
-  <div class="facts">
-   <div><b>CBT certified</b>Cognitive Behavioural Psychotherapy</div>
-   <div><b>MA Arts Therapy</b>Art as a way in</div>
-   <div><b>Australia &amp; Israel</b>Ministry of Education, local councils</div>
-   <div><b>Online worldwide</b>Clients across four continents</div>
+  <p>A certified CBT psychotherapist with a Master's in Arts Therapy, and a mother of three. For more than twenty years I've worked with children, teens, adults and parents — in schools, clinics, councils and online, in Israel and in Australia.</p>
+  <p>I believe in connection: between people, between cultures, and between you and the help you actually need.</p>
+  <div class="creds">
+   <div><b>20+ years</b>children to adults</div>
+   <div><b>CBT · EMDR · VR</b>certified and practising</div>
+   <div><b>MA Arts Therapy</b>art as a way in</div>
+   <div><b>Israel &amp; Australia</b>Ministry of Education, local councils</div>
   </div>
  </div>
 </div></section>
 
-<section class="where" id="where"><div class="wrap">
- <img src="img/map.jpg" alt="Where my clients are">
- <div>
-  <div class="eyebrow">Clinic &amp; online</div>
-  <h2>Here, or wherever you are.</h2>
-  <p>Come to my clinic, or meet online from anywhere — I already work with people across the US, Europe, Africa and Australia.</p>
-  <div class="two"><div><b>In my clinic</b><p class="note">A quiet, warm room. Parking nearby.</p></div><div><b>Online</b><p class="note">Any time zone. In English or Hebrew.</p></div></div>
- </div>
+<section class="network" data-name="Trusted network (referrals)"><div class="wrap">
+ <div class="kicker" style="color:#c9d3c2">The right help, even if it isn't me</div><div class="rule"></div>
+ <h2>A network I've vetted personally.</h2>
+ <p>Not every person needs me — and that's fine. I know experienced therapists I've interviewed and trust. If someone else fits you better, I'll connect you directly. No agency, no middleman.</p>
+ <p style="margin-top:22px"><a class="btn" href="#contact">Help me find the right person</a></p>
 </div></section>
 
-<section class="contact" id="contact"><div class="wrap">
+<section class="contact" id="contact" data-name="Contact"><div class="wrap">
  <div>
-  <div class="eyebrow">Let's talk</div>
+  <div class="kicker">Let's talk</div><div class="rule"></div>
   <h2>The first step can be one message.</h2>
-  <p>You don't need the right words yet. Write a line about what's going on, and I'll get back to you personally to find a time.</p>
-  <p><a class="btn wa" href="#">💬 WhatsApp Yael</a></p>
-  <p class="note">Prefer email? yael@example.com</p>
+  <p>You don't need the right words yet. Write a line, and I'll get back to you personally.</p>
+  <div class="price">Book directly with me — no agency fees.<br><span class="small">Session fee: [placeholder]</span></div>
+  <p style="margin-top:22px"><a class="btn" href="#">WhatsApp Yael</a></p>
  </div>
- <form onsubmit="event.preventDefault();this.innerHTML='<h3>Thank you.</h3><p class=note>Yael will be in touch personally.</p>'">
-  <input placeholder="Your name" required>
-  <input placeholder="Phone or email" required>
+ <form onsubmit="event.preventDefault();this.innerHTML='<h3>Thank you.</h3><p class=small>Yael will get back to you personally.</p>'">
+  <input placeholder="Your name" required><input placeholder="Phone or email" required>
   <select><option>Who is it for?</option><option>Me</option><option>My child</option><option>My teen</option><option>Our family</option></select>
   <textarea placeholder="In one line — what's going on?"></textarea>
-  <select><option>In clinic or online?</option><option>In clinic</option><option>Online</option><option>Not sure yet</option></select>
+  <select><option>Clinic or online?</option><option>Sydney clinic</option><option>Online</option><option>Not sure yet</option></select>
   <button class="btn" type="submit">Send to Yael</button>
-  <p class="note">Your message goes only to Yael.</p>
  </form>
 </div></section>
 
-<footer><div class="wrap">Yael Kario · CBT Psychotherapist &amp; Art Therapist · In clinic and online · English · עברית</div></footer>
-<a class="btn wa float" href="#contact">💬 WhatsApp</a>
+<footer data-name="Footer"><div class="wrap">Yael Kario · Psychotherapist · Therapy Across Borders · Sydney &amp; online · EN | עברית</div></footer>
+<a class="wa" href="#contact">WhatsApp</a>
+
+<div id="fb"><h4>Your note</h4><div class="where" id="fbwhere"></div><textarea id="fbtext" placeholder="What would you change here?"></textarea>
+ <div class="row"><button onclick="fbClose()">Cancel</button><button class="go" onclick="fbSave()">Add note</button></div></div>
+<div id="fbbar" style="display:none"><span><b id="fbn">0</b> notes</span><button onclick="fbSend()">Send to Oren</button></div>
 
 <script>
-const needs=[
- ['My child is anxious','Yes — anxious children are a big part of my work.','We work through play, drawing and small brave steps, with CBT tools adapted for children. Parents are part of the process.',['Children','CBT','Art therapy','Parent guidance']],
- ['My teen is struggling socially or at school','Yes — I work with teens on social anxiety, low mood and school pressure.','Teens need someone who gets them. We build confidence step by step, sometimes with VR to practise real situations safely.',['Teens','Social anxiety','CBT','VR']],
- ['Depression or low mood','Yes — I work with adults and teens with depression.','We look at the thoughts and patterns that keep you stuck, and build small, practical steps back toward yourself.',['Adults','Teens','CBT']],
- ['Trauma, PTSD or a hard event','Yes — including soldiers and reservists.','EMDR and CBT help the memory lose its grip, at a pace that feels safe for you.',['EMDR','CBT','PTSD']],
- ['We moved countries','Yes — I help families and individuals adjust to life abroad.','A new country touches everyone: kids at school, parents, the couple. I’ve worked with families on four continents.',['Relocation','Families','Online']],
- ['I need help as a parent','Yes — parent guidance is part of my work.','Sometimes the most effective help for a child goes through the parents. We work on what’s happening at home, practically.',['Parents','Guidance']],
- ['Something else','Write to me — there’s a good chance I can help.','My practice is wide on purpose. If it isn’t something I work with, I’ll tell you honestly and point you to the right person.',['Ask Yael']],
-];
-const chips=document.getElementById('chips'),ans=document.getElementById('answer');
-function show(i){[...chips.children].forEach((c,j)=>c.classList.toggle('on',i===j));const n=needs[i];
- ans.innerHTML='<div class="yes">✓</div><div><h3>'+n[1]+'</h3><p>'+n[2]+'</p><div class="tags">'+n[3].map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><p style="margin-top:14px"><a class="btn" href="#contact">Talk to Yael about this</a></p></div>';}
-needs.forEach((n,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=n[0];b.onclick=()=>show(i);chips.appendChild(b);});
-show(0);
+// Right-click (or long-press) anywhere → a note pinned to that part of the page; "Send to Oren" sends them all on WhatsApp.
+const FB_TO='61494821341', KEY='yael-site-notes';
+let notes=JSON.parse(localStorage.getItem(KEY)||'[]'), target=null;
+const box=document.getElementById('fb'), bar=document.getElementById('fbbar');
+function where(el){const s=el.closest('[data-name]');const name=s?s.dataset.name:'Page';const txt=(el.innerText||el.alt||el.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ').slice(0,60);return name+(txt?' — "'+txt+'"':'');}
+function open(x,y,el){target=el;document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));el.classList.add('fbmark');
+ document.getElementById('fbwhere').textContent=where(el);box.style.display='block';
+ box.style.left=Math.min(x,innerWidth-340)+'px';box.style.top=Math.min(y,innerHeight-230)+'px';document.getElementById('fbtext').value='';document.getElementById('fbtext').focus();}
+function fbClose(){box.style.display='none';document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));}
+function fbSave(){const t=document.getElementById('fbtext').value.trim();if(t){notes.push({where:where(target),note:t});localStorage.setItem(KEY,JSON.stringify(notes));}fbClose();render();}
+function render(){document.getElementById('fbn').textContent=notes.length;bar.style.display=notes.length?'flex':'none';}
+function fbSend(){const msg='Notes on the site from Yael:\n\n'+notes.map((n,i)=>(i+1)+'. '+n.where+'\n   '+n.note).join('\n\n');
+ window.open('https://wa.me/'+FB_TO+'?text='+encodeURIComponent(msg),'_blank');if(confirm('Sent? Clear your notes?')){notes=[];localStorage.setItem(KEY,'[]');render();}}
+document.addEventListener('contextmenu',e=>{if(box.contains(e.target))return;e.preventDefault();open(e.clientX,e.clientY,e.target);});
+let lp;document.addEventListener('touchstart',e=>{if(box.contains(e.target))return;const t=e.touches[0];lp=setTimeout(()=>open(t.clientX,t.clientY,e.target),650);},{passive:true});
+['touchend','touchmove'].forEach(ev=>document.addEventListener(ev,()=>clearTimeout(lp),{passive:true}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fbClose();});
+render();
 </script>
 </body>
 </html>
