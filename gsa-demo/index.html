@@ -176,6 +176,36 @@
   .pv .pgn{position:absolute;top:10px;right:12px;font-size:10.5px;color:var(--ink3)}
   .pv mark{background:#fff3bf;padding:0 2px;border-radius:2px}
 
+  /* appeal: refused → s34 → approved */
+  .flip{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--violet);background:var(--violet2);border:1px solid #dcd2f1;border-radius:99px;padding:3px 10px;white-space:nowrap}
+  .flip:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .tl{display:flex;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px 12px;margin-top:4px}
+  .tl .s{flex:1;min-width:0;padding-right:14px}
+  .tl .s:last-child{padding-right:0}
+  .tl .ln{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .tl .ln:after{content:"";flex:1;height:2px;background:var(--line)}
+  .tl .s:last-child .ln:after{display:none}
+  .tl .dt{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink3);background:#fff;flex:none}
+  .tl .s.bad .dt{border-color:var(--red);background:var(--red2)}
+  .tl .s.ct .dt{border-color:var(--violet);background:var(--violet2)}
+  .tl .s.ok .dt{border-color:var(--brand);background:var(--brand)}
+  .tl .s.now .dt{box-shadow:0 0 0 4px var(--violet2)}
+  .tl b{display:block;font-size:12.5px;font-weight:600;line-height:1.3}
+  .tl span{display:block;font-size:11.5px;color:var(--ink3);margin-top:2px;line-height:1.35}
+  .ba{display:grid;grid-template-columns:1fr 22px 1.2fr 22px 1fr;gap:10px;margin-top:14px;align-items:start}
+  .ba .arr{align-self:center;color:var(--ink3);text-align:center;font-size:20px;line-height:1;padding-top:40px}
+  .ba .card h3{flex-wrap:wrap;row-gap:6px}
+  .ba .card h3 .flip{margin-left:auto}
+  .ba .card h3 .ph{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--ink3);margin-right:2px}
+  .ba .card.bad h3{color:var(--red)}
+  .ba .card.ct h3{color:var(--violet)}
+  .ba .card.ok h3{color:var(--brand)}
+  .ba .card .bd{padding-top:8px}
+  .q.bad{border-left-color:#efc3c5;background:#fdf9f9}
+  .q.ct{border-left-color:#d6cbee;background:#fbfaff}
+  .q.ok{border-left-color:var(--brand3);background:#f7fbf9}
+  .q .lbl{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;margin-bottom:3px}
+
   /* summary */
   .sum{max-width:760px;margin:60px auto 0;text-align:center}
   .sum h1{font-size:30px;line-height:1.25;letter-spacing:-.02em}
@@ -236,6 +266,11 @@
     .two{grid-template-columns:1fr!important}
     .m2{grid-template-columns:1fr}
     .meta{grid-template-columns:repeat(2,1fr);row-gap:10px}
+    .ba{grid-template-columns:1fr}
+    .ba .arr{padding:0;transform:rotate(90deg)}
+    #v-appeal .hd{flex-wrap:wrap}
+    #v-appeal .hd>div{flex:1 1 100%}
+    #v-appeal .hd .found{margin-left:auto}
   }
   @media (max-width:1380px){.prec{grid-template-columns:1fr 1fr}.prec .pc:nth-child(3){grid-column:1/-1}}
 </style>
@@ -361,7 +396,7 @@
             </ul>
             <div class="ft"><span>SEE · 34 pages · assessment report · consent</span><span class="open">Open ›</span></div>
           </div>
-          <div class="pc" id="pc2">
+          <div class="pc" id="pc2" onclick="go(6)">
             <div class="t1"><span class="mn">GSA 2019-142</span><span>Randwick · 2019–20</span></div>
             <h4>23 Placeholder Rd, Kensington<small>Rear first-floor terrace · refused, then LEC Class 1 appeal</small></h4>
             <div class="oc"><span class="tag ok">Approved on appeal</span><span class="tag ct">LEC · s34 agreement</span></div>
@@ -372,7 +407,7 @@
               <li>Clause 4.6 request for FSR accepted: both limbs addressed, 4% variation</li>
               <li>Conditions of consent lock the screens and planting in place</li>
             </ul>
-            <div class="ft"><span>SEE · statement of facts · s34 orders</span><span class="open">Open ›</span></div>
+            <div class="ft"><span>SEE · statement of facts · s34 orders</span><span class="open">See how it was won on appeal ›</span></div>
           </div>
           <div class="pc ref" id="pc3">
             <div class="t1"><span class="mn">GSA 2022-031</span><span>Randwick · 2022</span></div>
@@ -428,6 +463,7 @@
                 <button class="btn"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Open the folder</button>
                 <span class="note">Opens the original file. Every line links back.</span>
               </div>
+              <div class="btnrow" style="margin-top:8px"><a href="#" onclick="go(6);return false" style="font-size:12.5px;font-weight:600;color:var(--violet)">Next: GSA 2019-142, Kensington — how a refusal became an approval ›</a></div>
             </div>
           </div>
         </div>
@@ -475,6 +511,60 @@
       </div>
     </section>
 
+    <!-- ===== Appeal: how a refusal became an approval ===== -->
+    <section class="view" id="v-appeal">
+      <div class="crumb">M-2026-214 &rsaquo; Similar past matters &rsaquo; <b>GSA 2019-142</b></div>
+      <div class="hd">
+        <div><h1>23 Placeholder Rd, Kensington <span class="tag ok" style="vertical-align:middle;margin-left:6px">Approved on appeal</span></h1><div class="sub">GSA 2019-142 · rear first-floor terrace · refused by Randwick City Council, then a Land and Environment Court Class 1 appeal settled at a s34 conciliation conference, 2020</div></div>
+        <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found in your files — not written by AI</span>
+      </div>
+
+      <div class="tl">
+        <div class="s bad"><div class="ln"><span class="dt"></span></div><b>Refused</b><span>Council, under delegation · 14 Nov 2019</span></div>
+        <div class="s"><div class="ln"><span class="dt"></span></div><b>Appeal lodged · Class 1</b><span>Merit appeal, LEC · 9 Dec 2019</span></div>
+        <div class="s ct now"><div class="ln"><span class="dt"></span></div><b>s34 conciliation conference</b><span>On site, before a Commissioner · 18 Feb 2020 · amended plans rev C</span></div>
+        <div class="s ok"><div class="ln"><span class="dt"></span></div><b>Approved</b><span>Orders under s34(3) · 11 Mar 2020</span></div>
+      </div>
+
+      <div class="ba">
+        <div class="card bad">
+          <h3><span class="ph">Before</span>Council refused <span class="tag bad">3 reasons</span></h3>
+          <div class="bd">
+            <div class="q bad">"The first-floor terrace, at 3.2 m deep, would result in unreasonable overlooking of the rear private open space and living room of No. 25, contrary to the visual privacy objectives of Randwick DCP 2013 Part C1."<span class="src pg">Refusal notice · p. 2</span></div>
+            <div class="q bad">"The written request under clause 4.6 does not demonstrate that compliance with the floor space ratio standard is unreasonable or unnecessary in the circumstances of the case."<span class="src pg">Refusal notice · p. 2</span></div>
+            <div class="q bad">"The terrace and its roof add to the bulk and scale of the rear elevation as seen from adjoining properties."<span class="src pg">Refusal notice · p. 3</span></div>
+            <div class="q bad" style="font-size:12.5px;color:var(--ink2)">GSA's own file note at the time: "No screening offered; relied on the 9 m separation alone."<span class="src pg">File note · 15 Nov 2019</span></div>
+          </div>
+        </div>
+        <div class="arr">›</div>
+        <div class="card ct">
+          <h3><span class="ph">At the s34 conference</span>What GSA changed and argued <span class="flip">What changed council's mind</span></h3>
+          <div class="bd">
+            <div class="q ct"><span class="lbl">Amended plans</span>"Terrace depth reduced from 3.2 m to 2.0 m. Fixed angled aluminium louvres to 1.6 m above the finished floor level along the southern edge. The main bedroom window relocated 1.4 m north so that it is offset from the living-room window of No. 25."<span class="src pg">Amended plans DA-04 rev C</span></div>
+            <div class="q ct"><span class="lbl">Expert evidence on sightlines</span>"With the louvres fixed at 45°, sightline sections 1 to 4 show no direct view from the terrace into the living room or the rear private open space of No. 25 within 9 m."<span class="src pg">Expert report · p. 7</span></div>
+            <div class="q ct"><span class="lbl">Clause 4.6 argued on its merits</span>"The variation is 4%, confined to the terrace roof, and produces no additional overshadowing or visible bulk. Strict compliance is unnecessary in the circumstances; the environmental planning grounds are specific to this site, not to the standard generally."<span class="src pg">Amended cl. 4.6 request · p. 4</span></div>
+            <div class="q ct"><span class="lbl">DCP objectives, on merit</span>"Part C1 lists screening, offset windows and planting as its own privacy techniques. The amended design uses all three; the privacy objective is met."<span class="src pg">Statement of facts and contentions · reply, p. 5</span></div>
+            <div class="q ct"><span class="lbl">Planting</span>"Six screening trees at 1.5 m centres along the southern boundary, 3 m at maturity."<span class="src pg">Landscape plan L-02 rev B</span></div>
+          </div>
+        </div>
+        <div class="arr">›</div>
+        <div class="card ok">
+          <h3><span class="ph">After</span>Approved with conditions <span class="tag ct">s34 agreement</span></h3>
+          <div class="bd">
+            <div class="q ok">"The parties have reached agreement under s34(3) of the Land and Environment Court Act 1979. The Commissioner is satisfied the decision is one the Court could have made in the proper exercise of its functions and disposes of the appeal in accordance with the agreement: the appeal is upheld and development consent is granted subject to the conditions in Annexure A."<span class="src pg">s34 agreement · orders, p. 1</span></div>
+            <div class="q ok">Condition: "The privacy louvres to the southern edge of the terrace shown on DA-04 rev C are to be fixed, angled at 45°, with no more than 25% openings, and retained in perpetuity."<span class="src pg">s34 agreement · cond. 12</span></div>
+            <div class="q ok">Condition: "The boundary planting on L-02 rev B is to be established before the occupation certificate and maintained; any plant that dies is to be replaced with the same species."<span class="src pg">s34 agreement · cond. 14</span></div>
+            <div class="q ok" style="font-size:12.5px;color:var(--ink2)">Each party bore its own costs. GSA team: <span class="av c" style="width:22px;height:22px;font-size:9px;vertical-align:middle">TN</span> lead · <span class="av b" style="width:22px;height:22px;font-size:9px;vertical-align:middle">PK</span><span class="src pg">Matter close-out · p. 1</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="btnrow" style="margin-top:14px">
+        <button class="btn"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Open the s34 agreement</button>
+        <button class="btn"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Open the folder</button>
+        <span class="note">Every line is quoted from GSA 2019-142's file. The system did not write the argument; GSA did, in 2020.</span>
+      </div>
+    </section>
+
     <!-- ===== Summary ===== -->
     <section class="view" id="v-sum">
       <div class="sum">
@@ -482,7 +572,7 @@
         <p>From your own files. The assistant finds and quotes GSA's past work. It never writes a report or advice. A planner reads the source every time.</p>
         <div class="grid">
           <div class="g"><b>One board</b><span>Every job, its stage — pre-DA, DA, court, completed — who is on it, and who has capacity. Read from Abtrac; no more Word doc.</span></div>
-          <div class="g"><b>Plain-language lookup</b><span>"Residential flat building, non-compliant height, Randwick." "Roof terraces in Waverley." Similar past matters and what carried them.</span></div>
+          <div class="g"><b>Plain-language lookup</b><span>"Residential flat building, non-compliant height, Randwick." "Roof terraces in Waverley." Similar past matters, what carried them, and how a refusal was won on appeal.</span></div>
           <div class="g"><b>Every claim has a source</b><span>Matter number and page on each line. Nothing in the answer that is not in a file you already hold. Nothing leaves your control.</span></div>
         </div>
         <div class="rule"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Found, not written.</b> The system only shows what GSA has already said.</span></div>
@@ -508,24 +598,24 @@
 <div class="demo">Demo with illustrative data</div>
 <div class="ctl">
   <button class="rs" onclick="restart()">Restart</button>
-  <span class="stp" id="stp">1 / 7</span>
+  <span class="stp" id="stp">1 / 8</span>
   <button class="pv2" onclick="prev()" title="Back (←)">‹</button>
   <button class="nx" id="nx" onclick="next()">Next <span style="font-size:13px">▸</span></button>
 </div>
 
 <script>
 (function(){
-  const TOTAL = 7;
+  const TOTAL = 8;
   let step = 0, timers = [];
   const $ = s => document.querySelector(s);
-  const views = { board: $('#v-board'), matter: $('#v-matter'), prec: $('#v-prec'), sum: $('#v-sum') };
+  const views = { board: $('#v-board'), matter: $('#v-matter'), prec: $('#v-prec'), appeal: $('#v-appeal'), sum: $('#v-sum') };
   const navs = { board: $('#nav-board'), matter: $('#nav-matter'), prec: $('#nav-prec') };
   const msgs = $('#msgs'), chat = $('#chat'), cin = $('#cintxt'), send = $('#send'), scope = $('#scope');
   const INTRO = msgs.innerHTML;
 
   function clearTimers(){ timers.forEach(t => clearTimeout(t)); timers = []; }
   function after(ms, fn){ timers.push(setTimeout(fn, ms)); }
-  function show(v){ Object.values(views).forEach(x => x.classList.remove('on')); views[v].classList.add('on'); Object.values(navs).forEach(x => x.classList.remove('on')); (navs[v] || navs.board).classList.add('on'); $('#main').scrollTop = 0; }
+  function show(v){ Object.values(views).forEach(x => x.classList.remove('on')); views[v].classList.add('on'); Object.values(navs).forEach(x => x.classList.remove('on')); (navs[v] || (v === 'appeal' ? navs.prec : navs.board)).classList.add('on'); $('#main').scrollTop = 0; }
   function resetChat(){ msgs.innerHTML = INTRO; cin.textContent = 'Ask about past matters…'; cin.classList.add('ph'); send.classList.remove('on'); }
   function addMsg(cls, html){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.innerHTML = html; msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d; }
 
@@ -545,6 +635,8 @@
   const ANSWER1 = 'Found <b>3 similar matters</b> in 9,214 files. Matched on: Randwick R2 · rear first-floor balcony · visual privacy and overlooking · first-floor side setback.<ul><li>GSA 2021-087 · Randwick · approved <span class="src">council</span></li><li>GSA 2019-142 · Kensington · approved on appeal <span class="src">LEC s34</span></li><li>GSA 2022-031 · Coogee · refused <span class="src">council</span></li></ul><span style="color:var(--ink3);font-size:12px">Cards are on the matter page. Each reason is quoted from the file with its page.</span>';
   const ANSWER2 = 'Opened <b>GSA 2021-087</b>. The approval turned on four things, all in your SEE and the council report:<ul><li>screens to 1.6 m <span class="src">SEE p. 18</span></li><li>depth 2.4 → 1.8 m <span class="src">SEE p. 17</span></li><li>offset windows and planting <span class="src">SEE p. 19</span></li><li>side setback to the Part C1 figure <span class="src">report p. 9</span></li></ul>';
   const ANSWER3 = 'This is the SEE as GSA wrote it in 2021. You can copy its structure and text into M-2026-214 as a starting point. I do not draft; every paragraph stays yours, with its page.';
+  const Q4 = 'And the Kensington one — how did a refusal become an approval?';
+  const ANSWER4 = 'Opened <b>GSA 2019-142</b>. Council refused on overlooking, the clause 4.6 request and rear bulk <span class="src">refusal notice p. 2–3</span>. At the s34 conference GSA amended the plans and brought sightline evidence:<ul><li>terrace 3.2 → 2.0 m, fixed angled louvres to 1.6 m <span class="src">DA-04 rev C</span></li><li>no direct view into No. 25 within 9 m <span class="src">expert report p. 7</span></li><li>4.6 at 4%, grounds specific to the site <span class="src">4.6 request p. 4</span></li></ul>Agreed under s34; the Court\'s orders approve the DA. Condition 12 keeps the louvres in perpetuity <span class="src">s34 agreement cond. 12</span>.';
 
   function render(n, fast){
     clearTimers(); step = n;
@@ -568,10 +660,13 @@
     if (n >= 5){ scope.innerHTML = 'Scope: <b>GSA 2021-087 · 8 Sample Ave, Randwick</b>'; }
     if (n === 5){ show('prec'); resetChat(); typeAsk(Q1, null, true); addMsg('a', ANSWER1);
       after(fast ? 0 : 500, () => typeAsk(Q2, () => addMsg('a', ANSWER2), fast)); }
-    if (n === 6){ show('prec'); $('#prec-a').style.display = 'none'; $('#prec-b').style.display = ''; resetChat();
+    if (n === 6){ show('appeal'); scope.innerHTML = 'Scope: <b>GSA 2019-142 · 23 Placeholder Rd, Kensington</b>'; resetChat();
       typeAsk(Q1, null, true); addMsg('a', ANSWER1); typeAsk(Q2, null, true); addMsg('a', ANSWER2);
+      after(fast ? 0 : 500, () => typeAsk(Q4, () => addMsg('a', ANSWER4), fast)); }
+    if (n === 7){ show('prec'); $('#prec-a').style.display = 'none'; $('#prec-b').style.display = ''; resetChat();
+      typeAsk(Q1, null, true); addMsg('a', ANSWER1); typeAsk(Q2, null, true); addMsg('a', ANSWER2); typeAsk(Q4, null, true); addMsg('a', ANSWER4);
       after(fast ? 0 : 500, () => typeAsk(Q3, () => addMsg('a', ANSWER3), fast)); }
-    if (n === 7){ show('sum'); chat.classList.add('dim'); }
+    if (n === 8){ show('sum'); chat.classList.add('dim'); }
   }
 
   window.go = n => render(Math.max(1, Math.min(TOTAL, n)));
