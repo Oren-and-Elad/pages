@@ -236,16 +236,16 @@ const FB_TO='61494821341', KEY='yael-site-notes';
 let notes=JSON.parse(localStorage.getItem(KEY)||'[]'), target=null;
 const box=document.getElementById('fb'), bar=document.getElementById('fbbar');
 function where(el){const s=el.closest('[data-name]');const name=s?s.dataset.name:'Page';const txt=(el.innerText||el.alt||el.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ').slice(0,60);return name+(txt?' — "'+txt+'"':'');}
-function open(x,y,el){target=el;document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));el.classList.add('fbmark');
+function fbOpen(x,y,el){target=el;document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));el.classList.add('fbmark');
  document.getElementById('fbwhere').textContent=where(el);box.style.display='block';
  box.style.left=Math.min(x,innerWidth-340)+'px';box.style.top=Math.min(y,innerHeight-230)+'px';document.getElementById('fbtext').value='';document.getElementById('fbtext').focus();}
 function fbClose(){box.style.display='none';document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));}
 function fbSave(){const t=document.getElementById('fbtext').value.trim();if(t){notes.push({where:where(target),note:t});localStorage.setItem(KEY,JSON.stringify(notes));}fbClose();render();}
 function render(){document.getElementById('fbn').textContent=notes.length;bar.style.display=notes.length?'flex':'none';}
 function fbSend(){const msg='Notes on the site from Yael:\n\n'+notes.map((n,i)=>(i+1)+'. '+n.where+'\n   '+n.note).join('\n\n');
- window.open('https://wa.me/'+FB_TO+'?text='+encodeURIComponent(msg),'_blank');if(confirm('Sent? Clear your notes?')){notes=[];localStorage.setItem(KEY,'[]');render();}}
-document.addEventListener('contextmenu',e=>{if(box.contains(e.target))return;e.preventDefault();open(e.clientX,e.clientY,e.target);});
-let lp;document.addEventListener('touchstart',e=>{if(box.contains(e.target))return;const t=e.touches[0];lp=setTimeout(()=>open(t.clientX,t.clientY,e.target),650);},{passive:true});
+ try{navigator.clipboard&&navigator.clipboard.writeText(msg);}catch(e){}window.open('https://wa.me/'+FB_TO+'?text='+encodeURIComponent(msg),'_blank');if(confirm('Sent? Clear your notes?')){notes=[];localStorage.setItem(KEY,'[]');render();}}
+document.addEventListener('contextmenu',e=>{if(box.contains(e.target))return;e.preventDefault();fbOpen(e.clientX,e.clientY,e.target);});
+let lp;document.addEventListener('touchstart',e=>{if(box.contains(e.target))return;const t=e.touches[0];lp=setTimeout(()=>fbOpen(t.clientX,t.clientY,e.target),650);},{passive:true});
 ['touchend','touchmove'].forEach(ev=>document.addEventListener(ev,()=>clearTimeout(lp),{passive:true}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fbClose();});
 render();
