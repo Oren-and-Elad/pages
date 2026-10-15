@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GSA Planning · Matters</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --panel:#ffffff; --line:#e3e8ef; --ink:#1b2430; --muted:#5c6b7d; --faint:#8a97a8;
+    --brand:#1f3a5f; --brand-2:#2f5d93; --accent:#0f766e; --accent-bg:#e6f4f1;
+    --amber:#b45309; --amber-bg:#fef3c7; --red:#b42318; --red-bg:#fee4e2; --green:#067647; --green-bg:#dcfae6;
+    --blue:#175cd3; --blue-bg:#e0ecff; --purple:#6941c6; --purple-bg:#ece9fe; --grey-bg:#eef2f6;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --shadow-lg:0 8px 24px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+    --r:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh;min-width:1280px}
+  /* top bar */
+  .top{grid-column:1/3;display:flex;align-items:center;gap:18px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .wordmark{font-weight:700;font-size:16px;letter-spacing:.2px;color:var(--brand)}
+  .wordmark span{color:var(--muted);font-weight:500}
+  .search{flex:none;width:460px;margin-left:24px;height:34px;border:1px solid var(--line);border-radius:8px;background:var(--bg);display:flex;align-items:center;padding:0 12px;color:var(--faint);gap:8px}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:14px;color:var(--muted)}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+  /* nav */
+  .nav{background:var(--panel);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+  .nav .sec{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:14px 10px 6px}
+  .nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:500;white-space:nowrap}
+  .nav a.active{background:var(--blue-bg);color:var(--brand)}
+  .nav a .ico{width:18px;height:18px;flex:none;border-radius:5px;background:currentColor;opacity:.22}
+  .nav .count{margin-left:auto;font-size:11px;background:var(--grey-bg);padding:1px 7px;border-radius:10px;color:var(--muted)}
+  /* main */
+  .main{position:relative;overflow:hidden}
+  .screen{position:absolute;inset:0;padding:24px 28px 90px;overflow:auto;opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;pointer-events:none}
+  .screen.on{opacity:1;transform:none;pointer-events:auto}
+  .crumbs{color:var(--faint);font-size:12px;margin-bottom:6px}
+  .crumbs b{color:var(--muted);font-weight:500}
+  h1{font-size:22px;margin:0 0 4px;font-weight:650;letter-spacing:-.2px}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .row{display:flex;gap:20px;align-items:flex-start}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+  .card h3{margin:0;padding:14px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .card h3 .n{color:var(--faint);font-weight:500}
+  /* table */
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600}
+  td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  tr.m{cursor:default;transition:background .2s}
+  tr.m:hover{background:#fafbfd}
+  td .addr{font-weight:600;white-space:nowrap}
+  td.council{white-space:nowrap}
+  td .desc{color:var(--muted);font-size:12.5px;margin-top:1px}
+  .ref{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .p-pre{background:var(--grey-bg);color:#475467}
+  .p-da{background:var(--blue-bg);color:var(--blue)}
+  .p-court{background:var(--purple-bg);color:var(--purple)}
+  .p-done{background:var(--green-bg);color:var(--green)}
+  .p-new{background:var(--amber-bg);color:var(--amber)}
+  .ini{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:700;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .ini+.ini{margin-left:-8px}
+  .c1{background:#1f3a5f}.c2{background:#0f766e}.c3{background:#b45309}.c4{background:#6941c6}.c5{background:#475467}.c6{background:#c2410c}
+  .due{color:var(--muted);font-size:12.5px;white-space:nowrap}
+  .due.soon{color:var(--amber);font-weight:600}
+  tr.new{background:linear-gradient(90deg,#fff8e6,#fffdf5);box-shadow:inset 3px 0 0 var(--amber);cursor:pointer;animation:flash 1.4s ease 1}
+  tr.new td{border-bottom-color:#f5e2b0}
+  @keyframes flash{0%{background:#fde68a}100%{background:#fff8e6}}
+  tr.new .open{color:var(--brand);font-weight:600;font-size:12.5px;white-space:nowrap}
+  tr.new .open::after{content:" ›"}
+  .unassigned{color:var(--amber);font-size:12px;font-weight:600;border:1px dashed var(--amber);border-radius:999px;padding:3px 9px}
+  /* capacity */
+  .cap{width:300px;flex:none}
+  .cap ul{list-style:none;margin:0;padding:6px 0}
+  .cap li{display:flex;align-items:center;gap:10px;padding:8px 16px}
+  .cap .nm{width:112px;font-weight:500;font-size:13px}
+  .cap .nm small{display:block;color:var(--faint);font-weight:400;font-size:11px}
+  .bar{flex:1;height:8px;border-radius:4px;background:var(--grey-bg);overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:4px;background:var(--accent);transition:width .8s ease}
+  .bar i.hi{background:var(--amber)}.bar i.over{background:var(--red)}
+  .cap .pct{width:40px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
+  .cap .foot{padding:10px 16px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .cap .foot b{color:var(--accent)}
+  .stats{display:flex;gap:14px;margin-bottom:18px}
+  .stat{flex:1;padding:12px 16px}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .stat .v{font-size:22px;font-weight:650;margin-top:2px}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:500;margin-left:6px}
+  /* matter screen */
+  .matter{display:grid;grid-template-columns:1fr 400px;gap:20px;height:100%}
+  .mhead{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+  .mhead h1{margin:0}
+  .mhead .pill{margin-top:6px}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line)}
+  .kv div{padding:12px 16px;border-right:1px solid var(--line)}
+  .kv div:last-child{border-right:0}
+  .kv .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .kv .v{font-weight:600;margin-top:2px}
+  .issues{padding:14px 16px}
+  .issue{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .issue:last-child{border-bottom:0}
+  .issue .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);margin-top:6px;flex:none}
+  .issue b{display:block;font-weight:600}
+  .issue span{color:var(--muted);font-size:12.5px}
+  .notes{padding:14px 16px;color:var(--muted);font-size:13px}
+  /* chat */
+  .chat{display:flex;flex-direction:column;height:calc(100vh - 56px - 24px - 90px);position:sticky;top:0}
+  .chat h3 .live{margin-left:auto;font-size:11px;color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:999px;font-weight:600}
+  .msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:92%;padding:10px 13px;border-radius:12px;font-size:13.5px;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+  .msg.show{opacity:1;transform:none}
+  .msg.me{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:4px}
+  .msg.ai{align-self:flex-start;background:var(--grey-bg);border-bottom-left-radius:4px}
+  .msg.ai .who{font-size:11px;color:var(--faint);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .caret::after{content:"▍";animation:blink .8s steps(1) infinite;color:var(--muted)}
+  @keyframes blink{50%{opacity:0}}
+  .input{border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:8px}
+  .input div{flex:1;height:38px;border:1px solid var(--line);border-radius:8px;padding:0 12px;display:flex;align-items:center;color:var(--faint);background:#fff}
+  .input button{height:38px;padding:0 14px;border-radius:8px;border:0;background:var(--brand);color:#fff;font-weight:600}
+  .trust{font-size:11.5px;color:var(--muted);padding:8px 14px 12px;display:flex;gap:6px;align-items:center}
+  .trust .lock{width:14px;height:14px;border-radius:3px;background:var(--accent);opacity:.75;flex:none}
+  /* precedent cards */
+  .precs{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+  .prec{padding:0;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s,box-shadow .2s;display:grid;grid-template-columns:250px 1fr;grid-template-rows:1fr auto}
+  .prec.show{opacity:1;transform:none}
+  .prec.best{border-color:#9fc5b8;box-shadow:0 0 0 3px var(--accent-bg),var(--shadow)}
+  .prec .ph{padding:14px 16px 12px;border-right:1px solid var(--line)}
+  .prec .ph .ref{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .prec .ph .addr{font-weight:650;font-size:14.5px;margin-top:6px}
+  .prec .ph .desc{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .prec .pf{grid-column:1/3}
+  .results .kvcard{display:none}
+  .results .issues{display:flex;gap:18px;padding:10px 16px}
+  .results .issue{border:0;padding:4px 0}
+  .results .issue span{display:none}
+  .forum{font-size:11.5px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .forum i{width:16px;height:16px;border-radius:4px;background:var(--grey-bg);display:inline-block;color:var(--muted);font-style:normal;font-size:10px;text-align:center;line-height:16px;font-weight:700}
+  .outcome{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12.5px;padding:4px 10px;border-radius:6px}
+  .o-app{background:var(--green-bg);color:var(--green)}
+  .o-ref{background:var(--red-bg);color:var(--red)}
+  .prec .body{padding:12px 16px 12px}
+  .prec .body ul{columns:2;column-gap:24px}
+  .prec .body li{break-inside:avoid}
+  .prec .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600;margin-bottom:6px}
+  .prec ul{margin:0;padding:0 0 0 16px;color:var(--ink);font-size:13px}
+  .prec li{margin:4px 0}
+  .prec .match{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--muted)}
+  .prec .match .bar{height:6px}
+  .prec .match b{color:var(--accent)}
+  .prec .pf{padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted)}
+  .prec .pf a{color:var(--brand);font-weight:600;text-decoration:none}
+  .prec.best .pf a{color:var(--accent)}
+  .srcline{margin-top:14px;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  /* document screen */
+  .doc{display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .paper{padding:0}
+  .paper .dh{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .paper .dh .t{font-weight:650}
+  .paper .dh .meta{color:var(--muted);font-size:12.5px}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:var(--accent-bg);color:var(--accent);border:1px solid #bfe3da;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-left:auto}
+  .badge::before{content:"✓";font-size:11px;background:var(--accent);color:#fff;border-radius:50%;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center}
+  .paper .pg{padding:26px 34px 30px;font-family:Georgia,"Times New Roman",serif;font-size:14.5px;line-height:1.65;color:#222}
+  .paper .pg h4{font-family:inherit;font-size:15px;margin:0 0 4px}
+  .paper .pg .h5{font-size:13px;color:#555;margin:0 0 18px;font-style:italic}
+  .para{position:relative;padding:12px 14px 12px 16px;margin:0 0 10px;border-radius:8px;border:1px solid transparent;transition:background .2s,border-color .2s}
+  .para:hover{background:#fbfcfe;border-color:var(--line)}
+  .para p{margin:0 0 8px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;font-size:11.5px;color:var(--muted);background:var(--grey-bg);border:1px solid var(--line);padding:2px 8px;border-radius:6px}
+  .chip i{display:inline-block;width:10px;height:12px;border:1.5px solid var(--faint);border-radius:2px;font-style:normal}
+  .chip b{color:var(--ink);font-weight:600}
+  .side .card{margin-bottom:16px}
+  .side .list{padding:8px 16px 12px;font-size:13px}
+  .side .list div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
+  .side .list div:last-child{border-bottom:0}
+  .side .list span{color:var(--muted)}
+  .side .list b{font-weight:600}
+  .side .act{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+  .btn{height:36px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:default}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .fine{font-size:12px;color:var(--muted);padding:0 16px 14px;line-height:1.5}
+  /* summary */
+  .summary{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding-bottom:40px}
+  .summary .big{font-size:34px;font-weight:700;letter-spacing:-.5px;max-width:860px;line-height:1.2;margin:0 0 10px}
+  .summary .big em{font-style:normal;color:var(--accent)}
+  .summary .lead{color:var(--muted);font-size:17px;max-width:700px;margin:0 0 34px}
+  .flow{display:flex;align-items:center;gap:14px;margin-bottom:36px}
+  .flow .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 20px;min-width:190px;text-align:left}
+  .flow .box .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
+  .flow .box .v{font-weight:650;font-size:15px;margin-top:3px}
+  .flow .box .s{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .flow .arr{color:var(--faint);font-size:22px}
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;width:100%}
+  .pillar{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;text-align:left}
+  .pillar .ic{width:34px;height:34px;border-radius:9px;background:var(--accent-bg);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:10px}
+  .pillar b{display:block;font-size:14.5px;margin-bottom:4px}
+  .pillar span{color:var(--muted);font-size:13px}
+  /* presenter controls */
+  .ctl{position:fixed;right:24px;bottom:22px;display:flex;align-items:center;gap:12px;z-index:50}
+  .ctl .step{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:var(--shadow)}
+  .ctl .restart{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
+  .ctl .next{height:52px;padding:0 28px;border-radius:999px;border:0;background:var(--brand);color:#fff;font-size:17px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .15s,background .2s}
+  .ctl .next:hover{background:var(--brand-2);transform:translateY(-1px)}
+  .ctl .next:disabled{opacity:.45;cursor:default;transform:none}
+  .footer{position:fixed;left:236px;bottom:28px;font-size:11.5px;color:var(--faint);z-index:50;background:rgba(244,246,249,.92);padding:4px 10px;border-radius:6px}
+  .toast{position:fixed;top:72px;right:28px;background:#fff;border:1px solid #f5e2b0;border-left:4px solid var(--amber);border-radius:10px;box-shadow:var(--shadow-lg);padding:12px 16px;min-width:320px;z-index:60;opacity:0;transform:translateY(-8px);transition:opacity .35s,transform .35s;pointer-events:none}
+  .toast.show{opacity:1;transform:none}
+  .toast b{display:block;font-size:13px}
+  .toast span{color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="wordmark">GSA Planning <span>· Matters</span></div>
+    <div class="search">Search matters, addresses, councils…</div>
+    <div class="right"><span id="clock">Thu 15 Oct 2026</span><span class="avatar">HR</span></div>
+  </div>
+  <nav class="nav">
+    <a href="#" id="nav-board" class="active"><i class="ico"></i>Job board<span class="count">31</span></a>
+    <a href="#" id="nav-matters"><i class="ico"></i>Matters</a>
+    <a href="#"><i class="ico"></i>Court diary<span class="count">7</span></a>
+    <a href="#"><i class="ico"></i>Team &amp; capacity</a>
+    <div class="sec">Library</div>
+    <a href="#" id="nav-prec"><i class="ico"></i>Precedent lookup</a>
+    <a href="#"><i class="ico"></i>Past outcomes<span class="count">9,214</span></a>
+    <a href="#"><i class="ico"></i>Templates</a>
+    <div class="sec">Admin</div>
+    <a href="#"><i class="ico"></i>Clients</a>
+    <a href="#"><i class="ico"></i>Settings</a>
+  </nav>
+  <main class="main">
+
+    <!-- Steps 1 & 2: Job board -->
+    <section class="screen" id="s-board">
+      <div class="crumbs"><b>Job board</b> · all active matters</div>
+      <h1>Job board</h1>
+      <p class="sub">Who is on each matter, where it is, and who has room for the next one. Updated as matters move.</p>
+      <div class="stats">
+        <div class="card stat"><div class="k">Pre-DA</div><div class="v">6</div></div>
+        <div class="card stat"><div class="k">DA lodged</div><div class="v">12</div></div>
+        <div class="card stat"><div class="k">In court (LEC)</div><div class="v">9<small>3 s34 this month</small></div></div>
+        <div class="card stat"><div class="k">Completed · Q4</div><div class="v">4</div></div>
+        <div class="card stat" id="stat-new" style="display:none"><div class="k">New today</div><div class="v" style="color:var(--amber)">1<small>unassigned</small></div></div>
+      </div>
+      <div class="row">
+        <div class="card" style="flex:1">
+          <h3>Active matters <span class="n">· sorted by next date</span></h3>
+          <table>
+            <thead><tr><th style="width:92px">Matter</th><th>Site &amp; proposal</th><th>Council</th><th>Stage</th><th>Team</th><th>Next date</th></tr></thead>
+            <tbody id="rows">
+              <tr class="new" id="newrow" style="display:none" title="Open this matter">
+                <td class="ref">2026-118</td>
+                <td><div class="addr">14 Sample Ave, Randwick</div><div class="desc">Alterations &amp; additions to a dwelling · proposed rear first-floor balcony</div></td>
+                <td class="council">Randwick City</td>
+                <td><span class="pill p-new">New · pre-DA</span></td>
+                <td><span class="unassigned">Unassigned</span></td>
+                <td><span class="open">Open matter</span></td>
+              </tr>
+              <tr class="m"><td class="ref">2026-104</td><td><div class="addr">9 Example St, Coogee</div><div class="desc">Dual occupancy (attached) · Clause 4.6 request, FSR</div></td><td class="council">Randwick City</td><td><span class="pill p-da">DA</span></td><td><span class="ini c1">GK</span><span class="ini c2">HR</span></td><td class="due soon">RFI due Fri 17 Oct</td></tr>
+              <tr class="m"><td class="ref">2026-097</td><td><div class="addr">22 Model Rd, Kensington</div><div class="desc">Boarding house · appeal against deemed refusal</div></td><td class="council">LEC · Class 1</td><td><span class="pill p-court">Court</span></td><td><span class="ini c3">ED</span><span class="ini c2">HR</span></td><td class="due soon">s34 conf · Mon 20 Oct</td></tr>
+              <tr class="m"><td class="ref">2026-111</td><td><div class="addr">3 Specimen Lane, Paddington</div><div class="desc">Heritage item · rear addition, HCA</div></td><td class="council">Woollahra</td><td><span class="pill p-pre">Pre-DA</span></td><td><span class="ini c4">MP</span></td><td class="due">Pre-DA mtg · 23 Oct</td></tr>
+              <tr class="m"><td class="ref">2026-089</td><td><div class="addr">41 Placeholder Pde, Maroubra</div><div class="desc">Shop-top housing · 4 storeys, B2</div></td><td class="council">Randwick City</td><td><span class="pill p-da">DA</span></td><td><span class="ini c1">GK</span><span class="ini c5">AL</span></td><td class="due">RLPP · 29 Oct</td></tr>
+              <tr class="m"><td class="ref">2026-076</td><td><div class="addr">7 Illustrative Ct, Bondi</div><div class="desc">Demolition &amp; new dwelling · view sharing (Tenacity)</div></td><td class="council">LEC · Class 1</td><td><span class="pill p-court">Court</span></td><td><span class="ini c3">ED</span></td><td class="due">Hearing · 4 Nov</td></tr>
+              <tr class="m"><td class="ref">2026-102</td><td><div class="addr">18 Sample Cres, Rose Bay</div><div class="desc">Childcare centre · 48 places, traffic</div></td><td class="council">Woollahra</td><td><span class="pill p-da">DA</span></td><td><span class="ini c2">HR</span><span class="ini c5">AL</span></td><td class="due">Submissions close 6 Nov</td></tr>
+              <tr class="m"><td class="ref">2026-065</td><td><div class="addr">30 Notional Ave, Kingsford</div><div class="desc">Residential flat building · s8.2 review of refusal</div></td><td class="council">Randwick City</td><td><span class="pill p-da">DA · s8.2</span></td><td><span class="ini c1">GK</span><span class="ini c4">MP</span></td><td class="due">Panel · 13 Nov</td></tr>
+              <tr class="m"><td class="ref">2026-058</td><td><div class="addr">2 Hypothetical Way, Clovelly</div><div class="desc">Secondary dwelling · conditions of consent, s4.55 mod</div></td><td class="council">Randwick City</td><td><span class="pill p-done">Completed</span></td><td><span class="ini c2">HR</span></td><td class="due">Consent issued 9 Oct</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card cap">
+          <h3>Capacity <span class="n">· this fortnight</span></h3>
+          <ul>
+            <li><span class="nm">George K.<small>MD · 6 matters</small></span><div class="bar"><i class="over" data-w="96%"></i></div><span class="pct">96%</span></li>
+            <li><span class="nm">Elliott D.<small>Assoc. Dir · 5 matters</small></span><div class="bar"><i class="hi" data-w="88%"></i></div><span class="pct">88%</span></li>
+            <li><span class="nm">Halina R.<small>Associate · 5 matters</small></span><div class="bar"><i class="hi" data-w="82%"></i></div><span class="pct">82%</span></li>
+            <li><span class="nm">Michelle P.<small>Planner · 3 matters</small></span><div class="bar"><i data-w="58%"></i></div><span class="pct">58%</span></li>
+            <li><span class="nm">Alex L.<small>Planner · 3 matters</small></span><div class="bar"><i data-w="51%"></i></div><span class="pct">51%</span></li>
+          </ul>
+          <div class="foot">Room for the new matter: <b>Michelle P.</b> or <b>Alex L.</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Steps 3, 4: Matter + chat -->
+    <section class="screen" id="s-matter">
+      <div class="matter">
+        <div>
+          <div class="crumbs"><b>Matters</b> › 2026-118</div>
+          <div class="mhead">
+            <div><h1>14 Sample Ave, Randwick</h1><div class="sub" style="margin:2px 0 0">Alterations and additions to a dwelling house · proposed rear first-floor balcony off the main bedroom</div></div>
+            <span class="pill p-new">New · pre-DA</span>
+          </div>
+          <div class="card kvcard" style="margin-bottom:16px">
+            <div class="kv">
+              <div><div class="k">Matter</div><div class="v">2026-118</div></div>
+              <div><div class="k">Council · LEP</div><div class="v">Randwick City · RLEP 2012, R2</div></div>
+              <div><div class="k">Controls</div><div class="v">Randwick DCP 2013, Part C1</div></div>
+              <div><div class="k">Client</div><div class="v">Owner · referred by architect</div></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <h3>Issues flagged at intake</h3>
+            <div class="issues">
+              <div class="issue"><span class="dot"></span><div><b>Visual privacy — overlooking</b><span>Balcony looks directly over the neighbour's rear private open space at No. 16 and towards their living-room windows.</span></div></div>
+              <div class="issue"><span class="dot"></span><div><b>Side setback</b><span>Balcony edge sits inside the DCP side setback to the northern boundary; neighbour has already raised it with the architect.</span></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Precedent lookup <span class="n" id="prec-title">· results appear here</span></h3>
+            <div class="notes" id="prec-empty">Ask the assistant on the right. It searches GSA's own past matters and quotes them. It does not write anything.</div>
+            <div id="prec-wrap" style="display:none;padding:0 16px 16px">
+              <div class="precs" id="precs">
+                <div class="card prec" data-i="0">
+                  <div class="ph"><div class="ref"><span class="ref">2021-047 · DA/412/2021</span><span class="forum"><i>C</i>Randwick City Council</span></div><div class="addr">27 Sample Ave, Randwick</div><div class="desc">Rear first-floor balcony off a bedroom · R2 · neighbour objection on privacy</div></div>
+                  <div class="body"><span class="outcome o-app">Approved</span><div class="lbl" style="margin-top:12px">Key reasons</div>
+                    <ul><li>Fixed privacy screen to 1.6 m above the finished floor level on the side edge</li><li>Balcony depth reduced to 1.5 m — a bedroom balcony, not an entertaining space</li><li>Sightlines offset from the neighbour's rear yard and living-room windows</li><li>Consistent with the Randwick DCP 2013 visual privacy objectives</li></ul>
+                    <div class="match"><div class="bar"><i data-w="94%"></i></div><b>94% match</b></div></div>
+                  <div class="pf"><span>Deferred commencement · conditions of consent</span><a href="#" id="open-best">Open SEE §4.6 ›</a></div>
+                </div>
+                <div class="card prec" data-i="1">
+                  <div class="ph"><div class="ref"><span class="ref">2019-212 · s8.2 review</span><span class="forum"><i>C</i>Randwick City Council</span></div><div class="addr">5 Example Pl, Randwick</div><div class="desc">First-floor rear terrace · refused, then approved on s8.2 review</div></div>
+                  <div class="body"><span class="outcome o-app">Approved on s8.2 review</span><div class="lbl" style="margin-top:12px">Key reasons</div>
+                    <ul><li>Amended plans: depth cut from 3.2 m to 1.8 m</li><li>Planter boxes along the edge, 0.6 m deep, pulling the standing line back</li><li>Privacy screen to 1.6 m with angled louvres; sightlines offset from No. 7's open space</li><li>Panel satisfied the DCP visual privacy objectives were met</li></ul>
+                    <div class="match"><div class="bar"><i data-w="87%"></i></div><b>87% match</b></div></div>
+                  <div class="pf"><span>Panel report · amended plans</span><a href="#">Open review submission ›</a></div>
+                </div>
+                <div class="card prec" data-i="2">
+                  <div class="ph"><div class="ref"><span class="ref">2018-139 · LEC 2018/00xxxx</span><span class="forum"><i>L</i>Land and Environment Court</span></div><div class="addr">11 Model St, Randwick</div><div class="desc">Rear first-floor balcony, 4.1 m deep · Class 1 appeal after s34 conciliation did not settle</div></div>
+                  <div class="body"><span class="outcome o-ref">Refused</span><div class="lbl" style="margin-top:12px">Key reasons</div>
+                    <ul><li>Direct overlooking of the neighbour's private open space and living-room windows</li><li>Excessive depth — used as the primary entertaining space, not an ancillary balcony</li><li>Non-compliant side setback; screening alone did not resolve the impact</li><li>Commissioner: the DCP visual privacy objectives were not met</li></ul>
+                    <div class="match"><div class="bar"><i data-w="81%"></i></div><b>81% match</b></div></div>
+                  <div class="pf"><span>Judgment · GSA appeared for the applicant</span><a href="#">Open judgment notes ›</a></div>
+                </div>
+              </div>
+              <div class="srcline" id="srcline" style="opacity:0;transition:opacity .4s"><span class="chip"><i></i>Searched <b>9,214</b> past matters</span><span class="chip"><i></i>3 shown · ranked by issue, council and outcome</span><span class="chip"><i></i>Every card links to the original file</span></div>
+            </div>
+          </div>
+        </div>
+        <aside class="card chat">
+          <h3>Assistant <span class="live">reads your files only</span></h3>
+          <div class="msgs" id="msgs">
+            <div class="msg ai show"><div class="who">Assistant</div>Matter 2026-118 opened. I can find similar past GSA matters and show what was argued and how they were decided. Ask in plain words.</div>
+            <div class="msg me" id="m-q" style="display:none">Show me similar past matters — balconies and privacy in Randwick</div>
+            <div class="msg ai" id="m-a" style="display:none"><div class="who">Assistant</div><span id="m-a-text" class="caret"></span></div>
+          </div>
+          <div class="input"><div>Ask about past matters…</div><button>Ask</button></div>
+          <div class="trust"><span class="lock"></span>Answers quote GSA's own files. Nothing is drafted; nothing leaves the office.</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Step 5: SEE excerpt -->
+    <section class="screen" id="s-doc">
+      <div class="crumbs"><b>Matters</b> › 2026-118 › Precedent 2021-047 › <b>Statement of Environmental Effects</b></div>
+      <h1>27 Sample Ave, Randwick — SEE, §4.6 Visual privacy</h1>
+      <p class="sub">GSA's own earlier work, as filed with DA/412/2021. Copy it into the new matter as your starting point and edit it yourself.</p>
+      <div class="doc">
+        <div class="card paper">
+          <div class="dh"><span class="t">Statement of Environmental Effects</span><span class="meta">Matter 2021-047 · prepared by GSA Planning · lodged Aug 2021 · pp. 6–7</span><span class="badge">Found in your files — not written by AI</span></div>
+          <div class="pg">
+            <h4>4.6 Visual privacy</h4>
+            <div class="h5">Randwick Comprehensive DCP 2013 — Part C1 Low Density Residential, visual privacy objectives and controls</div>
+            <div class="para"><p>The proposed first-floor balcony is located at the rear of the dwelling and is accessed solely from the main bedroom. It has a depth of 1.5 m and an area of 6.2 m². At this depth the balcony functions as an ancillary outdoor space to a bedroom rather than as a primary living or entertaining area, and the intensity of its use is correspondingly low. This is consistent with the DCP objective of minimising overlooking of the private open space and habitable rooms of adjoining dwellings.</p><span class="chip"><i></i>Source: matter <b>2021-047</b>, SEE p.6</span></div>
+            <div class="para"><p>A fixed privacy screen is proposed along the full length of the northern (side) edge of the balcony, extending to a height of 1.6 m above the finished floor level. The screen comprises fixed, angled aluminium louvres with a maximum open area of 25%, oriented to direct views downward and towards the subject site's own rear yard. The screen prevents direct sightlines from the balcony to the rear private open space of No. 25 and to the living-room windows on its southern elevation.</p><span class="chip"><i></i>Source: matter <b>2021-047</b>, SEE p.6</span></div>
+            <div class="para"><p>Sightlines from the balcony towards the rear boundary are offset from the neighbouring private open space by the balcony's location against the southern side of the rear elevation and by a 0.6 m deep planter box along the rear edge, which draws the standing line back from the balustrade. Sightline diagrams at Appendix C (Drawings DA-21 and DA-22) demonstrate that views at a standing eye height of 1.6 m are directed to the subject site's own rear garden and to the rear lane.</p><span class="chip"><i></i>Source: matter <b>2021-047</b>, SEE p.7</span></div>
+            <div class="para"><p>Having regard to the reduced depth, the fixed screening to 1.6 m, the offset sightlines and the planter boxes, the proposal satisfies the visual privacy objectives of Part C1 of the Randwick Comprehensive DCP 2013. The amenity of the adjoining private open space and habitable rooms is maintained, and no additional conditions of consent are considered necessary beyond those securing the screen as a permanent, fixed element.</p><span class="chip"><i></i>Source: matter <b>2021-047</b>, SEE p.7</span></div>
+          </div>
+        </div>
+        <div class="side">
+          <div class="card">
+            <h3>About this precedent</h3>
+            <div class="list">
+              <div><span>Outcome</span><b style="color:var(--green)">Approved · Randwick City</b></div>
+              <div><span>Determined</span><b>Nov 2021 · deferred commencement</b></div>
+              <div><span>Author</span><b>GSA Planning (H. Rubenstein)</b></div>
+              <div><span>Conditions</span><b>Screen fixed, 1.6 m, max 25% open</b></div>
+              <div><span>Objections</span><b>1 · No. 25 (privacy)</b></div>
+              <div><span>File</span><b>2021-047 › 03 SEE › final.pdf</b></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Use in matter 2026-118</h3>
+            <div class="act">
+              <span class="btn primary">Copy §4.6 into 2026-118 as a draft note</span>
+              <span class="btn">Open the original PDF at p.6</span>
+              <span class="btn">Open the conditions of consent</span>
+            </div>
+            <div class="fine">The copy keeps its source chips. The planner edits every paragraph for the new site; the assistant does not change a word.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 6: Summary -->
+    <section class="screen" id="s-sum">
+      <div class="summary">
+        <div class="big">New matter → 3 closest precedents and the reasons that carried them — <em>in under a minute, from your own files.</em></div>
+        <p class="lead">The assistant finds and quotes GSA's past work. It never drafts a report, an SEE or advice. A planner reads the source every time.</p>
+        <div class="flow">
+          <div class="box"><div class="k">1 · New matter</div><div class="v">14 Sample Ave, Randwick</div><div class="s">Balcony · privacy · side setback</div></div>
+          <div class="arr">→</div>
+          <div class="box"><div class="k">2 · Plain-language ask</div><div class="v">"Similar matters — balconies and privacy in Randwick"</div><div class="s">Searched 9,214 past outcomes</div></div>
+          <div class="arr">→</div>
+          <div class="box"><div class="k">3 · Three precedents</div><div class="v">Approved · s8.2 · Refused</div><div class="s">Council and LEC, with the key reasons</div></div>
+          <div class="arr">→</div>
+          <div class="box"><div class="k">4 · Your own SEE</div><div class="v">2021-047, §4.6, p.6–7</div><div class="s">Every paragraph with its source</div></div>
+        </div>
+        <div class="pillars">
+          <div class="pillar"><div class="ic">1</div><b>One live job board</b><span>Who is on each matter, its stage — pre-DA, DA, court, completed — and who has capacity. Replaces the Word document.</span></div>
+          <div class="pillar"><div class="ic">2</div><b>Precedent lookup, read-only</b><span>Plain-language search across 9,000+ past planning outcomes. Finds, ranks, quotes. Nothing is written by the system.</span></div>
+          <div class="pillar"><div class="ic">3</div><b>Your files stay yours</b><span>Runs over GSA's own documents, under GSA's control. Every answer links back to the file and page it came from.</span></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"><b>New matter received — 2026-118</b><span>14 Sample Ave, Randwick · rear first-floor balcony · referred by architect</span></div>
+<div class="footer">Demo · illustrative data · all matters, addresses and numbers are fictional</div>
+<div class="ctl">
+  <button class="restart" id="restart">Restart</button>
+  <span class="step" id="stepind">1/6</span>
+  <button class="next" id="next">Next ▸</button>
+</div>
+
+<script>
+(function(){
+  var TOTAL=6, step=1, timers=[];
+  var $=function(s){return document.querySelector(s)};
+  var screens={board:$('#s-board'),matter:$('#s-matter'),doc:$('#s-doc'),sum:$('#s-sum')};
+  function later(fn,ms){timers.push(setTimeout(fn,ms))}
+  function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+  function show(name){for(var k in screens)screens[k].classList.toggle('on',k===name)}
+  function nav(id){document.querySelectorAll('.nav a').forEach(function(a){a.classList.remove('active')});var a=$(id);if(a)a.classList.add('active')}
+  function bars(root,delay){root.querySelectorAll('.bar i').forEach(function(i){i.style.width='0';later(function(){i.style.width=i.getAttribute('data-w')},delay||50)})}
+
+  var ANSWER='I searched GSA’s 9,214 past matters for rear balconies with visual privacy issues in Randwick. Three are closest to 2026-118: two approvals (one at council, one on s8.2 review) and one refusal in the LEC. The cards show the key reasons each turned on. Open any card to read the original file.';
+
+  function typeOut(el,text,done){
+    el.textContent='';el.classList.add('caret');var i=0;
+    (function tick(){ if(i<text.length){var n=Math.min(text.length,i+3);el.textContent=text.slice(0,n);i=n;later(tick,12)} else {el.classList.remove('caret');done&&done()} })();
+  }
+
+  function render(instant){
+    clearTimers();
+    $('#stepind').textContent=step+'/'+TOTAL;
+    $('#next').disabled=step>=TOTAL;
+    var newrow=$('#newrow'),toast=$('#toast'),statNew=$('#stat-new');
+    var mq=$('#m-q'),ma=$('#m-a'),mat=$('#m-a-text'),wrap=$('#prec-wrap'),empty=$('#prec-empty'),src=$('#srcline');
+    toast.classList.remove('show');
+    if(step<=2){
+      nav('#nav-board');show('board');
+      newrow.style.display=step===2?'':'none';statNew.style.display=step===2?'':'none';
+      bars(screens.board,instant?0:80);
+      if(step===2&&!instant){later(function(){toast.classList.add('show')},200);later(function(){toast.classList.remove('show')},5200)}
+    } else if(step<=4){
+      nav('#nav-matters');show('matter');
+      wrap.style.display=step===4?'':'none';empty.style.display=step===4?'none':'';
+      screens.matter.classList.toggle('results',step===4);
+      $('#prec-title').textContent=step===4?'· 3 closest past matters, ranked':'· results appear here';
+      mq.style.display='';ma.style.display='';
+      var precs=document.querySelectorAll('.prec');
+      precs.forEach(function(p){p.classList.remove('show','best')});src.style.opacity='0';
+      if(step===3){
+        mq.classList.remove('show');ma.classList.remove('show');mat.textContent='';
+        if(instant){mq.classList.add('show');ma.classList.add('show');mat.textContent=ANSWER;mat.classList.remove('caret')}
+        else{later(function(){mq.classList.add('show')},300);later(function(){ma.classList.add('show');typeOut(mat,ANSWER)},1100)}
+      } else {
+        mq.classList.add('show');ma.classList.add('show');mat.textContent=ANSWER;mat.classList.remove('caret');
+        precs.forEach(function(p,i){later(function(){p.classList.add('show');bars(p,350);if(i===0)later(function(){p.classList.add('best')},900)},instant?0:200+i*350)});
+        later(function(){src.style.opacity='1'},instant?0:1300);
+      }
+    } else if(step===5){
+      nav('#nav-prec');show('doc');
+    } else {
+      nav('#nav-prec');show('sum');
+    }
+    try{history.replaceState(null,'',location.pathname+'?step='+step)}catch(e){}
+  }
+  function go(n,instant){step=Math.max(1,Math.min(TOTAL,n));render(instant)}
+  window.gsaGo=go;
+
+  $('#next').addEventListener('click',function(){go(step+1)});
+  $('#restart').addEventListener('click',function(){go(1)});
+  $('#newrow').addEventListener('click',function(){if(step===2)go(3)});
+  var ob=$('#open-best');ob.addEventListener('click',function(e){e.preventDefault();if(step===4)go(5)});
+  document.querySelectorAll('.nav a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault()})});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(step+1)}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(step-1)}
+    else if(e.key==='Home'||e.key==='r'||e.key==='R'){go(1)}
+  });
+
+  var m=/[?&]step=(\d)/.exec(location.search);
+  var initial=m?parseInt(m[1],10):(window.GSA_STEP||1);
+  go(initial,!!(m||window.GSA_STEP));
+})();
+</script>
+</body>
+</html>
