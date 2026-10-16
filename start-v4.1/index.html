@@ -89,6 +89,21 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 @media (max-width:820px){.who{grid-template-columns:1fr}}
 .art.shot img{width:min(560px,90vw);aspect-ratio:auto;border-radius:18px;object-fit:cover;box-shadow:0 0 0 1px rgba(216,169,72,.5),0 40px 120px rgba(0,0,0,.6)}
 .art.shot .badge{bottom:-18px}
+.art.live .app{width:min(540px,90vw);background:#f7f8fb;color:#16202e;border-radius:18px;box-shadow:0 0 0 1px rgba(216,169,72,.5),0 40px 120px rgba(0,0,0,.6);padding:16px 18px 14px;font:400 15px/1.45 Manrope,system-ui,sans-serif}
+.art.live .bar{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid #e3e7ef}
+.art.live .mk{width:26px;height:26px;border-radius:7px;background:#1f5d46;color:#fff;font:700 11px system-ui;display:grid;place-items:center}
+.art.live .pill{margin-left:auto;font-size:12px;background:#e7f3ed;color:#1f5d46;padding:3px 10px;border-radius:99px}
+.art.live .q{margin:14px 0 12px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid #e3e7ef;font-size:16.5px;min-height:24px}
+.art.live .caret{display:inline-block;width:2px;height:18px;background:#1f5d46;vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.art.live .r{background:#fff;border:1px solid #e3e7ef;border-radius:12px;padding:10px 14px;margin-bottom:8px;opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s}
+.art.live .r.on{opacity:1;transform:none}
+.art.live .r b{font-size:15px}.art.live .r p{margin:4px 0 0;color:#55607a;font-size:14px}
+.art.live .r span{float:right;font-size:11.5px;padding:2px 8px;border-radius:99px}
+.art.live .ok{background:#e4f4ea;color:#1f7a45}.art.live .ap{background:#ece8fb;color:#5b45b5}.art.live .no{background:#fbe6e6;color:#b23a3a}
+.art.live .foot{font-size:12px;color:#7a8499;text-align:center;opacity:0;transition:opacity .45s}.art.live .foot.on{opacity:1}
+.art.live .badge{bottom:-74px;left:24px}
+@media (prefers-reduced-motion:reduce){.art.live .r,.art.live .foot{opacity:1;transform:none}}
 </style></head><body>
 <div class="wrap"><nav><a class="logo" href="#"><img src="../cleo-logo-128.png" alt="">CLEOPATRA</a><div class="links"><a href="#what">Who we build for</a><a href="#team">Team</a></div><a class="navcta" href="#contact">Talk to us</a></nav>
 <header class="hero">
@@ -97,7 +112,19 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
  <p class="lede">Custom software with AI inside, made for how you work. It replaces your subscriptions and spreadsheets.</p>
  <div class="btns"><a class="btn p" href="https://calendar.app.google/QPiFU4qhbfeud8hA8">Book a 30-minute call →</a><a class="btn s" href="https://wa.me/61494821341?text=Hi%20Cleopatra%2C%20I%20saw%20your%20page%20and%20would%20like%20a%20quick%20chat.">WhatsApp us</a></div>
  <div class="hours">Mon–Fri, 9–5 Sydney. Pick any time.</div></div>
- <div class="art shot"><img src="product.jpg" alt="An example: asking for similar past matters, answered from the firm's own files (illustrative data)"><div class="badge"><b>An example</b> from a system we design: ask in plain words, get answers from your own files.</div></div>
+ <div class="art live" aria-label="An example: asking a question and getting answers from your own files (illustrative)">
+  <div class="app">
+   <div class="bar"><span class="mk">YF</span><b>Your firm</b><span class="pill">Ask AI</span></div>
+   <div class="q"><span id="qtext"></span><i class="caret"></i></div>
+   <div class="res" id="res">
+    <div class="r"><b>8 Barden Ave · 2021</b><span class="ok">Approved</span><p>Privacy screens 1.6 m · balcony cut to 1.8 m</p></div>
+    <div class="r"><b>23 Fenwick Rd · 2020</b><span class="ap">Approved on appeal</span><p>Terrace cut to 2.0 m · louvres added</p></div>
+    <div class="r"><b>5 Corbett Pl · 2022</b><span class="no">Refused</span><p>Deep balcony overlooked two yards</p></div>
+   </div>
+   <div class="foot">Found in your own files · not written by AI</div>
+  </div>
+  <div class="badge"><b>An example:</b> ask in plain words, get answers from your own files.</div>
+ </div>
 </header></div>
 
 <div class="wrap">
@@ -143,6 +170,23 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
  function show(k){box.innerHTML='';W[k].forEach(function(c){var d=document.createElement('div');d.className='card';d.innerHTML='<span class="tag"></span><h3></h3><p></p><p class="rep"></p>';d.querySelector('.tag').textContent=c[0];d.querySelector('h3').textContent=c[1];d.querySelector('p').textContent=c[2];d.querySelector('.rep').textContent=c[3];box.appendChild(d)})}
  document.querySelectorAll('#who-tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#who-tabs button').forEach(function(x){x.setAttribute('aria-selected','false')});b.setAttribute('aria-selected','true');show(b.dataset.w)}});
  show('trade');
+})();
+</script>
+<script>
+(function(){
+ var Q='Similar past matters? Rear balcony, privacy, Randwick';
+ var qt=document.getElementById('qtext'),rs=document.querySelectorAll('#res .r'),ft=document.querySelector('.art.live .foot');
+ if(!qt)return;
+ var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(reduce){qt.textContent=Q;return;}
+ function run(){
+  qt.textContent='';rs.forEach(function(r){r.classList.remove('on')});ft.classList.remove('on');
+  var i=0;(function type(){qt.textContent=Q.slice(0,++i);if(i<Q.length)setTimeout(type,45);else{
+   rs.forEach(function(r,k){setTimeout(function(){r.classList.add('on')},700+k*650)});
+   setTimeout(function(){ft.classList.add('on')},700+rs.length*650);
+   setTimeout(run,700+rs.length*650+4200);}})();
+ }
+ run();
 })();
 </script>
 </body></html>
