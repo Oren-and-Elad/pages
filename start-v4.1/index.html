@@ -56,6 +56,7 @@ h2{font:700 clamp(32px,4vw,48px)/1.05 "Space Grotesk",sans-serif;letter-spacing:
 .n span{font-size:14px;color:var(--mut)}
 .safe{display:flex;gap:16px;align-items:flex-start;margin-top:26px;padding:20px;border-radius:16px;background:rgba(43,179,163,.08);border:1px solid rgba(43,179,163,.3)}
 .safe b{color:var(--teal)}
+.safe .ico{color:var(--teal);flex:none;line-height:0;margin-top:1px}
 .people{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .person{display:flex;gap:16px;align-items:center;padding:22px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
 .av{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font:700 22px "Space Grotesk",sans-serif;background:linear-gradient(135deg,var(--gold),var(--teal));color:#0b1530}
@@ -145,7 +146,7 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 
 <section id="work" style="padding-top:0"><div class="proof">
  <div><h2>In use every day</h2><p class="sub" style="margin-bottom:0">The building-materials system we built, live since August 2026:</p>
- <div class="safe"><span>🔒</span><div><b>You stay in control.</b> Nothing goes to a customer or gets paid until you approve.</div></div></div>
+ <div class="safe"><span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.3" fill="currentColor" stroke="none"/></svg></span><div><b>You stay in control.</b> Nothing goes to a customer or gets paid until you approve.</div></div></div>
  <div class="nums"><div class="n"><b>644</b><span>staff requests since April 2026</span></div><div class="n"><b>627</b><span>closed as done</span></div><div class="n"><b>29h</b><span>median, request to closed</span></div></div>
 </div></section>
 <section id="team" style="padding-top:0" class="team">
