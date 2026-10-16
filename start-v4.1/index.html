@@ -102,7 +102,7 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 .art.live .r span{float:right;font-size:11.5px;padding:2px 8px;border-radius:99px}
 .art.live .ok{background:#e4f4ea;color:#1f7a45}.art.live .ap{background:#ece8fb;color:#5b45b5}.art.live .no{background:#fbe6e6;color:#b23a3a}
 .art.live .foot{font-size:12px;color:#7a8499;text-align:center;opacity:0;transition:opacity .45s}.art.live .foot.on{opacity:1}
-.art.live .badge{bottom:-74px;left:24px}
+.art.live .badge{bottom:-96px;left:24px;max-width:340px}
 @media (prefers-reduced-motion:reduce){.art.live .r,.art.live .foot{opacity:1;transform:none}}
 </style></head><body>
 <div class="wrap"><nav><a class="logo" href="#"><img src="../cleo-logo-128.png" alt="">CLEOPATRA</a><div class="links"><a href="#what">Who we build for</a><a href="#team">Team</a></div><a class="navcta" href="#contact">Talk to us</a></nav>
@@ -112,18 +112,14 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
  <p class="lede">Custom software with AI inside, made for how you work. It replaces your subscriptions and spreadsheets.</p>
  <div class="btns"><a class="btn p" href="https://calendar.app.google/QPiFU4qhbfeud8hA8">Book a 30-minute call →</a><a class="btn s" href="https://wa.me/61494821341?text=Hi%20Cleopatra%2C%20I%20saw%20your%20page%20and%20would%20like%20a%20quick%20chat.">WhatsApp us</a></div>
  <div class="hours">Mon–Fri, 9–5 Sydney. Pick any time.</div></div>
- <div class="art live" aria-label="An example: asking a question and getting answers from your own files (illustrative)">
+ <div class="art live" aria-label="Examples: asking a question and getting answers from your own data (illustrative)">
   <div class="app">
-   <div class="bar"><span class="mk">YF</span><b>Your firm</b><span class="pill">Ask AI</span></div>
+   <div class="bar"><span class="mk" id="mk">YB</span><b id="biz">Your business</b><span class="pill" id="who">Ask AI</span></div>
    <div class="q"><span id="qtext"></span><i class="caret"></i></div>
-   <div class="res" id="res">
-    <div class="r"><b>8 Barden Ave · 2021</b><span class="ok">Approved</span><p>Privacy screens 1.6 m · balcony cut to 1.8 m</p></div>
-    <div class="r"><b>23 Fenwick Rd · 2020</b><span class="ap">Approved on appeal</span><p>Terrace cut to 2.0 m · louvres added</p></div>
-    <div class="r"><b>5 Corbett Pl · 2022</b><span class="no">Refused</span><p>Deep balcony overlooked two yards</p></div>
-   </div>
-   <div class="foot">Found in your own files · not written by AI</div>
+   <div class="res" id="res"></div>
+   <div class="foot" id="foot"></div>
   </div>
-  <div class="badge"><b>An example:</b> ask in plain words, get answers from your own files.</div>
+  <div class="badge"><b>Examples:</b> ask in plain words, get answers from your own data.</div>
  </div>
 </header></div>
 
@@ -174,17 +170,26 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 </script>
 <script>
 (function(){
- var Q='Similar past matters? Rear balcony, privacy, Randwick';
- var qt=document.getElementById('qtext'),rs=document.querySelectorAll('#res .r'),ft=document.querySelector('.art.live .foot');
+ var S=[
+  {biz:'Your supply yard',tag:'Trades & supply',q:'Which deliveries are late this week?',foot:'From your own orders and deliveries',
+   r:[['Order 4182 · Smith Builders','ok','On the truck','Due Thu, 9 am'],['Order 4177 · Coastal Homes','ap','Waiting stock','Bricks due Wed'],['Order 4169 · R. Lee','no','Late','Was due Mon · call today']]},
+  {biz:'Your stores',tag:'Retail',q:'Who is on the floor Saturday at Bondi?',foot:'From your own roster and sales',
+   r:[['Morning · 8 to 2','ok','4 staff','Matches last Saturday'],['Afternoon · 2 to 6','no','1 short','Expected peak at 3 pm'],['Suggestion','ap','Move Sam','From Mon to Sat afternoon']]},
+  {biz:'Your firm',tag:'Professional services',q:'Similar past matters? Rear balcony, privacy',foot:'Found in your own files · not written by AI',
+   r:[['8 Barden Ave · 2021','ok','Approved','Privacy screens · balcony cut'],['23 Fenwick Rd · 2020','ap','On appeal','Terrace cut · louvres added'],['5 Corbett Pl · 2022','no','Refused','Deep balcony overlooked yards']]}
+ ];
+ var qt=document.getElementById('qtext'),res=document.getElementById('res'),ft=document.getElementById('foot'),biz=document.getElementById('biz'),mk=document.getElementById("mk"),who=document.getElementById('who');
  if(!qt)return;
- var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(reduce){qt.textContent=Q;return;}
+ var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,n=0;
+ function card(c){var d=document.createElement('div');d.className='r';d.innerHTML='<span></span><b></b><p></p>';d.querySelector('span').className=c[1];d.querySelector('span').textContent=c[2];d.querySelector('b').textContent=c[0];d.querySelector('p').textContent=c[3];return d}
  function run(){
-  qt.textContent='';rs.forEach(function(r){r.classList.remove('on')});ft.classList.remove('on');
-  var i=0;(function type(){qt.textContent=Q.slice(0,++i);if(i<Q.length)setTimeout(type,45);else{
-   rs.forEach(function(r,k){setTimeout(function(){r.classList.add('on')},700+k*650)});
-   setTimeout(function(){ft.classList.add('on')},700+rs.length*650);
-   setTimeout(run,700+rs.length*650+4200);}})();
+  var sc=S[n++%S.length];biz.textContent=sc.biz;mk.textContent=sc.biz.split(" ").slice(-2).map(function(w){return w[0].toUpperCase()}).join("");who.textContent=sc.tag;ft.textContent=sc.foot;ft.classList.remove('on');
+  res.innerHTML='';var cards=sc.r.map(card);cards.forEach(function(d){res.appendChild(d)});
+  if(reduce){qt.textContent=sc.q;cards.forEach(function(d){d.classList.add('on')});ft.classList.add('on');setTimeout(run,7000);return;}
+  qt.textContent='';var i=0;(function type(){qt.textContent=sc.q.slice(0,++i);if(i<sc.q.length)setTimeout(type,45);else{
+   cards.forEach(function(d,k){setTimeout(function(){d.classList.add('on')},600+k*600)});
+   setTimeout(function(){ft.classList.add('on')},600+cards.length*600);
+   setTimeout(run,600+cards.length*600+3600);}})();
  }
  run();
 })();
