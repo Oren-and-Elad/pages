@@ -1,0 +1,20 @@
+# The one gate before a change reaches main (and so the public site). Cleo's ship lane merges a pull request here
+# only when this job's check, "Pages · Check", is green (cleo2 config build.targets.pages-build.requiredChecks).
+name: Pages · Check
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    name: Pages · Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run check
