@@ -76,13 +76,13 @@ footer{border-top:1px solid rgba(255,255,255,.1);padding:26px 0;color:var(--mut)
 .links{display:flex;gap:26px;font:500 15px "Space Grotesk",sans-serif}.links a{text-decoration:none;color:var(--mut)}.links a:hover{color:var(--ink)}
 .svc{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .get{margin-top:22px;padding:18px 22px;border-radius:16px;background:rgba(216,169,72,.08);border:1px solid rgba(216,169,72,.35);color:var(--ink)}.get b{color:var(--gold2)}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
 .step{padding:24px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
 .step b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#1a1405;font:700 16px "Space Grotesk",sans-serif;margin-bottom:12px}
 .step h3{font:700 19px "Space Grotesk",sans-serif;margin:0 0 6px}.step p{margin:0;color:var(--mut);font-size:15.5px}
 html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 @media (max-width:820px){.links{display:none}.svc,.steps{grid-template-columns:1fr}}
-.who{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.who{display:grid;grid-template-columns:1fr;gap:18px;max-width:720px}
 .who .card{padding:26px;border-radius:20px;background:linear-gradient(160deg,var(--deep),#0e1a3b);border:1px solid rgba(255,255,255,.08)}
 .who .card h3{font:700 21px "Space Grotesk",sans-serif;margin:0 0 10px}.who .card p{margin:0 0 10px;color:var(--mut)}
 .who .rep{font-size:14px;color:var(--gold2)}.who .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
@@ -90,9 +90,9 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 .art.shot img{width:min(560px,90vw);aspect-ratio:auto;border-radius:18px;object-fit:cover;box-shadow:0 0 0 1px rgba(216,169,72,.5),0 40px 120px rgba(0,0,0,.6)}
 .art.shot .badge{bottom:-18px}
 </style></head><body>
-<div class="wrap"><nav><a class="logo" href="#"><img src="../cleo-logo-128.png" alt="">CLEOPATRA</a><div class="links"><a href="#what">What we do</a><a href="#how">How we work</a><a href="#work">Our work</a><a href="#team">Team</a></div><a class="navcta" href="#contact">Talk to us</a></nav>
+<div class="wrap"><nav><a class="logo" href="#"><img src="../cleo-logo-128.png" alt="">CLEOPATRA</a><div class="links"><a href="#what">Who we build for</a><a href="#team">Team</a></div><a class="navcta" href="#contact">Talk to us</a></nav>
 <header class="hero">
- <div><div class="kicker"><i></i>Custom software and AI for small businesses · Sydney</div>
+ <div>
  <h1>Software built <span>for your business</span>, not another subscription.</h1>
  <p class="lede">Custom software with AI inside, made for how you work. It replaces your subscriptions and spreadsheets.</p>
  <div class="btns"><a class="btn p" href="https://calendar.app.google/QPiFU4qhbfeud8hA8">Book a 30-minute call →</a><a class="btn s" href="https://wa.me/61494821341?text=Hi%20Cleopatra%2C%20I%20saw%20your%20page%20and%20would%20like%20a%20quick%20chat.">WhatsApp us</a></div>
@@ -110,21 +110,13 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
  </div>
  <div class="who" id="who"></div>
 </section>
-<section style="padding-top:0">
- <h2>Instead of another subscription</h2>
- <div class="svc">
-  <div class="tile"><div class="ic">🧩</div><h3>Built only for you</h3><p>Does exactly what your team needs.</p></div>
-  <div class="tile"><div class="ic">✦</div><h3>AI that knows your business</h3><p>Knows your files and does the routine work.</p></div>
-  <div class="tile"><div class="ic">🔁</div><h3>Easy to change</h3><p>Changes in days. Yours, no per-seat fees.</p></div>
- </div>
-</section>
+
 <section id="how" style="padding-top:0">
  <h2>How we work</h2><p class="sub">Start small. Grow step by step.</p>
  <div class="steps">
   <div class="step"><b>1</b><h3>A 30-minute call</h3><p>Tell us where time goes.</p></div>
-  <div class="step"><b>2</b><h3>Scoping</h3><p>One first project, fixed price.</p></div>
-  <div class="step"><b>3</b><h3>Build, in weeks</h3><p>You see it working early.</p></div>
-  <div class="step"><b>4</b><h3>Run and grow</h3><p>We support it, then the next.</p></div>
+    <div class="step"><b>2</b><h3>Build, in weeks</h3><p>You see it working early.</p></div>
+  <div class="step"><b>3</b><h3>Run and grow</h3><p>We support it, then the next.</p></div>
  </div>
 </section>
 
@@ -144,9 +136,9 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
 </div>
 <script>
 (function(){
- var W={trade:[["Done","An operations system for a building-materials business","Quotes, orders, deliveries and invoices in one place, synced to Xero.","Replaced: an ageing system, spreadsheets, double entry into Xero"],["Example","Job and stock tracking","Every job and item, from order to delivery.","Replaces: whiteboards, group chats, a stock spreadsheet"]],
- retail:[["Phase one","Staff rostering for a national retail chain","The right people in each store, from the chain's own rules.","Replaces: a spreadsheet and hours of manual work each week"],["Example","Booking reminders and follow-ups","Customers confirm on WhatsApp. Fewer no-shows.","Replaces: manual calls and texts"]],
- prof:[["In progress","Finding past work in seconds, for a planning firm","Ask in plain words, get similar past matters from their own files.","Replaces: asking colleagues, digging through folders"],["Example","Invoice chasing and a job board","Reminders until paid. Who is on which job.","Replaces: a Word list, manual reminders"]]};
+ var W={trade:[["Done","An operations system for a building-materials business","Quotes, orders, deliveries and invoices in one place, synced to Xero.","Replaced: an ageing system, spreadsheets, double entry into Xero"]],
+ retail:[["Phase one","Staff rostering for a national retail chain","The right people in each store, from the chain's own rules.","Replaces: a spreadsheet and hours of manual work each week"]],
+ prof:[["In progress","Finding past work in seconds, for a planning firm","Ask in plain words, get similar past matters from their own files.","Replaces: asking colleagues, digging through folders"]]};
  var box=document.getElementById('who');
  function show(k){box.innerHTML='';W[k].forEach(function(c){var d=document.createElement('div');d.className='card';d.innerHTML='<span class="tag"></span><h3></h3><p></p><p class="rep"></p>';d.querySelector('.tag').textContent=c[0];d.querySelector('h3').textContent=c[1];d.querySelector('p').textContent=c[2];d.querySelector('.rep').textContent=c[3];box.appendChild(d)})}
  document.querySelectorAll('#who-tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#who-tabs button').forEach(function(x){x.setAttribute('aria-selected','false')});b.setAttribute('aria-selected','true');show(b.dataset.w)}});
