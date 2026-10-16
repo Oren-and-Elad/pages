@@ -114,7 +114,7 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
  <div class="hours">Mon–Fri, 9–5 Sydney. Pick any time.</div></div>
  <div class="art live" aria-label="Examples: asking a question and getting answers from your own data (illustrative)">
   <div class="app">
-   <div class="bar"><span class="mk" id="mk">YB</span><b id="biz">Your business</b><span class="pill" id="who">Ask AI</span></div>
+   <div class="bar"><span class="mk" id="mk">YB</span><b id="biz">Your business</b><span class="pill" id="fieldtag">Ask AI</span></div>
    <div class="q"><span id="qtext"></span><i class="caret"></i></div>
    <div class="res" id="res"></div>
    <div class="foot" id="foot"></div>
@@ -178,7 +178,7 @@ html{scroll-behavior:smooth}section[id],div[id=contact]{scroll-margin-top:20px}
   {biz:'Your firm',tag:'Professional services',q:'Similar past matters? Rear balcony, privacy',foot:'Found in your own files · not written by AI',
    r:[['8 Barden Ave · 2021','ok','Approved','Privacy screens · balcony cut'],['23 Fenwick Rd · 2020','ap','On appeal','Terrace cut · louvres added'],['5 Corbett Pl · 2022','no','Refused','Deep balcony overlooked yards']]}
  ];
- var qt=document.getElementById('qtext'),res=document.getElementById('res'),ft=document.getElementById('foot'),biz=document.getElementById('biz'),mk=document.getElementById("mk"),who=document.getElementById('who');
+ var qt=document.getElementById('qtext'),res=document.getElementById('res'),ft=document.getElementById('foot'),biz=document.getElementById('biz'),mk=document.getElementById("mk"),who=document.getElementById("fieldtag");
  if(!qt)return;
  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,n=0;
  function card(c){var d=document.createElement('div');d.className='r';d.innerHTML='<span></span><b></b><p></p>';d.querySelector('span').className=c[1];d.querySelector('span').textContent=c[2];d.querySelector('b').textContent=c[0];d.querySelector('p').textContent=c[3];return d}
