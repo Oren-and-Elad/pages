@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>v3 · GSA Planning · Matters — demo</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --panel:#ffffff; --line:#e3e7ec; --line2:#eef1f4;
+    --ink:#15202b; --ink2:#4b5663; --ink3:#7b8692;
+    --brand:#1f5f4a; --brand2:#e8f3ee; --brand3:#c9e4d8;
+    --blue:#2457a8; --blue2:#e9f0fb;
+    --amber:#9a5b00; --amber2:#fff4dc;
+    --red:#a3262b; --red2:#fde9ea;
+    --violet:#5b3fa0; --violet2:#efeaf9;
+    --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.18);
+    --col:820px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;font-size:18px;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden;display:flex;flex-direction:column}
+  button{font:inherit;color:inherit;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- top bar (minimal) ---------- */
+  .top{height:60px;flex:none;display:flex;align-items:center;gap:28px;padding:0 32px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .wordmark{display:flex;align-items:center;gap:12px;font-weight:600;font-size:19px;letter-spacing:-.01em}
+  .wordmark .mk{width:30px;height:30px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;letter-spacing:.02em}
+  .wordmark .dot{color:var(--ink3);font-weight:400}
+  .tabs{display:flex;gap:6px;margin-left:8px}
+  .tabs span{padding:7px 14px;border-radius:8px;font-size:16px;color:var(--ink2);font-weight:500;cursor:pointer}
+  .tabs span.on{background:var(--brand2);color:var(--brand)}
+  .top .spacer{flex:1}
+  .top .user{display:flex;align-items:center;gap:10px;color:var(--ink2);font-size:16px}
+  .av{width:34px;height:34px;border-radius:50%;display:inline-grid;place-items:center;font-size:13px;font-weight:600;color:#fff;background:var(--ink2);flex:none}
+  .av.a{background:#2f6f5a}.av.b{background:#3b5aa6}.av.c{background:#8a5a1f}.av.d{background:#6a4a9c}.av.e{background:#9a3a3a}.av.f{background:#2b7a8c}
+
+  .main{flex:1;min-height:0;overflow:auto;padding:28px 40px 100px;position:relative}
+  .view{display:none;animation:fade .28s ease}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  body.still *{animation:none!important;transition:none!important}
+
+  /* ---------- board ---------- */
+  .board{max-width:1180px;margin:0 auto}
+  .board h1{font-size:30px;font-weight:600;letter-spacing:-.015em;margin:0 0 6px}
+  .board .sub{color:var(--ink3);font-size:17px;margin-bottom:22px}
+  .tbl{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;font-size:19px}
+  .tbl th{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);font-weight:600;text-align:left;padding:14px 22px;border-bottom:1px solid var(--line);background:#fafbfc}
+  .tbl td{padding:18px 22px;border-bottom:1px solid var(--line2);vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl .addr{font-weight:600;font-size:20px}
+  .tbl .cl{color:var(--ink3);font-size:16px;margin-top:3px}
+  .tbl .mn{color:var(--ink2);font-size:17px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .tbl .team .av{margin-left:-8px;border:2px solid #fff}
+  .tbl .team .av:first-child{margin-left:0}
+  .tbl tr.new{display:none}
+  .tbl tr.new.show{display:table-row;animation:slide .5s ease}
+  .tbl tr.new.show td{background:#fffbea;box-shadow:inset 5px 0 0 var(--amber)}
+  @keyframes slide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:5px 13px;border-radius:99px;white-space:nowrap}
+  .pill:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.8}
+  .pill.pre{background:var(--blue2);color:var(--blue)}
+  .pill.da{background:var(--brand2);color:var(--brand)}
+  .pill.court{background:var(--violet2);color:var(--violet)}
+  .pill.done{background:var(--line2);color:var(--ink2)}
+  .pill.new{background:var(--amber2);color:var(--amber)}
+
+  /* ---------- the chat (main item) ---------- */
+  .chatwrap{max-width:var(--col);margin:0 auto;display:flex;flex-direction:column;min-height:calc(100vh - 60px - 128px)}
+  .ctx{font-size:16px;color:var(--ink3);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+  .ctx b{color:var(--ink2);font-weight:600}
+  .ctx .pill{font-size:13px;padding:3px 10px}
+  .msgs{display:flex;flex-direction:column;gap:14px}
+  .msg{max-width:100%;line-height:1.45;animation:fade .3s ease}
+  .msg[hidden]{display:none!important}
+  .msg.u{align-self:flex-end;background:var(--brand);color:#fff;padding:16px 24px;border-radius:22px 22px 6px 22px;font-size:30px;font-weight:500;letter-spacing:-.01em;line-height:1.3;max-width:92%}
+  .msg.a::before{content:"GSAI";display:block;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted,#6b7280);margin-bottom:4px}
+.msg.a{align-self:flex-start;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);padding:14px 24px;border-radius:22px 22px 22px 6px;font-size:22px;color:var(--ink)}
+  .msg.a p{margin:0}
+  .msg.a .ln{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-weight:600;font-size:23px}
+  .msg.a ul{margin:8px 0 0;padding-left:26px}
+  .msg.a li{margin:3px 0;color:var(--ink2)}
+  .msg.a .from{display:block;margin-top:8px;font-size:15px;color:var(--ink3)}
+  .msg.s{align-self:flex-start;font-size:18px;color:var(--ink3);display:flex;gap:12px;align-items:center}
+  .msg.s .sp{width:18px;height:18px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tag{display:inline-block;font-size:14px;font-weight:600;padding:3px 10px;border-radius:7px;background:var(--line2);color:var(--ink2);vertical-align:middle}
+  .tag.ok{background:var(--brand2);color:var(--brand)}
+  .tag.bad{background:var(--red2);color:var(--red)}
+  .tag.ct{background:var(--violet2);color:var(--violet)}
+  .msg.a.wide{width:100%}
+  .tl{display:flex;margin-top:16px;padding-top:4px}
+  .tl .s{flex:1;min-width:0;position:relative;padding:0 12px 0 0}
+  .tl .s:before{content:"";position:absolute;left:18px;right:0;top:8px;height:3px;background:var(--line)}
+  .tl .s:last-child:before{display:none}
+  .tl .dt{display:block;width:18px;height:18px;border-radius:50%;border:3px solid var(--ink3);background:#fff;position:relative;z-index:1;margin-bottom:10px}
+  .tl .s.bad .dt{border-color:var(--red);background:var(--red2)}
+  .tl .s.ct .dt{border-color:var(--violet);background:var(--violet2);box-shadow:0 0 0 5px var(--violet2)}
+  .tl .s.ok .dt{border-color:var(--brand);background:var(--brand)}
+  .tl b{display:block;font-size:19px;font-weight:600;line-height:1.25}
+  .tl span{display:block;font-size:15px;color:var(--ink3);margin-top:3px}
+  .tl .s.bad b{color:var(--red)}.tl .s.ct b{color:var(--violet)}.tl .s.ok b{color:var(--brand)}
+  .q{border-left:5px solid var(--brand3);background:#f7fbf9;padding:16px 22px;border-radius:0 12px 12px 0;margin:14px 0 0;font-size:23px;line-height:1.5;color:var(--ink);font-style:italic}
+  .found{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--brand);background:var(--brand2);border:1px solid var(--brand3);border-radius:99px;padding:5px 13px 5px 10px;white-space:nowrap;margin-top:12px}
+  .found svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .caret{display:inline-block;width:2px;height:26px;background:currentColor;vertical-align:-4px;margin-left:2px;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .cin{margin-top:auto;padding-top:24px}
+  .cin .box{border:1px solid var(--line);border-radius:16px;padding:16px 20px;font-size:22px;color:var(--ink3);min-height:64px;display:flex;align-items:center;gap:12px;background:#fff;box-shadow:var(--shadow)}
+  .cin .box .txt{flex:1;color:var(--ink);min-height:30px}
+  .cin .box .txt.ph{color:var(--ink3)}
+  .cin .box .send{width:38px;height:38px;border-radius:10px;background:var(--line2);display:grid;place-items:center;color:var(--ink3);flex:none}
+  .cin .box .send svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .cin .box .send.on{background:var(--brand);color:#fff}
+  .cin .fine{font-size:14px;color:var(--ink3);margin-top:10px;text-align:center}
+
+  /* ---------- summary ---------- */
+  .sum{max-width:1000px;margin:14vh auto 0;text-align:center}
+  .sum h1{font-size:46px;line-height:1.22;letter-spacing:-.02em;font-weight:600;margin:0}
+  .sum h1 em{font-style:normal;color:var(--brand)}
+  .roi-sub{text-align:center;color:var(--muted,#6b7280);font-size:19px;margin:-14px 0 22px}
+  .roi{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .roi label{display:flex;flex-direction:column;gap:8px;font-size:15px;color:var(--muted,#6b7280);background:var(--panel,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:14px}
+  .roi input,.roi select{font-size:22px;padding:8px 10px;border:1px solid var(--line,#e5e7eb);border-radius:10px;color:var(--ink,#111)}
+  .roi-out{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:26px 0 8px}
+  .roi-out div{background:var(--panel,#fff);border:1px solid var(--line,#e5e7eb);border-radius:18px;padding:22px;text-align:center}
+  .roi-out b{display:block;font-size:52px;font-weight:600;color:var(--brand)}.roi-out span{color:var(--muted,#6b7280);font-size:16px}
+  .offer{max-width:1240px;margin:5vh auto 0;padding:0 32px}
+  .offer h1{font-size:42px;letter-spacing:-.02em;font-weight:600;margin:0 0 28px;text-align:center}
+  .og{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .oc{background:var(--panel,#fff);border:1px solid var(--line,#e5e7eb);border-radius:18px;padding:22px 22px 16px;font-size:18px;line-height:1.5}
+  .oc h3{margin:0 0 12px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#6b7280)}
+  .oc p{margin:0 0 12px}.oc ul{margin:0;padding-left:20px}.oc li{margin-bottom:6px}
+  .oc .big{font-size:40px;font-weight:600;line-height:1.1;color:var(--brand)}
+  .oc .pay{list-style:none;padding:0}.oc .pay li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line,#e5e7eb)}
+  .oc .pay b{white-space:nowrap}.oc .note{margin-top:12px;font-size:15px;color:var(--muted,#6b7280)}
+  @media (max-width:1100px){.og{grid-template-columns:repeat(2,1fr)}}
+  .sum .found{margin-top:34px;font-size:17px;padding:9px 18px 9px 14px}
+  .sum .found svg{width:18px;height:18px}
+
+  /* ---------- v3: fees owing ---------- */
+  .seg{display:inline-flex;gap:4px;background:var(--line2);border-radius:10px;padding:4px;margin:0 0 18px}
+  .seg span{padding:7px 16px;border-radius:7px;font-size:16px;font-weight:500;color:var(--ink2)}
+  .seg span.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.12)}
+  .flag{display:flex;align-items:center;gap:16px;background:var(--amber2);border:1px solid #f1d59b;border-left:6px solid var(--amber);border-radius:12px;padding:14px 20px;margin-bottom:18px;font-size:20px}
+  .flag b{color:var(--amber)}
+  .flag .fs{font-size:15px;color:var(--ink2);margin-top:2px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px 22px}
+  .stat b{display:block;font-size:38px;font-weight:600;letter-spacing:-.02em;color:var(--brand);line-height:1.15}
+  .stat b.amb{color:var(--amber)}
+  .stat span{font-size:16px;color:var(--ink3)}
+  .tbl.cmp td{padding:11px 22px}
+  .tbl.cmp .addr{font-size:19px}
+  .tbl.cmp .cl{font-size:15px;margin-top:1px}
+  .tbl .amt{font-weight:600;font-size:20px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tbl th.r{text-align:right}
+  .tbl tr.hot td{background:#fffbea}
+  .tbl tr.more td{color:var(--ink3);font-size:16px;padding:10px 22px}
+  .board .found{margin-top:14px}
+  /* ---------- v3: prospect list ---------- */
+  .grp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+  .grp .g{background:#fafbfc;border:1px solid var(--line2);border-radius:12px;padding:10px 16px}
+  .grp h4{margin:0 0 6px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+  .grp .r{display:flex;justify-content:space-between;gap:12px;font-size:19px;padding:3px 0;color:var(--ink2)}
+  .grp .r b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .ready{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:17px;color:var(--ink2)}
+  /* ---------- v3: proposals ---------- */
+  .props{max-width:1080px;margin:3vh auto 0}
+  .props h1{font-size:40px;letter-spacing:-.02em;font-weight:600;margin:0 0 20px;text-align:center}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 32px}
+  .pbig{display:flex;align-items:baseline;justify-content:center;gap:34px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line2)}
+  .pbig div{text-align:center}
+  .pbig b{display:block;font-size:56px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+  .pbig .pc b{color:var(--brand)}
+  .pbig span{font-size:17px;color:var(--ink3)}
+  .pbig .arr{font-size:34px;color:var(--ink3)}
+  .bars{margin-top:14px}
+  .bar{display:grid;grid-template-columns:260px 1fr 150px;align-items:center;gap:18px;padding:7px 0;font-size:19px}
+  .bar .tr{height:22px;background:var(--line2);border-radius:6px;overflow:hidden}
+  .bar .tr i{display:block;height:100%;background:var(--brand);border-radius:6px}
+  .bar .n{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bar .n b{color:var(--ink)}
+  .props .found{display:flex;width:max-content;margin:16px auto 0}
+  /* ---------- v3: why this lasts ---------- */
+  .why{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .why .oc{font-size:20px;padding:26px 26px 20px}
+  .why .oc h2{margin:0 0 12px;font-size:26px;font-weight:600;letter-spacing:-.01em;color:var(--brand)}
+  .why .oc p{color:var(--ink2)}
+  /* ---------- v3: payback headline ---------- */
+  .roi label{min-width:0}
+  .roi input,.roi select{width:100%;min-width:0}
+  .roi select{font-size:18px}
+  .jobpay{display:flex;align-items:center;gap:24px;background:var(--brand2);border:1px solid var(--brand3);border-radius:18px;padding:18px 26px;margin:0 0 20px}
+  .jobpay p{flex:1;margin:0;font-size:22px;line-height:1.4;color:var(--ink)}
+  .jobpay label{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--ink2)}
+  .jobpay input{font-size:22px;padding:8px 10px;border:1px solid var(--brand3);border-radius:10px;width:150px;color:var(--ink)}
+  .jobpay .jp{text-align:center;min-width:150px}
+  .jobpay .jp b{display:block;font-size:48px;font-weight:600;color:var(--brand);line-height:1.1}
+  .jobpay .jp span{font-size:15px;color:var(--ink2)}
+
+  /* ---------- presenter controls ---------- */
+  .ctl{position:fixed;right:28px;bottom:22px;display:flex;align-items:center;gap:10px;z-index:20}
+  .ctl .stp{font-size:14px;color:var(--ink3);background:rgba(255,255,255,.9);border:1px solid var(--line);padding:7px 12px;border-radius:99px;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px)}
+  .ctl .rs{height:40px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink2);font-size:14px;backdrop-filter:blur(6px)}
+  .ctl .nx{height:50px;padding:0 24px;border-radius:99px;border:0;background:var(--ink);color:#fff;font-weight:600;font-size:17px;box-shadow:0 10px 24px -8px rgba(0,0,0,.45);display:flex;align-items:center;gap:8px;transition:.15s}
+  .ctl .nx:hover{transform:translateY(-1px)}
+  .ctl .nx:disabled{opacity:.35;transform:none;cursor:default}
+  .ctl .pv2{height:40px;width:40px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink2);font-size:18px}
+  .demo{position:fixed;left:28px;bottom:26px;font-size:13px;color:var(--ink3);background:rgba(255,255,255,.85);padding:5px 12px;border-radius:99px;border:1px solid var(--line);z-index:20}
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="wordmark"><span class="mk">GSA</span>GSA Planning<span class="dot">·</span><span style="font-weight:500;color:var(--ink2)">Matters</span></div>
+    <div class="tabs"><span id="tab-board" class="on">Job board</span><span id="tab-ask">Ask GSAI</span></div>
+    <div class="spacer"></div>
+    <div class="user"><span class="av a">JM</span>Jules M</div>
+  </header>
+
+  <main class="main" id="main">
+
+    <!-- ===== Board (steps 1–2) ===== -->
+    <section class="view on" id="v-board">
+      <div class="board">
+        <h1>Job board</h1>
+        <div class="sub">Every open matter, its stage and who is on it</div>
+        <table class="tbl">
+          <thead><tr><th>Matter</th><th>Stage</th><th>Team</th><th>Next date</th></tr></thead>
+          <tbody>
+            <tr class="new" id="newrow">
+              <td><div class="addr">18 Welland St, Randwick</div><div class="cl">Alterations &amp; additions · rear first-floor balcony · brief received today</div></td>
+              <td><span class="pill new">New · unassigned</span></td>
+              <td class="team">—</td>
+              <td class="mn">—</td>
+            </tr>
+            <tr><td><div class="addr">41 Hartley Pde, Maroubra</div><div class="cl">Residential flat building · 4 storeys</div></td><td><span class="pill court">Court · LEC Class 1</span></td><td class="team"><span class="av c">TN</span><span class="av b">PK</span></td><td class="mn">s34 conference · 22 Oct</td></tr>
+            <tr><td><div class="addr">7 Osgood Ave, Coogee</div><div class="cl">Dual occupancy · attached</div></td><td><span class="pill da">DA · with council</span></td><td class="team"><span class="av a">JM</span><span class="av d">SR</span></td><td class="mn">RFI due 20 Oct</td></tr>
+            <tr><td><div class="addr">88 Beaufort St, Bondi Junction</div><div class="cl">Shop-top housing · Waverley</div></td><td><span class="pill court">Court · LEC Class 1</span></td><td class="team"><span class="av c">TN</span><span class="av e">LB</span></td><td class="mn">Hearing · 4 Nov</td></tr>
+            <tr><td><div class="addr">3 Garnet Rd, Kensington</div><div class="cl">Boarding house · 12 rooms</div></td><td><span class="pill pre">Pre-DA</span></td><td class="team"><span class="av b">PK</span></td><td class="mn">Pre-DA meeting · 29 Oct</td></tr>
+            <tr><td><div class="addr">19 Lindsay Cres, Clovelly</div><div class="cl">Roof terrace · dwelling house</div></td><td><span class="pill da">DA · notification</span></td><td class="team"><span class="av e">LB</span></td><td class="mn">Closes 24 Oct</td></tr>
+            <tr><td><div class="addr">9 Thorne St, Bronte</div><div class="cl">Alterations &amp; additions</div></td><td><span class="pill done">Completed</span></td><td class="team"><span class="av e">LB</span></td><td class="mn">Consent 9 Oct</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== Fees owing (step 3) ===== -->
+    <section class="view" id="v-fees">
+      <div class="board">
+        <h1>Job board</h1>
+        <div class="seg"><span>Open matters</span><span class="on">Fees owing</span></div>
+        <div class="flag"><div><b>Before you start: $9,800 still owed on GSA 2022-058.</b><div class="fs">The new brief at 18 Welland St, Randwick is a past client and address. That matter was completed, and its last invoice is unpaid.</div></div></div>
+        <div class="stats">
+          <div class="stat"><b>$48,600</b><span>still to collect</span></div>
+          <div class="stat"><b>9</b><span>completed matters that still owe money</span></div>
+          <div class="stat"><b class="amb">140 days</b><span>the oldest unpaid invoice</span></div>
+        </div>
+        <table class="tbl cmp">
+          <thead><tr><th>Completed matter</th><th>Last invoice</th><th class="r">Still owed</th></tr></thead>
+          <tbody>
+            <tr class="hot"><td><div class="addr">18 Welland St, Randwick</div><div class="cl">GSA 2022-058 · Court · LEC Class 1 · new brief today</div></td><td class="mn">140 days ago</td><td class="amt">$9,800</td></tr>
+            <tr><td><div class="addr">12 Dudley St, Coogee</div><div class="cl">GSA 2024-112 · DA · dual occupancy</div></td><td class="mn">96 days ago</td><td class="amt">$7,200</td></tr>
+            <tr><td><div class="addr">31 Arden St, Clovelly</div><div class="cl">GSA 2024-163 · DA · alterations &amp; additions</div></td><td class="mn">71 days ago</td><td class="amt">$6,400</td></tr>
+            <tr><td><div class="addr">5 Mears Ave, Randwick</div><div class="cl">GSA 2025-019 · Pre-DA advice</div></td><td class="mn">58 days ago</td><td class="amt">$5,600</td></tr>
+            <tr><td><div class="addr">9 Thorne St, Bronte</div><div class="cl">GSA 2025-077 · DA · alterations &amp; additions</div></td><td class="mn">10 days ago</td><td class="amt">$3,850</td></tr>
+            <tr class="more"><td colspan="2">+ 4 more completed matters</td><td class="amt" style="font-size:17px;color:var(--ink2)">$15,750</td></tr>
+          </tbody>
+        </table>
+        <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found from the invoices and payments in your records, not typed in</span>
+      </div>
+    </section>
+
+    <!-- ===== The chat (steps 4–8) ===== -->
+    <section class="view" id="v-chat">
+      <div class="chatwrap">
+        <div class="ctx"><span class="pill new">New</span><b>18 Welland St, Randwick</b> · rear first-floor balcony · R2 · Randwick City Council</div>
+        <div class="msgs" id="msgs">
+
+          <!-- step 4: the question, then the first answer -->
+          <div class="msg u" data-at="4" data-until="4" hidden>Similar past matters? Rear balcony, overlooking, Randwick.</div>
+          <div class="msg s" data-at="4" data-until="4" hidden><span class="sp"></span>Searching 9,214 past matters…</div>
+          <div class="msg a" data-at="4" data-until="4" hidden>
+            <p class="ln">Found 3 similar matters in your files.</p>
+            <p style="margin-top:10px;color:var(--ink2)">Matched on Randwick R2, a rear first-floor balcony, visual privacy and the side setback.</p>
+          </div>
+
+          <!-- step 5: three precedents, each a short message -->
+          <div class="msg a" data-at="5" data-until="5" hidden>
+            <p class="ln">8 Barden Ave, Randwick · 2021 <span class="tag ok">Approved by council</span></p>
+            <ul>
+              <li>Fixed privacy screens 1.6 m high, 70% opaque</li>
+              <li>Balcony depth cut from 2.4 m to 1.8 m</li>
+              <li>Side setback brought to 1.2 m (DCP Part C1 §3.3.2)</li>
+            </ul>
+            <span class="from">GSA 2021-087 · SEE p. 17–18 · council report p. 9</span>
+          </div>
+          <div class="msg a" data-at="5" data-until="5" hidden>
+            <p class="ln">23 Fenwick Rd, Kensington · 2020 <span class="tag ct">Refused, then approved on appeal</span></p>
+            <ul>
+              <li>Terrace cut to 2.0 m, fixed angled louvres</li>
+              <li>Sightline sections: no direct view into No. 25</li>
+              <li>Clause 4.6 request for a 4% FSR variation accepted</li>
+            </ul>
+            <span class="from">GSA 2019-142 · LEC Class 1, s34 agreement · expert report p. 7</span>
+          </div>
+          <div class="msg a" data-at="5" data-until="5" hidden>
+            <p class="ln">5 Corbett Pl, Coogee · 2022 <span class="tag bad">Refused by the Local Planning Panel</span></p>
+            <ul>
+              <li>3.0 m deep balcony overlooked two rear yards</li>
+              <li>No screens or offsets; relied on planting alone</li>
+              <li>Clause 4.6 request not well founded</li>
+            </ul>
+            <span class="from">GSA 2022-031 · panel report p. 4</span>
+          </div>
+
+          <!-- step 6: the words that carried the approval -->
+          <div class="msg u" data-at="6" data-until="6" hidden>What carried Barden Ave? Show me the words.</div>
+          <div class="msg s" data-at="6" data-until="6" hidden><span class="sp"></span>Opening the SEE…</div>
+          <div class="msg a" data-at="6" data-until="6" hidden>
+            <p class="ln">From your own SEE, section 6, Visual privacy:</p>
+            <div class="q">“Fixed privacy screens, 1.6 m above the finished floor level and at least 70% opaque, are proposed to the eastern and western edges of the balcony. With the screens in place there is no direct sightline to the rear private open space of No. 10. The balcony depth has been reduced from 2.4 m to 1.8 m, so it stays ancillary to the main bedroom and not the primary open space.”</div>
+            <span class="from">From matter GSA 2021-087, SEE p. 18</span>
+            <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found in your files — not written by AI</span>
+          </div>
+
+          <!-- step 7: how a refusal became an approval -->
+          <div class="msg u" data-at="7" data-until="7" hidden>And Fenwick Rd — how did a refusal become an approval?</div>
+          <div class="msg s" data-at="7" data-until="7" hidden><span class="sp"></span>Opening the appeal file…</div>
+          <div class="msg a wide" data-at="7" data-until="7" hidden>
+            <p class="ln">23 Fenwick Rd, Kensington · 2019–20 <span class="tag ok">Approved on appeal</span></p>
+            <div class="tl">
+              <div class="s bad"><span class="dt"></span><b>Refused by council</b><span>14 Nov 2019</span></div>
+              <div class="s"><span class="dt"></span><b>Class 1 appeal lodged</b><span>LEC · 9 Dec 2019</span></div>
+              <div class="s ct"><span class="dt"></span><b>s34 conciliation conference</b><span>amended plans rev C · 18 Feb 2020</span></div>
+              <div class="s ok"><span class="dt"></span><b>Approved under s34(3)</b><span>orders · 11 Mar 2020</span></div>
+            </div>
+            <p class="ln" style="margin-top:14px;font-size:20px;color:var(--violet)">What changed at the conference</p>
+            <ul>
+              <li>Terrace cut from 3.2 m to 2.0 m; fixed louvres at 45°, 1.6 m high, 70% opaque</li>
+              <li>Sightline sections: no direct view into No. 25 within 9 m</li>
+              <li>Clause 4.6 argued on its merits: 4% FSR variation, grounds specific to the site (pre-Nov 2023 clause)</li>
+            </ul>
+            <span class="from">GSA 2019-142 · refusal notice p. 2 · plans DA-04 rev C · expert report p. 7 · s34 orders cond. 12</span>
+          </div>
+
+          <!-- step 8: a prospect list in seconds -->
+          <div class="msg u" data-at="8" data-until="8" hidden>Court approvals in Randwick, last 10 years.</div>
+          <div class="msg s" data-at="8" data-until="8" hidden><span class="sp"></span>Searching your files and the public court and council records…</div>
+          <div class="msg a wide" data-at="8" data-until="8" hidden>
+            <p class="ln">38 matters in Randwick approved by the Court, 2016–2026 <span class="tag ct">LEC Class 1</span></p>
+            <div class="grp">
+              <div class="g"><h4>By year</h4>
+                <div class="r"><span>2016–2018</span><b>9</b></div>
+                <div class="r"><span>2019–2021</span><b>14</b></div>
+                <div class="r"><span>2022–2024</span><b>10</b></div>
+                <div class="r"><span>2025–2026</span><b>5</b></div></div>
+              <div class="g"><h4>By type</h4>
+                <div class="r"><span>Alterations &amp; additions</span><b>15</b></div>
+                <div class="r"><span>Dual occupancy</span><b>9</b></div>
+                <div class="r"><span>Residential flat building</span><b>8</b></div>
+                <div class="r"><span>Boarding house</span><b>6</b></div></div>
+            </div>
+            <div class="ready"><span class="tag ok">Ready as a prospect list · 38 addresses</span>7 were GSA's own matters · 31 used another planner</div>
+            <span class="from">From NSW Caselaw judgments, council DA records and your matter files · in 4 seconds</span>
+          </div>
+
+        </div>
+        <div class="cin">
+          <div class="box"><span class="txt ph" id="cintxt">Ask GSAI about past matters…</span><span class="send" id="send"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+          <div class="fine">Quotes from your files, with the page. It does not write reports or advice.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Summary (step 9) ===== -->
+    <section class="view" id="v-sum">
+      <div class="sum">
+        <h1>A new matter, the three closest past matters, the words that carried them and how an appeal was won — <em>in under a minute, from your own files.</em></h1>
+        <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found, not written</span>
+      </div>
+    </section>
+
+    <!-- ===== Fee proposals that became paid jobs (step 10) ===== -->
+    <section class="view" id="v-props">
+      <div class="props">
+        <h1>Which fee proposals became paid jobs?</h1>
+        <div class="pcard">
+          <div class="pbig">
+            <div><b>142</b><span>fee proposals sent, last 12 months</span></div>
+            <div class="arr">→</div>
+            <div><b>61</b><span>became paid jobs</span></div>
+            <div class="pc"><b>43%</b><span>won</span></div>
+          </div>
+          <div class="bars">
+            <div class="bar"><span>Alterations &amp; additions</span><span class="tr"><i style="width:50%"></i></span><span class="n"><b>29</b> of 58 · 50%</span></div>
+            <div class="bar"><span>Court · LEC Class 1</span><span class="tr"><i style="width:55%"></i></span><span class="n"><b>12</b> of 22 · 55%</span></div>
+            <div class="bar"><span>Dual occupancy</span><span class="tr"><i style="width:46%"></i></span><span class="n"><b>11</b> of 24 · 46%</span></div>
+            <div class="bar"><span>Pre-DA advice</span><span class="tr"><i style="width:23%"></i></span><span class="n"><b>6</b> of 26 · 23%</span></div>
+            <div class="bar"><span>Other</span><span class="tr"><i style="width:25%"></i></span><span class="n"><b>3</b> of 12 · 25%</span></div>
+          </div>
+        </div>
+        <span class="found"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Found from the fee proposals and signed agreements on your server</span>
+      </div>
+    </section>
+
+    <!-- ===== Why this lasts (step 11) ===== -->
+    <section class="view" id="v-why">
+      <div class="offer">
+        <h1>Why this lasts</h1>
+        <div class="why">
+          <div class="oc"><h2>You own it</h2>
+            <p>Software that does exactly what GSA needs. No per-seat fees, unlike off-the-shelf tools.</p></div>
+          <div class="oc"><h2>Built on one base</h2>
+            <p>Each next part — fees owing, prospect lists, job tracking — sits on what is already built, so it costs little to add.</p></div>
+          <div class="oc"><h2>Ready for what comes next</h2>
+            <p>When a better AI model comes out, we plug it in and you get the upgrade without starting over.</p>
+            <p>A general tool won't know your process, your files and your way of working. That knowledge is what we build.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-roi">
+      <div class="offer">
+        <h1>Does it pay back?</h1>
+        <p class="roi-sub">Put in your own numbers. The defaults are only a starting point.</p>
+        <div class="jobpay">
+          <p>An average job is about <b>$20,000</b>. If the time saved lets the team take on <b>one more job</b>, the system has paid for itself.</p>
+          <label>Average job ($)<input id="r-j" type="number" min="1" step="1000" value="20000"></label>
+          <div class="jp"><b id="o-j">–</b><span>jobs to pay back</span></div>
+        </div>
+        <div class="roi">
+          <label>Planners who look for precedents<input id="r-p" type="number" min="1" value="6"></label>
+          <label>Hours each spends looking, per week<input id="r-h" type="number" min="0" step="0.5" value="2"></label>
+          <label>Share of that time saved<select id="r-s"><option value="0.5">Half</option><option value="0.7" selected>Most (70%)</option><option value="0.3">A third</option></select></label>
+          <label>Value of a planner hour ($)<input id="r-v" type="number" min="0" value="150"></label>
+          <label>Project cost ($, ex GST)<select id="r-c"><option value="18000">$18,000 (low end)</option><option value="27000" selected>$27,000 (the cap)</option></select></label>
+        </div>
+        <div class="roi-out">
+          <div><b id="o-h">–</b><span>hours saved a month</span></div>
+          <div><b id="o-v">–</b><span>worth, each month</span></div>
+          <div><b id="o-m">–</b><span>months to pay back</span></div>
+        </div>
+        <p class="note" style="text-align:center">Illustrative. Hours and rates are yours to set; we confirm them together at scoping.</p>
+      </div>
+    </section>
+    <section class="view" id="v-offer">
+      <div class="offer">
+        <h1>What we'll build together</h1>
+        <div class="og">
+          <div class="oc"><h3>What we build</h3>
+            <p><b>Stage A · The job board.</b> Every matter, its stage, who is on it, and who has capacity — one view for the whole office.</p>
+            <p><b>Stage B · GSAI.</b> Ask in plain words and get the closest past matters and what carried them. It finds and quotes your own work. It never writes.</p></div>
+          <div class="oc"><h3>How long</h3>
+            <p class="big">6–8 weeks</p>
+            <p>Stage A first, in use in the office early. Stage B follows on the same system.</p>
+            <p>You own it. No per-seat fees.</p></div>
+          <div class="oc"><h3>What it depends on</h3>
+            <p>A short scoping session answers a few questions:</p>
+            <ul><li>How many past files, and in what formats</li><li>Where they live today</li><li>How much of Abtrac's job data we connect</li><li>Who uses it day to day</li></ul></div>
+          <div class="oc"><h3>How it works</h3>
+            <ul class="pay"><li><span>To start</span><b>$9,000</b></li><li><span>On delivery</span><b>$9,000</b></li><li><span>Set by the scoping answers (files, data size)</span><b>the rest</b></li></ul>
+            <p class="note">Total between $18,000 and $27,000 + GST, fixed after scoping, before anything more is billed.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<div class="demo">Demo · illustrative data</div>
+<div class="ctl">
+  <button class="rs" onclick="restart()">Restart</button>
+  <span class="stp" id="stp">1 / 13</span>
+  <button class="pv2" onclick="prev()" title="Back (←)">‹</button>
+  <button class="nx" id="nx" onclick="next()">Next <span style="font-size:14px">▸</span></button>
+</div>
+
+<script>
+(function(){
+  const TOTAL = 13;
+  let step = 0, timers = [];
+  const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
+  const views = { board: $('#v-board'), fees: $('#v-fees'), chat: $('#v-chat'), sum: $('#v-sum'), props: $('#v-props'), why: $('#v-why'), roi: $('#v-roi'), offer: $('#v-offer') };
+  const ctx = $('.ctx'), CTX = ctx.innerHTML, CTX8 = '<b>Ask GSAI</b> · your matter files and the public court and council records';
+  const cin = $('#cintxt'), send = $('#send'), PH = 'Ask about past matters…';
+
+  function clearTimers(){ timers.forEach(t => clearTimeout(t)); timers = []; }
+  function after(ms, fn){ timers.push(setTimeout(fn, ms)); }
+  function show(v){ Object.values(views).forEach(x => x.classList.remove('on')); views[v].classList.add('on'); $('#tab-board').classList.toggle('on', v === 'board' || v === 'fees'); $('#tab-ask').classList.toggle('on', v === 'chat'); $('#main').scrollTop = 0; }
+  function resetInput(){ cin.textContent = PH; cin.classList.add('ph'); send.classList.remove('on'); }
+  function inRange(m, n){ return +m.dataset.at <= n && n <= +(m.dataset.until || TOTAL); }
+
+  // Type the question into the box, then show its bubble, then cb.
+  function typeAsk(text, cb){
+    cin.classList.remove('ph'); cin.innerHTML = '<span class="caret"></span>';
+    let i = 0;
+    (function tick(){
+      i++; cin.innerHTML = text.slice(0, i) + '<span class="caret"></span>';
+      if (i < text.length) after(22 + Math.random()*20, tick);
+      else { send.classList.add('on'); after(300, () => { resetInput(); cb(); }); }
+    })();
+  }
+
+  // Reveal this step's messages one after another: question typed, status for a moment, answers in turn.
+  function play(n){
+    const list = $$('.msg').filter(m => +m.dataset.at === n);
+    let i = 0;
+    (function nextMsg(){
+      if (i >= list.length) return;
+      const m = list[i++];
+      if (m.classList.contains('u')){ typeAsk(m.textContent.trim(), () => { m.hidden = false; nextMsg(); }); }
+      else if (m.classList.contains('s')){ m.hidden = false; after(1100, () => { m.hidden = true; nextMsg(); }); }
+      else { m.hidden = false; after(i < list.length ? 650 : 0, nextMsg); }
+    })();
+  }
+
+  function render(n, fast){
+    clearTimers(); step = n;
+    $('#stp').textContent = n + ' / ' + TOTAL;
+    $('#nx').disabled = n >= TOTAL;
+    resetInput();
+    const newrow = $('#newrow');
+    if (n <= 2){ show('board'); newrow.classList.toggle('show', n === 2 && !!fast); if (n === 2 && !fast) after(400, () => newrow.classList.add('show')); }
+    if (n === 3){ show('fees'); newrow.classList.add('show'); }
+    if (n >= 4 && n <= 8){ show('chat'); newrow.classList.add('show'); }
+    ctx.innerHTML = n === 8 ? CTX8 : CTX;
+    if (n === 9){ show('sum'); }
+    if (n === 10){ show('props'); }
+    if (n === 11){ show('why'); }
+    if (n === 12){ show('offer'); }
+    if (n === 13){ show('roi'); }
+    // Messages of earlier steps still in range show at once; this step's own messages play in (or show at once when fast).
+    $$('.msg').forEach(m => { m.hidden = !(inRange(m, n) && (+m.dataset.at < n || fast) && !m.classList.contains('s')); });
+    if (n >= 4 && n <= 8 && !fast) after(600, () => play(n));
+  }
+
+  window.go = n => render(Math.max(1, Math.min(TOTAL, n)));
+  window.next = () => { if (step < TOTAL) render(step + 1); };
+  window.prev = () => { if (step > 1) render(step - 1, true); };
+  window.restart = () => render(1);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter'){ e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prev(); }
+    else if (e.key === 'Home' || e.key.toLowerCase() === 'r'){ restart(); }
+  });
+  $('#tab-board').addEventListener('click', () => go(2));
+  $('#tab-ask').addEventListener('click', () => go(4));
+
+  // ?step=N opens at a step with no typing delay; ?still=1 also freezes animations (for static previews).
+  const qs = new URLSearchParams(location.search), q = qs.get('step');
+  if (qs.get('still')) document.body.classList.add('still');
+  render(q ? Math.max(1, Math.min(TOTAL, +q)) : 1, !!q);
+})();
+</script>
+
+<script>
+(function(){
+  var f=function(id){return document.getElementById(id)};
+  function calc(){
+    var hrs=(+f('r-p').value||0)*(+f('r-h').value||0)*(+f('r-s').value||0)*52/12;
+    var val=hrs*(+f('r-v').value||0), cost=+f('r-c').value||0;
+    f('o-h').textContent=Math.round(hrs);
+    f('o-v').textContent='$'+Math.round(val).toLocaleString('en-AU');
+    f('o-m').textContent=val>0?(cost/val).toFixed(1):'–';
+    var job=+f('r-j').value||0;
+    f('o-j').textContent=job>0?String(+(cost/job).toFixed(2)):'–';
+  }
+  ['r-p','r-h','r-s','r-v','r-c','r-j'].forEach(function(id){f(id).addEventListener('input',calc);f(id).addEventListener('keydown',function(e){e.stopPropagation()})});
+  calc();
+})();
+</script>
+</body>
+</html>
