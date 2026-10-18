@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Remote · GSA demo v3</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#15202b;color:#fff;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 0;font-size:15px;color:#9aa5b1}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#a3262b;margin-right:7px;vertical-align:1px}
+  .dot.on{background:#3ecf8e}
+  .pts{flex:1;overflow:auto;padding:12px 22px 20px}
+  h1{font-size:30px;line-height:1.2;margin:6px 0 18px;letter-spacing:-.01em}
+  ul{margin:0;padding-left:24px}
+  li{font-size:23px;line-height:1.38;margin:0 0 14px;color:#e8edf2}
+  .nx{color:#9aa5b1;font-size:16px;margin-top:22px}
+  .ctl{display:flex;gap:12px;padding:12px 16px calc(16px + env(safe-area-inset-bottom))}
+  .ctl button{border:0;border-radius:18px;font:inherit;font-weight:700;color:#fff;height:84px}
+  .pv{flex:1;background:#2c3a48;font-size:22px}
+  .go{flex:2.2;background:#1f5f4a;font-size:28px}
+  .ctl button:active{opacity:.7}
+  .err{padding:40px 24px;font-size:20px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="top"><span><span class="dot" id="dot"></span><span id="st">connecting…</span></span><span id="num">1 / 13</span></div>
+<div class="pts" id="pts"></div>
+<div class="ctl"><button class="pv" id="pv">‹ Back</button><button class="go" id="go">Next ›</button></div>
+<script>
+// The phone remote for gsa-demo-v3: talking points for the slide on screen, and Next / Back that move the laptop.
+// Pairing is the private code in both links (?remote=CODE). The only thing sent is the slide number
+// (go:N from here, at:N from the laptop), through the public relay ntfy.sh.
+(function(){
+  var TOTAL = 13;
+  var P = {
+    1: ['The job board', ['Every open matter, its stage and who is on it — one view for the office.', 'This is Stage A. Built from how GSA works today.']],
+    2: ['A new brief arrives', ['18 Welland St, Randwick — rear first-floor balcony.', 'It lands on the board, unassigned. Watch what the system notices.']],
+    3: ['Fees owing', ['Before you start: $9,800 still owed — same client, same address.', '$48,600 to collect across 9 completed matters.', 'Found from your invoices and payments, not typed in.']],
+    4: ['Ask GSAI', ['Plain words: similar past matters, rear balcony, overlooking, Randwick.', 'It searches all 9,214 past matters.']],
+    5: ['Three closest matters', ['Approved, won on appeal, refused — and why each went that way.', 'Every line points to the file and the page.']],
+    6: ['The words that carried it', ['Barden Ave: your own SEE, section 6, quoted exactly.', 'Found in your files — not written by AI.']],
+    7: ['A refusal became an approval', ['Fenwick Rd: refused, appealed, s34 conference, approved.', 'What changed at the conference, with the plans and orders cited.']],
+    8: ['Court approvals in Randwick', ['38 approvals in 10 years, from public court and council records.', 'Ready as a prospect list: 31 used another planner.']],
+    9: ['What just happened', ['A new matter, the closest past matters, the words and the appeal — under a minute.', 'Found, not written.']],
+    10: ['Fee proposals to paid jobs', ['142 proposals in 12 months, 61 became paid jobs — 43%.', 'Court work wins most; pre-DA advice least.']],
+    11: ['Why this lasts', ['You own it — no per-seat fees.', 'Each next part sits on one base, so it costs little to add.', 'A better AI model comes out: we plug it in.']],
+    12: ['What we build together', ['Stage A: the job board. Stage B: GSAI.', '6–8 weeks. Stage A in use early.', 'You own it. No per-seat fees.']],
+    13: ['Does it pay back?', ['Put in their own numbers together.', 'One extra job of about $20,000 pays for the system.']]
+  };
+  var code = (new URLSearchParams(location.search).get('remote') || '').replace(/[^a-zA-Z0-9]/g, '');
+  var $ = function(id){ return document.getElementById(id); };
+  if (code.length < 6){ document.body.innerHTML = '<div class="err">This remote needs its private link (…/remote.html?remote=CODE). Ask Cleo for it.</div>'; return; }
+  var URL_T = 'https://ntfy.sh/gsa3-' + code, step = 1;
+  function esc(t){ return String(t).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+  function show(n){
+    step = n; var p = P[n] || ['', []];
+    $('num').textContent = n + ' / ' + TOTAL;
+    $('pts').innerHTML = '<h1>' + esc(p[0]) + '</h1><ul>' + p[1].map(function(l){ return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>' + (P[n + 1] ? '<div class="nx">Next: ' + esc(P[n + 1][0]) + '</div>' : '');
+    $('pts').scrollTop = 0; $('pv').disabled = n <= 1; $('go').disabled = n >= TOTAL;
+  }
+  function send(m){ fetch(URL_T, { method: 'POST', body: m }).catch(function(){ $('st').textContent = 'not sent — check the connection'; }); }
+  function move(n){ n = Math.max(1, Math.min(TOTAL, n)); show(n); send('go:' + n); }
+  $('go').onclick = function(){ move(step + 1); };
+  $('pv').onclick = function(){ move(step - 1); };
+  var es = new EventSource(URL_T + '/sse');
+  es.onopen = function(){ $('dot').className = 'dot on'; $('st').textContent = 'connected'; send('hello'); };
+  es.onerror = function(){ $('dot').className = 'dot'; $('st').textContent = 'reconnecting…'; };
+  es.onmessage = function(e){
+    var m; try { m = JSON.parse(e.data).message || ''; } catch(x){ return; }
+    var a = /^at:(\d+)$/.exec(m); if (a){ show(+a[1]); $('st').textContent = 'connected · laptop on ' + a[1]; }
+  };
+  show(1);
+})();
+</script>
+</body>
+</html>
