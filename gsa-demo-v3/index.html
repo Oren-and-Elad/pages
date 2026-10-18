@@ -639,5 +639,25 @@
   paint();
 })();
 </script>
+<script>
+// Phone remote: open this page with ?remote=CODE and the phone's remote.html?remote=CODE moves it (go:N) and is told
+// the slide on screen (at:N). Only slide numbers travel, through the public relay ntfy.sh; without ?remote= nothing is sent.
+(function(){
+  var code = (new URLSearchParams(location.search).get('remote') || '').replace(/[^a-zA-Z0-9]/g, '');
+  if (code.length < 6 || !window.EventSource) return;
+  var URL_T = 'https://ntfy.sh/gsa3-' + code, stp = document.getElementById('stp');
+  function at(){ return +stp.textContent.split('/')[0]; }
+  function tell(){ fetch(URL_T, { method: 'POST', body: 'at:' + at() }).catch(function(){}); }
+  var es = new EventSource(URL_T + '/sse');
+  es.onmessage = function(e){
+    var m; try { m = JSON.parse(e.data).message || ''; } catch(x){ return; }
+    var g = /^go:(\d+)$/.exec(m);
+    if (g && +g[1] === at() - 1) window.prev();
+    else if (g && +g[1] !== at()) window.go(+g[1]);
+    else if (g || m === 'hello') tell();
+  };
+  new MutationObserver(tell).observe(stp, { childList: true, characterData: true, subtree: true });
+})();
+</script>
 </body>
 </html>
