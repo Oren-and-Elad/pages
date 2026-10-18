@@ -210,6 +210,14 @@
   .ctl .nx:disabled{opacity:.35;transform:none;cursor:default}
   .ctl .pv2{height:40px;width:40px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink2);font-size:18px}
   .demo{position:fixed;left:28px;bottom:26px;font-size:13px;color:var(--ink3);background:rgba(255,255,255,.85);padding:5px 12px;border-radius:99px;border:1px solid var(--line);z-index:20}
+  .assign{border:1px solid var(--brand3);background:var(--brand2);color:var(--brand);font-size:14px;font-weight:600;padding:5px 14px;border-radius:99px}
+  .apx{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:var(--amber2);padding:4px 11px;border-radius:99px;margin-bottom:10px}
+  .msg.a .lead2{color:var(--ink2);font-size:18px;margin:6px 0 4px}
+  .msg.a ol.cases{margin:8px 0 0;padding-left:28px}
+  .msg.a ol.cases li{margin:10px 0;color:var(--ink)}
+  .msg.a a.case{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .msg.a a.case span{color:var(--ink3);font-weight:500;text-decoration:none}
+  .msg.a ol.cases small{display:block;font-size:17px;color:var(--ink2);margin-top:2px}
   /* ---------- right-click feedback (stays in this browser; nothing is sent) ---------- */
   .fb-pop{position:fixed;z-index:60;width:320px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px -8px rgba(16,24,40,.35);padding:12px;font-size:14px}
   .fb-pop .fb-at{color:var(--ink3);font-size:12px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -244,7 +252,7 @@
             <tr class="new" id="newrow">
               <td><div class="addr">18 Welland St, Randwick</div><div class="cl">Alterations &amp; additions · rear first-floor balcony · brief received today</div></td>
               <td><span class="pill new">New · unassigned</span></td>
-              <td class="team">—</td>
+              <td class="team"><button class="assign" type="button" title="Stage A: suggests who has capacity, then assigns">Assign</button></td>
               <td class="mn">—</td>
             </tr>
             <tr><td><div class="addr">41 Hartley Pde, Maroubra</div><div class="cl">Residential flat building · 4 storeys</div></td><td><span class="pill court">Court · LEC Class 1</span></td><td class="team"><span class="av c">TN</span><span class="av b">PK</span></td><td class="mn">s34 conference · 22 Oct</td></tr>
@@ -261,6 +269,7 @@
     <!-- ===== Fees owing (step 3) ===== -->
     <section class="view" id="v-fees">
       <div class="board">
+        <div class="apx">Appendix</div>
         <h1>Job board</h1>
         <div class="seg"><span>Open matters</span><span class="on">Fees owing</span></div>
         <div class="flag"><div><b>Before you start: $9,800 still owed on GSA 2022-058.</b><div class="fs">The new brief at 18 Welland St, Randwick is a past client and address. That matter was completed, and its last invoice is unpaid.</div></div></div>
@@ -291,15 +300,15 @@
         <div class="msgs" id="msgs">
 
           <!-- step 4: the question, then the first answer -->
-          <div class="msg u" data-at="4" data-until="4" hidden>Similar past matters? Rear balcony, overlooking, Randwick.</div>
-          <div class="msg s" data-at="4" data-until="4" hidden><span class="sp"></span>Searching 9,214 past matters…</div>
-          <div class="msg a" data-at="4" data-until="4" hidden>
+          <div class="msg u" data-at="3" data-until="3" hidden>Similar past matters? Rear balcony, overlooking, Randwick.</div>
+          <div class="msg s" data-at="3" data-until="3" hidden><span class="sp"></span>Searching 9,214 past matters…</div>
+          <div class="msg a" data-at="3" data-until="3" hidden>
             <p class="ln">Found 3 similar matters in your files.</p>
             <p style="margin-top:10px;color:var(--ink2)">Matched on Randwick R2, a rear first-floor balcony, visual privacy and the side setback.</p>
           </div>
 
           <!-- step 5: three precedents, each a short message -->
-          <div class="msg a" data-at="5" data-until="5" hidden>
+          <div class="msg a" data-at="4" data-until="4" hidden>
             <p class="ln">8 Barden Ave, Randwick · 2021 <span class="tag ok">Approved by council</span></p>
             <ul>
               <li>Fixed privacy screens 1.6 m high, 70% opaque</li>
@@ -308,7 +317,7 @@
             </ul>
             <span class="from">GSA 2021-087 · SEE p. 17–18 · council report p. 9</span>
           </div>
-          <div class="msg a" data-at="5" data-until="5" hidden>
+          <div class="msg a" data-at="4" data-until="4" hidden>
             <p class="ln">23 Fenwick Rd, Kensington · 2020 <span class="tag ct">Refused, then approved on appeal</span></p>
             <ul>
               <li>Terrace cut to 2.0 m, fixed angled louvres</li>
@@ -317,7 +326,7 @@
             </ul>
             <span class="from">GSA 2019-142 · LEC Class 1, s34 agreement · expert report p. 7</span>
           </div>
-          <div class="msg a" data-at="5" data-until="5" hidden>
+          <div class="msg a" data-at="4" data-until="4" hidden>
             <p class="ln">5 Corbett Pl, Coogee · 2022 <span class="tag bad">Refused by the Local Planning Panel</span></p>
             <ul>
               <li>3.0 m deep balcony overlooked two rear yards</li>
@@ -328,9 +337,9 @@
           </div>
 
           <!-- step 6: the words that carried the approval -->
-          <div class="msg u" data-at="6" data-until="6" hidden>What carried Barden Ave? Show me the words.</div>
-          <div class="msg s" data-at="6" data-until="6" hidden><span class="sp"></span>Opening the SEE…</div>
-          <div class="msg a" data-at="6" data-until="6" hidden>
+          <div class="msg u" data-at="5" data-until="5" hidden>What carried Barden Ave? Show me the words.</div>
+          <div class="msg s" data-at="5" data-until="5" hidden><span class="sp"></span>Opening the SEE…</div>
+          <div class="msg a" data-at="5" data-until="5" hidden>
             <p class="ln">From your own SEE, section 6, Visual privacy:</p>
             <div class="q">“Fixed privacy screens, 1.6 m above the finished floor level and at least 70% opaque, are proposed to the eastern and western edges of the balcony. With the screens in place there is no direct sightline to the rear private open space of No. 10. The balcony depth has been reduced from 2.4 m to 1.8 m, so it stays ancillary to the main bedroom and not the primary open space.”</div>
             <span class="from">From matter GSA 2021-087, SEE p. 18</span>
@@ -338,9 +347,9 @@
           </div>
 
           <!-- step 7: how a refusal became an approval -->
-          <div class="msg u" data-at="7" data-until="7" hidden>And Fenwick Rd — how did a refusal become an approval?</div>
-          <div class="msg s" data-at="7" data-until="7" hidden><span class="sp"></span>Opening the appeal file…</div>
-          <div class="msg a wide" data-at="7" data-until="7" hidden>
+          <div class="msg u" data-at="6" data-until="6" hidden>And Fenwick Rd — how did a refusal become an approval?</div>
+          <div class="msg s" data-at="6" data-until="6" hidden><span class="sp"></span>Opening the appeal file…</div>
+          <div class="msg a wide" data-at="6" data-until="6" hidden>
             <p class="ln">23 Fenwick Rd, Kensington · 2019–20 <span class="tag ok">Approved on appeal</span></p>
             <div class="tl">
               <div class="s bad"><span class="dt"></span><b>Refused by council</b><span>14 Nov 2019</span></div>
@@ -358,23 +367,19 @@
           </div>
 
           <!-- step 8: a prospect list in seconds -->
-          <div class="msg u" data-at="8" data-until="8" hidden>Court approvals in Randwick, last 10 years.</div>
-          <div class="msg s" data-at="8" data-until="8" hidden><span class="sp"></span>Searching your files and the public court and council records…</div>
-          <div class="msg a wide" data-at="8" data-until="8" hidden>
-            <p class="ln">38 matters in Randwick approved by the Court, 2016–2026 <span class="tag ct">LEC Class 1</span></p>
-            <div class="grp">
-              <div class="g"><h4>By year</h4>
-                <div class="r"><span>2016–2018</span><b>9</b></div>
-                <div class="r"><span>2019–2021</span><b>14</b></div>
-                <div class="r"><span>2022–2024</span><b>10</b></div>
-                <div class="r"><span>2025–2026</span><b>5</b></div></div>
-              <div class="g"><h4>By type</h4>
-                <div class="r"><span>Alterations &amp; additions</span><b>15</b></div>
-                <div class="r"><span>Dual occupancy</span><b>9</b></div>
-                <div class="r"><span>Residential flat building</span><b>8</b></div>
-                <div class="r"><span>Boarding house</span><b>6</b></div></div>
-            </div>
-            <div class="ready"><span class="tag ok">Ready as a prospect list · 38 addresses</span>7 were GSA's own matters · 31 used another planner</div>
+          <div class="msg u" data-at="7" data-until="7" hidden>Give me other Court approvals with the same challenges, as a list with a short summary to dive into.</div>
+          <div class="msg s" data-at="7" data-until="7" hidden><span class="sp"></span>Searching your files and the public court and council records…</div>
+          <div class="msg a wide" data-at="7" data-until="7" hidden>
+            <p class="ln">12 Court approvals in Randwick with the same challenges, 2016–2026 <span class="tag ct">LEC Class 1</span></p>
+            <p class="lead2">Rear balcony · overlooking · visual privacy · side setback. The five closest:</p>
+            <ol class="cases">
+              <li><a class="case" href="#" onclick="return false" title="In the live system this opens the judgment">14 Arcadia St, Coogee <span>· LEC 2023 ↗</span></a><small>Rear first-floor balcony; overlooking two rear yards. Approved with 1.7 m fixed screens and planter-box offset.</small></li>
+              <li><a class="case" href="#" onclick="return false" title="In the live system this opens the judgment">62 Clovelly Rd, Randwick <span>· LEC 2022 ↗</span></a><small>Balcony in the side setback. Approved after depth was cut to 1.5 m and the setback met the DCP.</small></li>
+              <li><a class="case" href="#" onclick="return false" title="In the live system this opens the judgment">9 Moverly Rd, Maroubra <span>· LEC 2021 ↗</span></a><small>Upper-level terrace, privacy and FSR. Approved on a clause 4.6 variation with sightline sections.</small></li>
+              <li><a class="case" href="#" onclick="return false" title="In the live system this opens the judgment">31 Bream St, Coogee <span>· LEC 2020 ↗</span></a><small>Rear deck overlooking a neighbour’s pool. Approved at s34 conference with angled louvres.</small></li>
+              <li><a class="case" href="#" onclick="return false" title="In the live system this opens the judgment">4 Mons Ave, Kensington <span>· LEC 2019 ↗</span></a><small>Dwelling alterations, visual privacy. Approved after council conceded on screens at hearing.</small></li>
+            </ol>
+            <div class="ready"><span class="tag ok">Ready as a prospect list · 12 addresses</span>3 were GSA's own matters · 9 used another planner</div>
             <span class="from">From NSW Caselaw judgments, council DA records and your matter files · in 4 seconds</span>
           </div>
 
@@ -533,17 +538,17 @@
     resetInput();
     const newrow = $('#newrow');
     if (n <= 2){ show('board'); newrow.classList.toggle('show', n === 2 && !!fast); if (n === 2 && !fast) after(400, () => newrow.classList.add('show')); }
-    if (n === 3){ show('fees'); newrow.classList.add('show'); }
-    if (n >= 4 && n <= 8){ show('chat'); newrow.classList.add('show'); }
-    ctx.innerHTML = n === 8 ? CTX8 : CTX;
-    if (n === 9){ show('sum'); }
-    if (n === 10){ show('props'); }
-    if (n === 11){ show('why'); }
-    if (n === 12){ show('offer'); }
-    if (n === 13){ show('roi'); }
+    if (n >= 3 && n <= 7){ show('chat'); newrow.classList.add('show'); }
+    ctx.innerHTML = n === 7 ? CTX8 : CTX;
+    if (n === 8){ show('sum'); }
+    if (n === 9){ show('props'); }
+    if (n === 10){ show('why'); }
+    if (n === 11){ show('offer'); }
+    if (n === 12){ show('roi'); }
+    if (n === 13){ show('fees'); newrow.classList.add('show'); } // appendix: talked about at the end
     // Messages of earlier steps still in range show at once; this step's own messages play in (or show at once when fast).
     $$('.msg').forEach(m => { m.hidden = !(inRange(m, n) && (+m.dataset.at < n || fast) && !m.classList.contains('s')); });
-    if (n >= 4 && n <= 8 && !fast) after(600, () => play(n));
+    if (n >= 3 && n <= 7 && !fast) after(600, () => play(n));
   }
 
   window.go = n => render(Math.max(1, Math.min(TOTAL, n)));
@@ -557,7 +562,7 @@
     else if (e.key === 'Home' || e.key.toLowerCase() === 'r'){ restart(); }
   });
   $('#tab-board').addEventListener('click', () => go(2));
-  $('#tab-ask').addEventListener('click', () => go(4));
+  $('#tab-ask').addEventListener('click', () => go(3));
 
   // ?step=N opens at a step with no typing delay; ?still=1 also freezes animations (for static previews).
   const qs = new URLSearchParams(location.search), q = qs.get('step');
