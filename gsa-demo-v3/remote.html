@@ -36,19 +36,19 @@
 (function(){
   var TOTAL = 13;
   var P = {
-    1: ['The job board', ['Every open matter, its stage and who is on it — one view for the office.', 'This is Stage A. Built from how GSA works today.']],
-    2: ['A new brief arrives', ['18 Welland St, Randwick — rear first-floor balcony.', 'It lands on the board, unassigned. Watch what the system notices.']],
-    3: ['Fees owing', ['Before you start: $9,800 still owed — same client, same address.', '$48,600 to collect across 9 completed matters.', 'Found from your invoices and payments, not typed in.']],
-    4: ['Ask GSAI', ['Plain words: similar past matters, rear balcony, overlooking, Randwick.', 'It searches all 9,214 past matters.']],
-    5: ['Three closest matters', ['Approved, won on appeal, refused — and why each went that way.', 'Every line points to the file and the page.']],
-    6: ['The words that carried it', ['Barden Ave: your own SEE, section 6, quoted exactly.', 'Found in your files — not written by AI.']],
-    7: ['A refusal became an approval', ['Fenwick Rd: refused, appealed, s34 conference, approved.', 'What changed at the conference, with the plans and orders cited.']],
-    8: ['Court approvals in Randwick', ['38 approvals in 10 years, from public court and council records.', 'Ready as a prospect list: 31 used another planner.']],
-    9: ['What just happened', ['A new matter, the closest past matters, the words and the appeal — under a minute.', 'Found, not written.']],
-    10: ['Fee proposals to paid jobs', ['142 proposals in 12 months, 61 became paid jobs — 43%.', 'Court work wins most; pre-DA advice least.']],
-    11: ['Why this lasts', ['You own it — no per-seat fees.', 'Each next part sits on one base, so it costs little to add.', 'A better AI model comes out: we plug it in.']],
-    12: ['What we build together', ['Stage A: the job board. Stage B: GSAI.', '6–8 weeks. Stage A in use early.', 'You own it. No per-seat fees.']],
-    13: ['Does it pay back?', ['Put in their own numbers together.', 'One extra job of about $20,000 pays for the system.']]
+    1: ['The job board', ['Every open matter, its stage and who is on it — one view for the office.', 'No more 18 emails a week to one Word doc.']],
+    2: ['A new brief arrives', ['18 Welland St, Randwick — rear first-floor balcony, unassigned.', 'Assign: the system suggests who is free — by workload or any rule you prefer — and assigns it.']],
+    3: ['Ask GSAI', ['Plain words: similar past matters, rear balcony, overlooking, Randwick.', 'It searches all 9,214 past matters.']],
+    4: ['Three closest matters', ['Approved, won on appeal, refused — and why each went that way.', 'Every line points to the file and the page.']],
+    5: ['The words that carried it', ['Barden Ave: your own SEE, section 6, quoted exactly.', 'Found in your files — not written by AI.']],
+    6: ['A refusal became an approval', ['Fenwick Rd: refused, appealed, s34 conference, approved.', 'What changed at the conference, with the plans and orders cited.']],
+    7: ['Court approvals, same challenges', ['12 approvals with the same issues, each with a one-line summary.', 'Click a case to open the judgment and dive in.', 'Also a prospect list: 9 used another planner.']],
+    8: ['What just happened', ['A new matter, the closest past matters, the words and the appeal — under a minute.', 'Found, not written.']],
+    9: ['Fee proposals to paid jobs', ['142 proposals in 12 months, 61 became paid jobs — 43%.', 'Court work wins most; pre-DA advice least.']],
+    10: ['Why this lasts', ['You own it — no per-seat fees.', 'Each next part sits on one base, so it costs little to add.', 'A better AI model comes out: we plug it in.']],
+    11: ['What we build together', ['Stage A: the job board. Stage B: GSAI.', '6–8 weeks. Stage A in use early.', 'You own it. No per-seat fees.']],
+    12: ['Does it pay back?', ['Put in their own numbers together.', 'One extra job of about $20,000 pays for the system.']],
+    13: ['Appendix · Fees owing', ['Before you start: $9,800 still owed — same client, same address.', '$48,600 to collect across 9 completed matters.', 'Found from your invoices and payments, not typed in.']]
   };
   var code = (new URLSearchParams(location.search).get('remote') || '').replace(/[^a-zA-Z0-9]/g, '');
   var $ = function(id){ return document.getElementById(id); };
