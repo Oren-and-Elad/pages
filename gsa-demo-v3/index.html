@@ -210,6 +210,17 @@
   .ctl .nx:disabled{opacity:.35;transform:none;cursor:default}
   .ctl .pv2{height:40px;width:40px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink2);font-size:18px}
   .demo{position:fixed;left:28px;bottom:26px;font-size:13px;color:var(--ink3);background:rgba(255,255,255,.85);padding:5px 12px;border-radius:99px;border:1px solid var(--line);z-index:20}
+  /* ---------- right-click feedback (stays in this browser; nothing is sent) ---------- */
+  .fb-pop{position:fixed;z-index:60;width:320px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px -8px rgba(16,24,40,.35);padding:12px;font-size:14px}
+  .fb-pop .fb-at{color:var(--ink3);font-size:12px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fb-pop textarea{width:100%;height:84px;font:inherit;font-size:15px;border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical}
+  .fb-pop .fb-row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;flex-wrap:wrap}
+  .fb-pop button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font-size:14px}
+  .fb-pop button.fb-ok{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .fb-pop ol{margin:0 0 4px;padding-left:20px;max-height:50vh;overflow:auto}
+  .fb-pop li{margin:6px 0;color:var(--ink)} .fb-pop li small{display:block;color:var(--ink3)}
+  .fb-pin{position:fixed;z-index:55;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--amber);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);pointer-events:none}
+  .fb-btn{position:fixed;left:28px;bottom:64px;z-index:20;font-size:13px;color:#fff;background:var(--amber);border:0;padding:6px 13px;border-radius:99px}
 </style>
 </head>
 <body>
@@ -569,6 +580,63 @@
   }
   ['r-p','r-h','r-s','r-v','r-c','r-j'].forEach(function(id){f(id).addEventListener('input',calc);f(id).addEventListener('keydown',function(e){e.stopPropagation()})});
   calc();
+})();
+</script>
+<script>
+// Right-click anywhere = a feedback note on that spot, for showing the demo live. Notes stay in this browser
+// (localStorage) — this page sends nothing anywhere. "Feedback · N" lists them, copies them all, or clears them.
+// Shift + right-click opens the browser's own menu.
+(function(){
+  var KEY = 'gsa-demo-v3-feedback', pop = null, pins = [];
+  function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } }
+  function save(list){ localStorage.setItem(KEY, JSON.stringify(list)); paint(); }
+  function step(){ var el = document.getElementById('stp'); return el ? el.textContent.split('/')[0].trim() : ''; }
+  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function where(el){
+    for (var n = el, i = 0; n && n !== document.body && i < 6; n = n.parentElement, i++){
+      var t = (n.innerText || n.textContent || '').replace(/\s+/g, ' ').trim();
+      if (t) return t.length > 70 ? t.slice(0, 70) + '…' : t;
+    }
+    return '';
+  }
+  var btn = document.createElement('button'); btn.className = 'fb-btn'; document.body.appendChild(btn);
+  function paint(){
+    var list = load(), s = step();
+    btn.textContent = 'Feedback · ' + list.length; btn.style.display = list.length ? '' : 'none';
+    pins.forEach(function(p){ p.remove(); }); pins = [];
+    list.forEach(function(f){ if (f.step !== s) return; var p = document.createElement('div'); p.className = 'fb-pin'; p.style.left = f.x + 'px'; p.style.top = f.y + 'px'; document.body.appendChild(p); pins.push(p); });
+  }
+  function close(){ if (pop){ pop.remove(); pop = null; } }
+  function open(x, y, html){
+    close(); pop = document.createElement('div'); pop.className = 'fb-pop'; pop.innerHTML = html;
+    pop.style.left = Math.max(8, Math.min(x, innerWidth - 336)) + 'px';
+    pop.style.top = Math.max(8, Math.min(y, innerHeight - 230)) + 'px';
+    pop.addEventListener('keydown', function(e){ e.stopPropagation(); if (e.key === 'Escape') close(); });
+    pop.addEventListener('contextmenu', function(e){ e.stopPropagation(); });
+    document.body.appendChild(pop); return pop;
+  }
+  function text(list){ return list.map(function(f, i){ return (i + 1) + '. [step ' + f.step + '] ' + (f.at ? '"' + f.at + '" — ' : '') + f.note; }).join('\n'); }
+  document.addEventListener('contextmenu', function(e){
+    if (e.shiftKey) return;
+    e.preventDefault();
+    var at = where(e.target), x = e.clientX, y = e.clientY;
+    var p = open(x, y, '<div class="fb-at">Step ' + esc(step()) + (at ? ' · ' + esc(at) : '') + '</div><textarea placeholder="Feedback on this spot…"></textarea><div class="fb-row"><button class="fb-no">Cancel</button><button class="fb-ok">Save</button></div>');
+    var ta = p.querySelector('textarea'); ta.focus();
+    function ok(){ var note = ta.value.trim(); if (note){ var l = load(); l.push({ step: step(), at: at, note: note, x: x, y: y, t: new Date().toISOString() }); save(l); } close(); }
+    p.querySelector('.fb-ok').onclick = ok;
+    p.querySelector('.fb-no').onclick = close;
+    ta.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey)) ok(); });
+  });
+  btn.addEventListener('click', function(){
+    var list = load(), r = btn.getBoundingClientRect();
+    var p = open(r.left, r.top - 240, '<ol>' + list.map(function(f){ return '<li>' + esc(f.note) + '<small>Step ' + esc(f.step) + (f.at ? ' · ' + esc(f.at) : '') + '</small></li>'; }).join('') + '</ol><div class="fb-row"><button class="fb-clr">Clear all</button><button class="fb-no">Close</button><button class="fb-ok">Copy all</button></div>');
+    p.querySelector('.fb-no').onclick = close;
+    p.querySelector('.fb-ok').onclick = function(){ var b = this; navigator.clipboard.writeText(text(load())).then(function(){ b.textContent = 'Copied ✓'; }, function(){ b.textContent = 'Copy failed'; }); };
+    p.querySelector('.fb-clr').onclick = function(){ if (confirm('Delete all feedback notes?')){ save([]); close(); } };
+  });
+  document.addEventListener('mousedown', function(e){ if (pop && !pop.contains(e.target) && e.target !== btn) close(); });
+  new MutationObserver(paint).observe(document.getElementById('stp'), { childList: true, characterData: true, subtree: true });
+  paint();
 })();
 </script>
 </body>
