@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הגיבור שלי — ספר ילדים אישי (אב-טיפוס)</title>
+<meta property="og:title" content="הגיבור שלי — ספר ילדים אישי (אב-טיפוס)">
+<style>
+:root{--bg:#fff8f0;--ink:#2d2240;--soft:#6b5f7d;--accent:#ff7a59;--accent2:#7b5cff;--card:#fff;--line:#eadfd3}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding:16px 18px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{font-weight:800;font-size:1.1rem}
+.lang{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:.9rem;cursor:pointer}
+.banner{background:#fff1c9;border-radius:10px;padding:6px 10px;font-size:.8rem;margin:10px 0;text-align:center}
+.step{display:none}.step.on{display:block}
+h1{font-size:1.7rem;line-height:1.2;margin:18px 0 8px}
+h2{font-size:1.3rem;margin:16px 0 10px}
+p.lead{color:var(--soft);margin:0 0 16px}
+.hero{border-radius:20px;padding:26px 18px;background:linear-gradient(135deg,#ffd6c2,#d9ceff);text-align:center;font-size:3.4rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+ul.ticks{padding:0;list-style:none;margin:0}ul.ticks li{margin:6px 0}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1rem;background:#fff;font-family:inherit}
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.theme{border:2px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;font-size:1rem}
+.theme b{display:block;font-size:2rem}
+.theme.sel{border-color:var(--accent2);background:#f2eeff}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font-size:1.05rem;font-weight:700;background:var(--accent);color:#fff;cursor:pointer;margin-top:18px}
+.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:10px}
+.err{color:#c0392b;font-size:.9rem;min-height:1.2em;margin-top:6px}
+.page{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff;margin:14px 0;box-shadow:0 4px 14px rgba(45,34,64,.06)}
+.ill{height:190px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
+.ill img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid #fff;position:absolute;bottom:12px;inset-inline-start:12px}
+.txt{padding:14px 16px;font-size:1.05rem}
+.pno{color:var(--soft);font-size:.8rem;padding:0 16px 10px}
+.row{display:flex;justify-content:space-between;margin:6px 0}
+.total{font-weight:800;font-size:1.2rem;border-top:1px solid var(--line);padding-top:8px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qty{display:flex;align-items:center;gap:12px}.qty button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:1.3rem}
+.demo{background:#ffe4dc;color:#8a2c12;border-radius:10px;padding:10px;font-weight:700;text-align:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ok{font-size:4rem;text-align:center}
+.ordno{font-size:1.4rem;font-weight:800;text-align:center;letter-spacing:1px;direction:ltr}
+small.note{color:var(--soft);display:block;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand" data-t="brand"></div><button class="lang" id="lang" type="button">English</button></header>
+<div class="banner" data-t="banner"></div>
+
+<section class="step on" id="s-landing">
+  <div class="hero">📖✨🧒</div>
+  <h1 data-t="l_title"></h1>
+  <p class="lead" data-t="l_lead"></p>
+  <div class="card"><ul class="ticks"><li data-t="l_b1"></li><li data-t="l_b2"></li><li data-t="l_b3"></li></ul></div>
+  <button class="btn" data-go="create" data-t="l_cta"></button>
+</section>
+
+<section class="step" id="s-create">
+  <h2 data-t="c_title"></h2>
+  <label for="name" data-t="c_name"></label><input id="name" maxlength="20" autocomplete="off">
+  <label for="age" data-t="c_age"></label>
+  <select id="age"></select>
+  <label data-t="c_theme"></label>
+  <div class="themes" id="themes"></div>
+  <label for="photo" data-t="c_photo"></label><input id="photo" type="file" accept="image/*">
+  <small class="note" data-t="c_photo_note"></small>
+  <div class="err" id="c-err"></div>
+  <button class="btn" id="make" data-t="c_cta"></button>
+  <button class="btn alt" data-go="landing" data-t="back"></button>
+</section>
+
+<section class="step" id="s-preview">
+  <h2 id="bookTitle"></h2>
+  <p class="lead" data-t="p_lead"></p>
+  <div id="pages"></div>
+  <button class="btn" data-go="order" data-t="p_cta"></button>
+  <button class="btn alt" data-go="create" data-t="p_edit"></button>
+</section>
+
+<section class="step" id="s-order">
+  <h2 data-t="o_title"></h2>
+  <label data-t="o_format"></label>
+  <div class="opts" id="formats"></div>
+  <label data-t="o_qty"></label>
+  <div class="qty"><button type="button" id="qminus">−</button><b id="qty">1</b><button type="button" id="qplus">+</button></div>
+  <label for="sname" data-t="o_sname"></label><input id="sname" autocomplete="off">
+  <label for="saddr" data-t="o_saddr"></label><input id="saddr" autocomplete="off">
+  <label for="scity" data-t="o_scity"></label><input id="scity" autocomplete="off">
+  <label for="sphone" data-t="o_sphone"></label><input id="sphone" inputmode="tel" autocomplete="off">
+  <div class="card" id="summary"></div>
+  <div class="err" id="o-err"></div>
+  <button class="btn" id="toPay" data-t="o_cta"></button>
+  <button class="btn alt" data-go="preview" data-t="back"></button>
+</section>
+
+<section class="step" id="s-pay">
+  <h2 data-t="y_title"></h2>
+  <div class="demo" data-t="y_demo"></div>
+  <label for="cnum" data-t="y_num"></label><input id="cnum" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="off" dir="ltr">
+  <div class="two">
+    <div><label for="cexp" data-t="y_exp"></label><input id="cexp" placeholder="12/29" autocomplete="off" dir="ltr"></div>
+    <div><label for="ccvc">CVC</label><input id="ccvc" inputmode="numeric" placeholder="123" autocomplete="off" dir="ltr"></div>
+  </div>
+  <div class="card"><div class="row total"><span data-t="total"></span><span id="payTotal"></span></div></div>
+  <div class="err" id="y-err"></div>
+  <button class="btn" id="pay"></button>
+  <button class="btn alt" data-go="order" data-t="back"></button>
+</section>
+
+<section class="step" id="s-done">
+  <div class="ok">🎉</div>
+  <h2 style="text-align:center" data-t="d_title"></h2>
+  <p class="lead" style="text-align:center" data-t="d_ordno"></p>
+  <div class="ordno" id="ordno"></div>
+  <div class="card" id="doneSummary"></div>
+  <p class="lead" style="text-align:center" data-t="d_demo"></p>
+  <button class="btn" id="again" data-t="d_again"></button>
+</section>
+</div>
+
+<script>
+const T={
+he:{brand:"📚 הגיבור שלי",banner:"אב-טיפוס להדגמה · שום מידע לא יוצא מהטלפון",
+l_title:"ספר מאויר שבו הילד שלכם הוא הגיבור",l_lead:"כותבים שם, בוחרים עולם — ומקבלים סיפור אישי ומאויר, מודפס ונשלח עד הבית.",
+l_b1:"✨ השם של הילד שזור בכל עמוד",l_b2:"🎨 ארבעה עולמות: הרפתקה, חלל, חיות, לילה טוב",l_b3:"📦 כריכה רכה או קשה, משלוח עד הבית",l_cta:"ליצור ספר",
+c_title:"מי הגיבור?",c_name:"שם הילד/ה",c_age:"גיל",c_theme:"בחרו עולם",c_photo:"תמונה (לא חובה)",c_photo_note:"התמונה נשארת בטלפון שלכם ולא נשלחת לשום מקום.",c_cta:"להציג את הספר",
+err_name:"נא לכתוב שם",err_theme:"נא לבחור עולם",back:"חזרה",
+p_lead:"תצוגה מקדימה של הספר",p_cta:"להזמין את הספר",p_edit:"לשנות פרטים",
+o_title:"הזמנה",o_format:"כריכה",o_qty:"כמות",o_sname:"שם מלא",o_saddr:"כתובת",o_scity:"עיר",o_sphone:"טלפון",o_cta:"למעבר לתשלום",
+err_ship:"נא למלא את כל פרטי המשלוח",soft:"כריכה רכה",hard:"כריכה קשה",books:"ספרים",shipping:"משלוח",total:"סה״כ",
+y_title:"תשלום",y_demo:"הדגמה בלבד — אין חיוב אמיתי",y_num:"מספר כרטיס",y_exp:"תוקף",pay:"לשלם",err_card:"נא למלא את פרטי הכרטיס (16 ספרות, תוקף, CVC)",
+d_title:"ההזמנה התקבלה!",d_ordno:"מספר הזמנה",d_demo:"זו הדגמה — לא בוצע חיוב ולא תישלח חבילה.",d_again:"ליצור ספר נוסף",
+th:{adventure:"הרפתקה",space:"חלל",animals:"חיות",bedtime:"לילה טוב"},
+title:(n,t)=>`${n} ו${t==="space"?"המסע לכוכבים":t==="animals"?"חברי היער":t==="bedtime"?"ארץ החלומות":"המפה האבודה"}`,
+pages:{
+adventure:[n=>`בוקר אחד ${n} מצא/ה מפה ישנה מתחת למיטה.`,n=>`"לאן היא מובילה?" שאל/ה ${n}, ויצא/ה לדרך עם תרמיל קטן.`,n=>`ביער הירוק ${n} חצה/תה גשר מתנדנד בלי לפחד.`,n=>`ליד המפל חיכתה תיבה, ועליה נכתב: "${n}".`,n=>`בתוכה היה אוצר: כוכב זהב קטן — בשביל ${n}, הכי אמיץ/ה בעולם.`,n=>`${n} חזר/ה הביתה עם חיוך ענק וסיפור לספר.`],
+space:[n=>`בלילה צלול ${n} בנה/תה חללית מקרטון.`,n=>`3, 2, 1… ו${n} המריא/ה אל בין הכוכבים!`,n=>`על הירח ${n} פגש/ה חייזר ירקרק וחביב.`,n=>`${n} והחייזר קפצו יחד על מכתשים, קלים כמו נוצות.`,n=>`החייזר נתן ל${n} אבן כוכב נוצצת למזכרת.`,n=>`${n} נחת/ה בבית בדיוק בזמן לארוחת בוקר.`],
+animals:[n=>`${n} שמע/ה ציוץ קטן מעבר לגדר.`,n=>`ציפור קטנה איבדה את הדרך, ו${n} החליט/ה לעזור.`,n=>`הארנב, הצב והשועל הצטרפו אל ${n}.`,n=>`${n} וחברי היער חיפשו יחד עד שמצאו את הקן על העץ הגבוה.`,n=>`אמא-ציפור שרה שיר תודה ל${n}.`,n=>`מאז, חיות היער קוראות ל${n} "החבר/ה הכי טוב/ה".`],
+bedtime:[n=>`כשהירח עלה, ${n} התכרבל/ה בשמיכה.`,n=>`ענן רך ירד אל החלון והזמין את ${n} לטיול.`,n=>`${n} והענן ריחפו מעל גגות שקטים ונהרות של אור.`,n=>`הכוכבים לחשו "לילה טוב, ${n}".`,n=>`הענן החזיר את ${n} בעדינות למיטה החמה.`,n=>`ו${n} נרדם/ה עם חלום מתוק עד הבוקר.`]}},
+en:{brand:"📚 My Hero Book",banner:"Demo prototype · nothing leaves your phone",
+l_title:"An illustrated book where your child is the hero",l_lead:"Type a name, pick a world — get a personal illustrated story, printed and delivered.",
+l_b1:"✨ Your child's name on every page",l_b2:"🎨 Four worlds: adventure, space, animals, bedtime",l_b3:"📦 Softcover or hardcover, delivered home",l_cta:"Create a book",
+c_title:"Who's the hero?",c_name:"Child's name",c_age:"Age",c_theme:"Pick a world",c_photo:"Photo (optional)",c_photo_note:"The photo stays on your phone and is never uploaded.",c_cta:"Show the book",
+err_name:"Please enter a name",err_theme:"Please pick a world",back:"Back",
+p_lead:"A preview of the book",p_cta:"Order this book",p_edit:"Change details",
+o_title:"Order",o_format:"Cover",o_qty:"Quantity",o_sname:"Full name",o_saddr:"Address",o_scity:"City",o_sphone:"Phone",o_cta:"Continue to payment",
+err_ship:"Please fill in all shipping details",soft:"Softcover",hard:"Hardcover",books:"Books",shipping:"Shipping",total:"Total",
+y_title:"Payment",y_demo:"Demo only — no real charge",y_num:"Card number",y_exp:"Expiry",pay:"Pay",err_card:"Please fill in the card (16 digits, expiry, CVC)",
+d_title:"Order received!",d_ordno:"Order number",d_demo:"This is a demo — no charge was made and nothing will ship.",d_again:"Create another book",
+th:{adventure:"Adventure",space:"Space",animals:"Animals",bedtime:"Bedtime"},
+title:(n,t)=>`${n} and ${t==="space"?"the Trip to the Stars":t==="animals"?"the Forest Friends":t==="bedtime"?"the Land of Dreams":"the Lost Map"}`,
+pages:{
+adventure:[n=>`One morning ${n} found an old map under the bed.`,n=>`"Where does it lead?" wondered ${n}, and set off with a small backpack.`,n=>`In the green forest, ${n} crossed a wobbly bridge without fear.`,n=>`By the waterfall sat a chest with a name on it: "${n}".`,n=>`Inside was treasure: a little gold star, for ${n}, the bravest of all.`,n=>`${n} came home with a huge smile and a story to tell.`],
+space:[n=>`On a clear night ${n} built a rocket from a cardboard box.`,n=>`3, 2, 1… and ${n} blasted off into the stars!`,n=>`On the moon, ${n} met a friendly little green alien.`,n=>`${n} and the alien bounced over craters, light as feathers.`,n=>`The alien gave ${n} a sparkling star-stone to keep.`,n=>`${n} landed home just in time for breakfast.`],
+animals:[n=>`${n} heard a tiny chirp behind the fence.`,n=>`A little bird had lost its way, and ${n} decided to help.`,n=>`The rabbit, the turtle and the fox joined ${n}.`,n=>`${n} and the animals searched until they found the nest high in a tree.`,n=>`Mother bird sang a thank-you song for ${n}.`,n=>`Ever since, the forest animals call ${n} their best friend.`],
+bedtime:[n=>`When the moon rose, ${n} snuggled under the blanket.`,n=>`A soft cloud floated to the window and invited ${n} for a ride.`,n=>`${n} and the cloud drifted over quiet rooftops and rivers of light.`,n=>`The stars whispered, "Good night, ${n}."`,n=>`The cloud carried ${n} gently back to a warm bed.`,n=>`And ${n} fell asleep with sweet dreams till morning.`]}}};
+const ART={adventure:["🗺️","🎒","🌉","🧰","⭐","🏡"],space:["📦","🚀","👽","🌕","💎","🌅"],animals:["🐦","🐣","🐇","🌳","🎶","🦊"],bedtime:["🌙","☁️","🏘️","✨","🛏️","💤"]};
+const BG={adventure:"linear-gradient(135deg,#c8f0d0,#ffe9a8)",space:"linear-gradient(135deg,#2b2a6b,#7b5cff)",animals:"linear-gradient(135deg,#d6f5c9,#bfe7ff)",bedtime:"linear-gradient(135deg,#3a2f66,#a593e0)"};
+const PRICE={soft:89,hard:129},SHIP=25;
+const S={lang:"he",theme:null,photo:null,fmt:"soft",qty:1,orderTotal:null};
+const $=id=>document.getElementById(id),L=()=>T[S.lang];
+const money=v=>"₪"+v.toLocaleString("en-US");
+function total(){return PRICE[S.fmt]*S.qty+SHIP}
+function show(step){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("on",s.id==="s-"+step));window.scrollTo(0,0);if(step==="preview")renderBook();if(step==="order")renderOrder();}
+function render(){
+  const l=L();document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==="he"?"rtl":"ltr";
+  document.querySelectorAll("[data-t]").forEach(e=>{if(typeof l[e.dataset.t]==="string")e.textContent=l[e.dataset.t]});
+  $("lang").textContent=S.lang==="he"?"English":"עברית";
+  $("themes").innerHTML=Object.keys(l.th).map(k=>`<button type="button" class="theme${S.theme===k?" sel":""}" data-th="${k}"><b>${ART[k][1]}</b>${l.th[k]}</button>`).join("");
+  $("formats").innerHTML=["soft","hard"].map(k=>`<button type="button" class="theme${S.fmt===k?" sel":""}" data-fmt="${k}"><b>${k==="soft"?"📗":"📘"}</b>${l[k]}<br>${money(PRICE[k])}</button>`).join("");
+  $("pay").textContent=`${l.pay} ${money(S.orderTotal??total())}`;
+  if($("s-preview").classList.contains("on"))renderBook();
+  if($("s-order").classList.contains("on"))renderOrder();
+  if($("s-done").classList.contains("on"))renderDone();
+}
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function renderBook(){
+  const n=esc($("name").value.trim()),l=L(),age=+$("age").value,count=age<=4?4:6;
+  $("bookTitle").textContent=l.title($("name").value.trim(),S.theme);
+  const img=S.photo?`<img src="${S.photo}" alt="">`:"";
+  $("pages").innerHTML=l.pages[S.theme].slice(0,count).map((f,i)=>`<div class="page"><div class="ill" style="background:${BG[S.theme]}">${ART[S.theme][i]}${img}</div><div class="txt">${f(`<b>${n}</b>`)}</div><div class="pno">${i+1} / ${count}</div></div>`).join("");
+}
+function summaryHTML(t){const l=L();return `<div class="row"><span>${l[S.fmt]} × ${S.qty}</span><span>${money(PRICE[S.fmt]*S.qty)}</span></div><div class="row"><span>${l.shipping}</span><span>${money(SHIP)}</span></div><div class="row total"><span>${l.total}</span><span>${money(t)}</span></div>`}
+function renderOrder(){$("qty").textContent=S.qty;$("summary").innerHTML=summaryHTML(total());}
+function renderDone(){$("doneSummary").innerHTML=summaryHTML(S.orderTotal);}
+for(let a=1;a<=12;a++)$("age").insertAdjacentHTML("beforeend",`<option value="${a}"${a===5?" selected":""}>${a}</option>`);
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]");if(g)return show(g.dataset.go);
+  const th=e.target.closest("[data-th]");if(th){S.theme=th.dataset.th;$("c-err").textContent="";return render();}
+  const f=e.target.closest("[data-fmt]");if(f){S.fmt=f.dataset.fmt;return render();}
+});
+$("lang").onclick=()=>{S.lang=S.lang==="he"?"en":"he";render();};
+$("photo").onchange=e=>{const file=e.target.files[0];if(!file){S.photo=null;return;}const r=new FileReader();r.onload=()=>S.photo=r.result;r.readAsDataURL(file);};
+$("make").onclick=()=>{const l=L();if(!$("name").value.trim())return $("c-err").textContent=l.err_name;if(!S.theme)return $("c-err").textContent=l.err_theme;$("c-err").textContent="";show("preview");};
+$("qminus").onclick=()=>{if(S.qty>1){S.qty--;render();}};
+$("qplus").onclick=()=>{if(S.qty<10){S.qty++;render();}};
+$("toPay").onclick=()=>{if(["sname","saddr","scity","sphone"].some(id=>!$(id).value.trim()))return $("o-err").textContent=L().err_ship;$("o-err").textContent="";S.orderTotal=total();$("payTotal").textContent=money(S.orderTotal);render();show("pay");};
+$("pay").onclick=()=>{const num=$("cnum").value.replace(/\D/g,"");if(num.length!==16||!/^\d{2}\/\d{2}$/.test($("cexp").value.trim())||!/^\d{3,4}$/.test($("ccvc").value.trim()))return $("y-err").textContent=L().err_card;$("y-err").textContent="";
+  $("ordno").textContent="HB-"+Date.now().toString().slice(-6)+"-"+Math.floor(Math.random()*90+10);["cnum","cexp","ccvc"].forEach(id=>$(id).value="");show("done");renderDone();};
+$("again").onclick=()=>location.reload();
+render();
+</script>
+</body>
+</html>
