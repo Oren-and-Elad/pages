@@ -14,10 +14,17 @@ const ROOMNAME = (r) => S.get(`elad-oren-rooms/${r}`)?.name || r;
 const roots = () => [...S.entries()].filter(([p, d]) => /^elad-oren-rooms\/[^/]+\/messages\/[^/]+$/.test(p) && !d.threadId && !d.type).map(([p, d]) => ({ room: p.split('/')[1], id: p.split('/')[3], d }));
 const kidsOf = (ref) => roots().filter((r) => r.d.parent === ref);
 const STATE = (d) => ({ working: 'working', waiting: 'waiting', question: 'waiting', done: 'done', dropped: 'done' }[d?.goal?.state] || 'working');
-const chip = (ref, faded) => { const [room, id] = ref.split('/'); const d = get(room, id); if (!d) return ''; return `<a class="hx-chip${faded ? ' faded' : ''}" href="#${room}/${id}" title="${ROOMNAME(room)}"><span class="hx-dot s-${STATE(d)}"></span><span dir="rtl">${d.title || ''}</span></a>`; };
+// each client has one emoji and one colour, shared by all its rooms (the build room is the client's too)
+const CLIENT = { brickwise: { e: '🧱', c: '#b3361f' }, tabs: { e: '🧭', c: '#0e7490' }, 'book-generator': { e: '🌿', c: '#b7791f' } };
+const clientOf = (room) => CLIENT[S.get(`elad-oren-rooms/${room}`)?.parentRoom || room];
+const chip = (ref, faded) => { const [room, id] = ref.split('/'); const d = get(room, id); if (!d) return ''; const cl = clientOf(room); return `<a class="hx-chip${faded ? ' faded' : ''}${cl ? ' hx-cl' : ''}" style="${cl ? `--cl:${cl.c}` : ''}" href="#${room}/${id}" title="${ROOMNAME(room)}">${cl ? `<span class="hx-em">${cl.e}</span>` : ''}<span class="hx-dot s-${STATE(d)}"></span><span dir="rtl">${d.title || ''}</span></a>`; };
+// the room list carries the same identity: the client's emoji and colour on every one of its rooms
+function paintRooms() { for (const r of document.querySelectorAll('.room[data-rid]')) { const cl = clientOf(r.dataset.rid), sw = r.querySelector('.swatch'); if (!cl || !sw || sw.dataset.cl) continue; sw.dataset.cl = 1; sw.textContent = cl.e; sw.style.setProperty('--rc', cl.c); r.style.boxShadow = `inset -3px 0 0 ${cl.c}`; } }
+new MutationObserver(paintRooms).observe(document.documentElement, { childList: true, subtree: true });
 document.head.insertAdjacentHTML('beforeend', `<style>
 .hx-chip{display:inline-flex;align-items:center;gap:5px;padding:0 8px;border:1px solid var(--border);border-radius:999px;background:var(--elevated,#fff);color:var(--text);font-size:12.5px;line-height:20px;text-decoration:none;white-space:nowrap;vertical-align:middle}
-.hx-chip:hover{border-color:var(--accent)}.hx-chip.faded{opacity:.5}
+.hx-chip:hover{border-color:var(--accent)}
+.hx-chip.hx-cl{background:color-mix(in srgb,var(--cl) 13%,var(--elevated,#fff));border-color:color-mix(in srgb,var(--cl) 45%,transparent);border-inline-start:3px solid var(--cl)}.hx-em{font-size:12px}.hx-chip.faded{opacity:.5}
 .hx-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}
 .s-working{background:var(--accent);animation:pulse-dot 1.3s ease-in-out infinite}.s-waiting{background:var(--amber)}.s-done{background:var(--dim)}.s-stuck{background:var(--red)}
 .hx-ini{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;font-size:9.5px;font-weight:700;margin-inline-end:6px;vertical-align:middle}
