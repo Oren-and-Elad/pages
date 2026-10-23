@@ -1,0 +1,230 @@
+<!doctype html>
+<html dir="rtl" lang="he"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>היררכיית שרשורים · אב־טיפוס</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#efe9e1;font-family:-apple-system,"Segoe UI",Arial,sans-serif;color:#2b2622;font-size:15px}
+header{padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:17px;margin:0}header .tag{font-size:12px;background:#fff3c4;color:#6b5200;border-radius:6px;padding:2px 8px}
+.wrap{display:grid;grid-template-columns:290px 1fr 300px;gap:16px;padding:0 16px 16px;align-items:start}
+.card{background:#fcf8f3;border:1px solid #e6d9cc;border-radius:14px;box-shadow:0 1px 3px #0001;overflow:hidden}
+.ttl{font-size:12.5px;color:#8a7f75;font-weight:700;padding:10px 14px;border-bottom:1px solid #eee2d6}
+/* list */
+.it{padding:9px 14px;border-bottom:1px solid #f0e6dc;cursor:pointer}
+.it:hover{background:#f6efe6}.it.sel{background:#fbe9e5;box-shadow:inset -3px 0 0 #e0533d}
+.it .lt{font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:14px}
+.it .sub{font-size:12.5px;color:#7c7268;display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap}
+.d1{padding-right:30px;background:#f8f2ea}.d2{padding-right:50px;background:#f4ece2}
+.d1 .lt,.d2 .lt{font-weight:500}
+.rm{color:#9a8f85;font-size:12px;font-weight:400}
+.badge{font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px}
+.bo{background:#e3ecfb;color:#2c56a8}.be{background:#efe3fb;color:#6b3aa8}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.g{background:#2fae5b;box-shadow:0 0 0 3px #2fae5b33;animation:pulse 1.6s infinite}.a{background:#e5a020}.r{background:#d8412f}.x{background:#b9b0a6}
+@keyframes pulse{50%{box-shadow:0 0 0 5px #2fae5b11}}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3d6c9;border-radius:999px;padding:0 10px 0 9px;color:#2f5fb3;font-weight:500;white-space:nowrap;font-size:13.5px;cursor:pointer;text-decoration:none;vertical-align:baseline}
+.chip:hover{border-color:#2f5fb3}
+/* thread view */
+.view{border-right:4px solid #e0533d;min-height:540px;display:flex;flex-direction:column}
+.view.child{border-right-color:#b9b0a6}
+.vh{padding:11px 18px;border-bottom:1px solid #eee2d6}
+.vh .crumb{font-size:12.5px;color:#7c7268;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.vh .name{font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kids{margin:12px 18px 0;border:1px solid #eadfd3;border-radius:10px;background:#fff}
+.kids .t{font-size:12.5px;color:#8a7f75;padding:7px 12px;border-bottom:1px solid #f1e8de;font-weight:700}
+.k{display:flex;align-items:center;gap:9px;padding:8px 12px;font-size:14px;border-bottom:1px solid #f5ede4;cursor:pointer}
+.k:last-child{border:0}.k:hover{background:#faf5ef}.k .st{margin-inline-start:auto;color:#7c7268;font-size:12.5px}
+.k.k2{padding-right:34px;font-size:13.5px}
+.msgs{padding:8px 18px 14px;flex:1}
+.m{margin-top:12px;line-height:1.75}
+.who{display:flex;align-items:center;gap:8px;margin-bottom:2px;font-size:13.5px}
+.av{width:22px;height:22px;border-radius:50%;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ac{background:#e0533d}.ao{background:#3b6fd1}
+.time{color:#9a8f85;font-size:12px}
+.sys{font-size:13px;color:#7c7268;margin-top:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sys.no{color:#9b2c1f;background:#fdecea;border:1px solid #f3b8b0;border-radius:9px;padding:6px 10px}
+.you{background:#fff4dc;border:1px solid #f0d58f;border-radius:10px;padding:9px 12px;color:#6b4d00;margin:12px 18px 0}
+.you .q{margin-bottom:7px}
+.btn{border:0;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+.bp{background:#e0533d;color:#fff}.bs{background:#fff;border:1px solid #d9cbbd;color:#2b2622}
+.btn:disabled{opacity:.45;cursor:default}
+.peek{margin:0 18px 14px;background:#f3eee8;border-radius:10px;padding:9px 12px;font-size:13.5px;color:#6f655c;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.reply{margin:0 18px 14px;display:flex;gap:8px}
+.reply input{flex:1;border:1px solid #e0533d;border-radius:10px;padding:9px 12px;font:inherit;background:#fff}
+/* sim */
+.sim .body{padding:12px 14px}
+.step{font-size:13.5px;color:#6f655c;margin-bottom:10px;line-height:1.6}
+.sim .btn{width:100%;margin-bottom:8px}
+.log{border-top:1px solid #eee2d6;padding:10px 14px;font-size:13px;line-height:1.65;max-height:320px;overflow:auto}
+.log div{margin-bottom:6px;padding-right:10px;border-right:2px solid #e6d9cc}
+.log div:first-child{border-right-color:#e0533d;color:#2b2622}
+.flash{animation:fl 1.4s}
+@keyframes fl{0%{background:#fff1b8}100%{}}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}.sim{order:-1}.list{order:2}.log{max-height:110px}.sim .body{padding:10px 14px 4px}}
+</style></head><body>
+<header><h1>היררכיית שרשורים</h1><span class="tag">אב־טיפוס · נתונים מומצאים · לא מחובר ל־Cleo</span></header>
+<div class="wrap">
+ <div class="card list"><div class="ttl">שרשורים</div><div id="list"></div></div>
+ <div class="card view" id="view"></div>
+ <div class="card sim"><div class="ttl">סימולציה</div><div class="body"><div class="step" id="stepTxt"></div>
+  <button class="btn bp" id="next">▶ הצעד הבא</button>
+  <button class="btn bs" id="close">נסה לסגור את השיחה היומית</button>
+  <button class="btn bs" id="reset">↺ מההתחלה</button></div>
+  <div class="ttl">מה קרה</div><div class="log" id="log"></div></div>
+</div>
+<script>
+const COLOR = { working: 'g', quiet: 'a', asking: 'a', stuck: 'r', done: 'x' };
+const STATUS = { working: 'עובד', quiet: 'שקט 40 דק׳ · השרשור שמעליו בודק', asking: 'שאל את השרשור שמעליו', stuck: 'נתקע', done: '✓ הסתיים' };
+let T, order, cur, clock, stepI, flashIds;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function init() {
+  T = {}; order = []; clock = 14 * 60 + 40; stepI = 0; flashIds = new Set();
+  mk('daily', { title: 'שיחה יומית · 23 באוקטובר', room: 'hq2', origin: 'oren' });
+  mk('night', { title: 'חשבוניות Brickwise בלילה', room: 'hq2', origin: 'elad' });
+  say('daily', 'oren', 'הנה התמלול של השיחה היומית שלי ושל אלעד. תטפלי בכל מה שיצא ממנה.');
+  say('daily', 'cleo', 'קוראת את התמלול. אכתוב לך כאן מה יוצא ממנו.');
+  say('night', 'elad', 'תוודאי שהריצה הלילית לא שולחת חשבוניות.');
+  say('night', 'cleo', 'בודקת הלילה ב־23:00 ומדווחת כאן.');
+  cur = 'daily'; $('log').innerHTML = '';
+  log('אתה בשרשור שפתחת: השיחה היומית. לחץ "הצעד הבא".');
+  render();
+}
+function mk(id, o) { T[id] = { id, state: 'working', parent: null, origin: null, msgs: [], ask: null, ...o }; order.push(id); flashIds.add(id); }
+function time() { clock += 3; const h = Math.floor(clock / 60), m = clock % 60; return `${h > 12 ? h - 12 : h}:${String(m).padStart(2, '0')} PM`; }
+function say(id, who, text) { T[id].msgs.push({ who, text, t: who === 'sys' || who === 'no' ? '' : time() }); flashIds.add(id); }
+const kids = (id) => order.filter((k) => T[k].parent === id);
+const depth = (id) => (T[id].parent ? 1 + depth(T[id].parent) : 0);
+const rootOf = (id) => (T[id].parent ? rootOf(T[id].parent) : id);
+const openKids = (id) => kids(id).flatMap((k) => [k, ...openKids(k)]).filter((k) => T[k].state !== 'done');
+function chip(id) { const t = T[id]; return `<a class="chip" onclick="openT('${id}')"><span class="dot ${COLOR[t.state]}"></span>${esc(t.title)}</a>`; }
+const fill = (s) => esc(s).replace(/\{(\w+)\}/g, (_, id) => (T[id] ? chip(id) : ''));
+function log(s) { $('log').insertAdjacentHTML('afterbegin', `<div>${fill(s)}</div>`); }
+window.openT = (id) => { cur = id; render(); };
+
+function badge(t) { return t.origin === 'oren' ? '<span class="badge bo">אורן</span>' : t.origin === 'elad' ? '<span class="badge be">אלעד</span>' : ''; }
+function summary(id) {
+  const all = kids(id).flatMap((k) => [k, ...kids(k)]); const t = T[id];
+  if (t.state === 'done') return '<span class="dot x"></span>✓ הסתיים · כל תתי השרשורים נסגרו';
+  const parts = [`<span class="dot ${COLOR[t.state]}"></span>${STATUS[t.state]}`];
+  if (all.length) parts.push(`${all.length} תתי שרשורים · ${all.filter((k) => T[k].state === 'done').length} הסתיימו`); else if (!t.parent) parts.push('אין תתי שרשורים');
+  if (t.ask) parts.push('🔔 שאלה אליך');
+  return parts.join(' · ');
+}
+function renderList() {
+  const roots = order.filter((k) => !T[k].parent);
+  const rows = [];
+  const walk = (id) => { rows.push(id); kids(id).forEach(walk); };
+  roots.forEach(walk);
+  $('list').innerHTML = rows.map((id) => {
+    const t = T[id], d = depth(id);
+    const head = d ? `↳ ${esc(t.title)} <span class="rm" dir="ltr">#${t.room}</span>` : `${esc(t.title)} ${badge(t)}`;
+    const sub = d ? `<span class="dot ${COLOR[t.state]}"></span>${STATUS[t.state]}` : summary(id);
+    return `<div class="it d${d}${id === cur ? ' sel' : ''}${flashIds.has(id) ? ' flash' : ''}" onclick="openT('${id}')"><div class="lt">${head}</div><div class="sub">${sub}</div></div>`;
+  }).join('');
+}
+function kidsPanel(id) {
+  const ks = kids(id); if (!ks.length) return '';
+  const row = (k, cls) => `<div class="k ${cls}${flashIds.has(k) ? ' flash' : ''}" onclick="openT('${k}')"><span class="dot ${COLOR[T[k].state]}"></span>${cls ? '↳ ' : ''}${esc(T[k].title)} <span class="rm" dir="ltr">#${T[k].room}</span><span class="st">${STATUS[T[k].state]}</span></div>`;
+  return `<div class="kids"><div class="t">תתי שרשורים שהשרשור הזה פתח ואחראי עליהם · ${ks.length}</div>${ks.map((k) => row(k, '') + kids(k).map((g) => row(g, 'k2')).join('')).join('')}</div>`;
+}
+function renderView() {
+  const t = T[cur], v = $('view'); v.className = 'card view' + (t.parent ? ' child' : '');
+  const chain = []; for (let p = t.parent; p; p = T[p].parent) chain.unshift(p);
+  const crumb = t.parent ? `<div class="crumb">↳ נפתח מתוך ${chain.map(chip).join(' › ')}</div>` : '';
+  const name = `<div class="name">${esc(t.title)} ${t.parent ? `<span class="rm" dir="ltr">#${t.room}</span>` : `<span class="badge ${t.origin === 'oren' ? 'bo' : 'be'}">נפתח ע״י ${t.origin === 'oren' ? 'אורן' : 'אלעד'}</span>`}</div>`;
+  const msgs = t.msgs.map((m) => {
+    if (m.who === 'sys') return `<div class="sys">${fill(m.text)}</div>`;
+    if (m.who === 'no') return `<div class="sys no">${fill(m.text)}</div>`;
+    const W = { cleo: ['C', 'ac', 'Cleo', '#e0533d'], oren: ['א', 'ao', 'Oren', '#3b6fd1'], elad: ['א', 'ao', 'Elad', '#6b3aa8'] }[m.who];
+    return `<div class="m"><div class="who"><div class="av ${W[1]}">${W[0]}</div><b style="color:${W[3]}">${W[2]}</b><span class="time">${m.t}</span></div>${fill(m.text)}</div>`;
+  }).join('');
+  const ask = t.ask ? `<div class="you"><div class="q">🔔 <b>מחכה לך:</b> ${fill(t.ask.q)}</div>${t.ask.opts.map((o, i) => `<button class="btn ${i ? 'bs' : 'bp'}" onclick="answer(${i})">${o}</button>`).join(' ')}</div>` : '';
+  const foot = t.parent
+    ? `<div class="peek">👁 אתה רק מציץ. השרשור הזה מדווח ל־${chip(t.parent)} ושם אתה מקבל ממנו הכל. אין לך מה לעשות כאן.</div>`
+    : `<div class="reply"><input id="inp" placeholder="כאן אתה מדבר…" onkeydown="if(event.key==='Enter')send()"><button class="btn bp" onclick="send()">שלח</button></div>`;
+  v.innerHTML = `<div class="vh">${crumb}${name}</div>${kidsPanel(cur)}${ask}<div class="msgs">${msgs}</div>${foot}`;
+}
+function render() {
+  renderList(); renderView();
+  const s = STEPS[stepI];
+  const blocked = T.daily.ask;
+  $('stepTxt').innerHTML = blocked ? '🔔 יש שאלה אליך בשיחה היומית. ענה עליה שם כדי להמשיך.' : s ? `הצעד הבא: <b>${s.label}</b>` : 'הסיפור נגמר. נסה לסגור את השיחה היומית, או התחל מההתחלה.';
+  $('next').disabled = !s || !!blocked;
+  setTimeout(() => flashIds.clear(), 0);
+}
+window.send = () => { const i = $('inp'); if (!i.value.trim()) return; say(cur, T[cur].origin, i.value.trim()); say(cur, 'cleo', 'רשמתי. (באב־הטיפוס אין תשובות אמיתיות.)'); render(); };
+
+const STEPS = [
+  { label: 'השיחה היומית פותחת 3 תתי שרשורים בחדרי הלקוחות', run() {
+    mk('quote', { title: 'הצעת מחיר לשלב 2', room: 'brickwise', parent: 'daily' });
+    mk('book', { title: 'טיוטת פרק 3', room: 'book-generator', parent: 'daily' });
+    mk('tabs', { title: 'סיכום פגישה ל־TABS', room: 'tabs', parent: 'daily' });
+    for (const [k, b] of [['quote', 'להכין הצעה לשלב 2 לפי מה שסוכם'], ['book', 'לכתוב את פרק 3 לפי ההערות'], ['tabs', 'לכתוב סיכום של הפגישה עם Cindy']]) {
+      say(k, 'sys', `↪ קיבלתי מ־{daily}: "${b}"`); say(k, 'cleo', 'מתחילה.');
+    }
+    say('daily', 'cleo', 'מהשיחה יצאו 3 משימות, כל אחת בחדר של הלקוח שלה: {quote} {book} {tabs}. אני אחראית עליהן ומעדכנת אותך כאן.');
+    log('השיחה היומית פתחה 3 תתי שרשורים. כל אחד קיבל רק את החלק של הלקוח שלו. תוכל ללחוץ על כל אחד כדי להציץ.');
+  } },
+  { label: 'תת־שרשור שואל שאלה', run() {
+    T.quote.state = 'asking';
+    say('quote', 'cleo', 'טיוטת ההצעה מוכנה. לא ברור אם לכלול את שלב ההתקנה.');
+    say('quote', 'sys', '↑ השאלה נשלחה לשרשור שמעליי: {daily}');
+    say('daily', 'cleo', '{quote} שואל אם לכלול את שלב ההתקנה. מהשיחה זה לא ברור, אז אני שואלת אותך.');
+    T.daily.ask = { q: 'לכלול את שלב ההתקנה בהצעה של Brickwise?', opts: ['כן, לכלול', 'לא'], from: 'quote' };
+    cur = 'daily';
+    log('השאלה של {quote} עלתה לשיחה היומית, ומשם אליך. לא היית צריך ללכת לחדר של Brickwise.');
+  } },
+  { label: 'תת־שרשור נתקע', run() {
+    T.book.state = 'quiet';
+    log('{book} לא זז 40 דקות. הנקודה שלו כתומה. אתה לא צריך לעשות כלום: השרשור שמעליו בודק.');
+    setTimeout(() => {
+      T.book.state = 'working';
+      say('book', 'sys', '↻ הופעל מחדש ע״י השרשור שמעליו, {daily}');
+      say('daily', 'cleo', '{book} לא זז 40 דקות. בדקתי: הוא נתקע בהורדת התמונות. הפעלתי אותו מחדש, והוא עובד.');
+      log('השיחה היומית טיפלה בזה לבד ורק דיווחה לך. הנקודה חזרה לירוק.'); render();
+    }, 1800);
+  } },
+  { label: 'תת־שרשור פותח תת־שרשור משלו (בנייה)', run() {
+    mk('build', { title: 'בנייה: עמוד ההצעה באתר', room: 'brickwise-build', parent: 'quote' });
+    say('build', 'sys', '↪ קיבלתי מ־{quote}: "לבנות את עמוד ההצעה באתר של Brickwise"');
+    say('build', 'cleo', 'בונה.');
+    say('quote', 'sys', '↳ פתחתי תת־שרשור: {build}');
+    log('{quote} פתח תת־שרשור לבנייה. זו רמה שנייה. הוא אחראי עליו, ואתה רואה אותו מוזח ברשימה.');
+  } },
+  { label: 'סיכום TABS מסתיים', run() {
+    T.tabs.state = 'done'; say('tabs', 'cleo', 'הסיכום כתוב. סוגרת ומדווחת למעלה.');
+    say('daily', 'cleo', '✓ {tabs} הסתיים: הסיכום מוכן. הוא לא נשלח ל־Cindy בלי האישור שלך.');
+    log('{tabs} הסתיים, והתוצאה הגיעה לשיחה היומית. נסה עכשיו לסגור את השיחה היומית: זה לא יעבוד, כי יש עוד תתי שרשורים פתוחים.');
+  } },
+  { label: 'כל השאר מסתיימים', run() {
+    T.build.state = 'done'; say('build', 'cleo', 'נבנה ונבדק.'); say('quote', 'sys', '✓ {build} הסתיים: העמוד בנוי');
+    T.quote.state = 'done'; say('quote', 'cleo', 'ההצעה מוכנה, כולל שלב ההתקנה.');
+    T.book.state = 'done'; say('book', 'cleo', 'הפרק מוכן.');
+    say('daily', 'cleo', '✓ {quote} הסתיים: ההצעה והעמוד מוכנים.<br>✓ {book} הסתיים: הפרק מוכן.<br>כל מה שיצא מהשיחה טופל.');
+    log('הכל הסתיים מלמטה למעלה: הבנייה דיווחה להצעה, וההצעה דיווחה לשיחה היומית. עכשיו אפשר לסגור.');
+  } },
+];
+window.answer = (i) => {
+  const a = T.daily.ask; T.daily.ask = null;
+  say('daily', 'oren', a.opts[i]);
+  const yes = i === 0;
+  say('daily', 'cleo', `העברתי ל־{quote}.`);
+  say('quote', 'sys', `↓ תשובה מ־{daily}: ${yes ? 'כן, לכלול את שלב ההתקנה' : 'לא לכלול'}`);
+  say('quote', 'cleo', 'מעדכנת את ההצעה.'); T.quote.state = 'working';
+  log('ענית בשיחה היומית, והתשובה ירדה לבד ל־{quote}.'); render();
+};
+$('next').onclick = () => { const s = STEPS[stepI++]; if (s) s.run(); render(); };
+$('close').onclick = () => {
+  const d = T.daily; cur = 'daily';
+  if (d.state === 'done') { log('השיחה היומית כבר סגורה.'); }
+  else { const open = openKids('daily');
+    if (open.length) { say('daily', 'no', `✋ אי אפשר לסגור: ${open.length} תתי שרשורים עדיין פתוחים: ${open.map((k) => `{${k}}`).join(' ')}`); log('הסגירה נחסמה. שרשור לא נסגר כל עוד משהו שהוא פתח עדיין רץ.'); }
+    else if (!order.some((k) => T[k].parent === 'daily')) { say('daily', 'no', '✋ השיחה עוד לא טופלה. לחץ "הצעד הבא".'); }
+    else { d.state = 'done'; say('daily', 'cleo', 'כל המשימות מהשיחה הסתיימו. סוגרת את השרשור.'); log('השיחה היומית נסגרה, אחרי שכל תתי השרשורים שלה הסתיימו.'); } }
+  render();
+};
+$('reset').onclick = init;
+init();
+</script></body></html>
