@@ -1,0 +1,5 @@
+{
+  "runId": "seed",
+  "note": "The release-canary console surface. Rewritten by every release-canary run with that run's runId, so a live console serving the current runId proves the console republished end-to-end. See sidecars/release-canary.mjs.",
+  "at": null
+}

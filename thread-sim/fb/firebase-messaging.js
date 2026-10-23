@@ -1,0 +1,1 @@
+export const getMessaging = () => ({}); export const getToken = async () => ''; export const onMessage = () => () => {}; export const isSupported = async () => false; export const deleteToken = async () => true; export default {};
