@@ -1,0 +1,21 @@
+// The simulator's starting state: invented rooms and threads. Nothing here is real.
+import { write, Timestamp } from './store.js';
+const now = Date.now();
+export const at = (minAgo) => { const ms = now - minAgo * 60000; return { createdAt: Timestamp.fromMillis(ms), ts: ms }; };
+const R = (id, d) => write(`elad-oren-rooms/${id}`, d);
+R('hq2', { name: 'Boss', pinned: true });
+R('brickwise', { name: 'Brickwise', pinned: true });
+R('brickwise-build', { name: 'Brickwise build', parentRoom: 'brickwise', pinned: true });
+R('book-generator', { name: 'AI Personalized Book', pinned: true });
+R('tabs', { name: 'TABS', pinned: true });
+const M = (room, id, d, minAgo) => write(`elad-oren-rooms/${room}/messages/${id}`, { ...d, ...at(minAgo) });
+M('hq2', 'night', { from: 'Elad', title: 'חשבוניות Brickwise בלילה', text: 'תוודאי שהריצה הלילית של Brickwise לא שולחת חשבוניות.', goal: { state: 'working' } }, 70);
+M('hq2', 'nightr', { from: 'brain', text: 'בודקת הלילה ב־23:00 ומדווחת כאן.', threadId: 'night' }, 69);
+M('hq2', 'daily', { from: 'Oren', title: 'שיחה יומית · 23 באוקטובר', text: 'הנה התמלול של השיחה היומית שלי ושל אלעד. תטפלי בכל מה שיצא ממנה.', goal: { state: 'working' } }, 12);
+M('hq2', 'dailyr1', { from: 'brain', text: 'קוראת את התמלול. אכתוב לך כאן מה יוצא ממנו.', threadId: 'daily' }, 11);
+M('brickwise', 'bug', { from: 'Oren', title: 'באג בטופס ההזמנה', text: 'הטופס לא שומר את הטלפון של הלקוח. תתקני.', goal: { state: 'working' } }, 40);
+M('brickwise', 'bugr', { from: 'brain', text: 'מצאתי את הבעיה, מתקנת.', threadId: 'bug' }, 38);
+M('book-generator', 'old1', { from: 'Oren', title: 'עיצוב הכריכה', text: 'תכיני שלוש אפשרויות לכריכה.', goal: { state: 'done' } }, 300);
+M('book-generator', 'old1r', { from: 'brain', text: 'שלוש האפשרויות מוכנות.', threadId: 'old1' }, 290);
+M('tabs', 'old2', { from: 'Elad', title: 'רשימת חייבים', text: 'תשלחי לי את רשימת החייבים המעודכנת.', goal: { state: 'done' } }, 200);
+M('tabs', 'old2r', { from: 'brain', text: 'הרשימה אצלך.', threadId: 'old2' }, 190);

@@ -1,0 +1,14 @@
+{
+  "_README": "The DEPLOYED Cleo 2 TWIN's manifest. Deploy this AS manifest.json on the twin's DISTINCT origin (a separate Cloudflare Pages project/subdomain — never a path on oren-vibe-space.pages.dev, whose SW cache + scope would collide and open Cleo 1). Distinct name/scope/icons so an installed 'Cleo 2 — TWIN' PWA never opens Cleo 1. No share_target (the twin never ingests shares). See twin-ui-build/twin-deploy/README.md.",
+  "name": "CLEO 2",
+  "short_name": "CLEO 2",
+  "description": "Cleo 2 twin — read her rooms and ask her (shadow project). Never sends.",
+  "start_url": "/elad-and-oren/",
+  "scope": "/elad-and-oren/",
+  "display": "standalone",
+  "background_color": "#1a1200",
+  "theme_color": "#F59E0B",
+  "icons": [
+    { "src": "./twin-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
