@@ -116,7 +116,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
   <div class="rule"></div>
   <h1>Real change,<br>in a short time.</h1>
   <p>Practical, warm therapy for children, teens, adults and parents — in my Sydney clinic or online, wherever life has taken you.</p>
-  <div class="ctas"><a class="btn" href="https://wa.me/WHATSAPP_NUMBER_PLACEHOLDER" target="_blank" rel="noopener" data-placeholder="whatsapp-number">Let's talk →</a><a class="btn line" href="#support">Who is this for?</a></div>
+  <div class="ctas"><a class="btn" id="talk" href="#contact">Let's talk →</a><a class="btn line" href="#support">Who is this for?</a></div>
   <div class="promise"><span>Short-term by design</span><span>English · עברית</span><span>Clinic &amp; online</span></div>
  </div>
  <div class="photo" role="img" aria-label="Yael by the sea"></div>
@@ -246,6 +246,8 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
 <div id="fbbar" style="display:none"><span><b id="fbn">0</b> notes</span><button onclick="fbSend()">Send to Oren</button></div>
 
 <script>
+// "Let's talk" → WhatsApp. Her number is not known yet: leave YAEL_WA empty and the button falls back to the contact section. Fill in digits only, e.g. 614xxxxxxxx.
+const YAEL_WA=""; if(/^\d{8,15}$/.test(YAEL_WA)){const t=document.getElementById("talk");t.href="https://wa.me/"+YAEL_WA;t.target="_blank";t.rel="noopener";}
 // Right-click (or long-press) anywhere → a note pinned to that part of the page; "Send to Oren" sends them all on WhatsApp.
 const FB_TO='61494821341', KEY='yael-site-notes';
 let notes=JSON.parse(localStorage.getItem(KEY)||'[]'), target=null;
