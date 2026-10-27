@@ -16,6 +16,7 @@ h1,h2,h3{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:500;line-heigh
 .kicker{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--soft);font-weight:400}
 .rule{width:56px;height:1px;background:var(--blush);margin:18px 0 22px}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:40px;background:var(--moss);color:#fff;text-decoration:none;font:400 14px Assistant,sans-serif;letter-spacing:.02em;text-transform:uppercase;border:0;cursor:pointer}
+.topimg{display:block;width:100%;height:auto}
 .btn:hover{background:var(--moss-d)}.btn.line{background:transparent;color:var(--moss-d);border:1px solid var(--moss)}
 .preview{background:var(--moss-d);color:#f7f3ec;text-align:center;font-size:13px;padding:7px 10px;letter-spacing:.04em}
 nav{position:sticky;top:0;z-index:20;background:rgba(247,243,236,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
@@ -72,7 +73,7 @@ section{padding:96px 0}
 .network{background:var(--moss-d);color:#eef0ea}.network h2{color:#fff;font-size:clamp(34px,4vw,50px)}.network p{max-width:700px;color:#d8ddd4}
 .network .btn{background:#f7f3ec;color:var(--moss-d)}
 /* contact */
-.contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.contact .wrap{display:grid;grid-template-columns:1fr;gap:60px;max-width:720px}
 .contact h2{font-size:clamp(38px,4.4vw,58px)}
 form{background:#fff;border-radius:22px;padding:32px;display:grid;gap:14px;box-shadow:0 20px 50px rgba(60,83,56,.08)}
 input,textarea,select{font:300 16px Assistant,sans-serif;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:var(--paper);width:100%}
@@ -81,14 +82,6 @@ textarea{min-height:100px;resize:vertical}
 .price{display:inline-block;margin-top:14px;background:#fff;border-radius:14px;padding:14px 18px;font-size:15px}
 footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(--soft)}
 .wa{position:fixed;left:20px;bottom:20px;z-index:30;background:#3f7a4f;color:#fff;border-radius:40px;padding:13px 20px;text-decoration:none;font:400 14px Assistant,sans-serif;letter-spacing:.08em;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-/* feedback */
-#fb{position:fixed;z-index:50;display:none;width:320px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:16px;font-size:14px}
-#fb h4{margin:0 0 6px;font:500 18px 'Frank Ruhl Libre',serif;color:var(--moss-d)}#fb .where{color:var(--soft);font-size:12px;margin-bottom:8px}
-#fb textarea{min-height:90px;font-size:15px}#fb .row{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-#fb button{font:400 13px Assistant,sans-serif;border-radius:20px;padding:8px 14px;border:1px solid var(--line);background:#fff;cursor:pointer}#fb button.go{background:var(--moss);color:#fff;border-color:var(--moss)}
-#fbbar{position:fixed;right:20px;bottom:20px;z-index:30;background:#fff;border-radius:30px;padding:10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.15);font-size:13px;display:flex;gap:10px;align-items:center}
-#fbbar b{color:var(--moss-d)}#fbbar button{font:400 13px Assistant,sans-serif;border:0;background:var(--moss);color:#fff;border-radius:20px;padding:7px 12px;cursor:pointer}
-.fbmark{outline:2px dashed var(--blush);outline-offset:4px}
 @media(max-width:900px){.hero,.borders,.approach,.short .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr}.hero .photo{min-height:60vh;order:-1}.borders .img,.approach .img{min-height:46vh}.links{display:none}.areas{grid-template-columns:1fr 1fr}.area{border-right:0!important;padding-left:0!important}.gallery{grid-template-columns:repeat(3,1fr)}.quote{background-image:none}}
 @media(max-width:560px){.areas,.duo,.creds{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}section{padding:64px 0}}
 .pillars{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--linen)}
@@ -103,26 +96,26 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
 </style>
 </head>
 <body>
-<div class="preview">תצוגה מקדימה ליעל · לחיצה ימנית על כל מקום (לחיצה ארוכה בטלפון) כדי להשאיר הערה · מחירים ופרטי קשר הם דוגמה</div>
-<nav data-name="Menu"><div class="wrap">
+<nav><div class="wrap">
  <a class="brand" href="#"><b>יעל קריו</b><span>פסיכותרפיסטית</span></a>
  <div class="links"><a href="#short">איך אני עובדת</a><a href="#support">תחומי טיפול</a><a href="#borders">בלי גבולות</a><a href="#about">עליי</a><a href="#contact">צור קשר</a></div>
  <div class="lang"><a href="../" style="color:inherit;text-decoration:none">EN</a> | <b>עברית</b></div>
 </div></nav>
+<img class="topimg" src="../img/therapy-across-borders.jpg" alt="טיפול בלי גבולות — יעל ליד הים" width="1280" height="720">
 
-<header class="hero" data-name="Top of the page (hero)">
+<header class="hero">
  <div class="copy">
   <div class="kicker">טיפול בלי גבולות</div>
   <div class="rule"></div>
   <h1>שינוי אמיתי,<br>בזמן קצר.</h1>
   <p>טיפול חם ומעשי לילדים, נוער, מבוגרים והורים — בקליניקה שלי בסידני או אונליין, לאן שהחיים לקחו אתכם.</p>
-  <div class="ctas"><a class="btn" href="#contact">בואו נדבר ←</a><a class="btn line" href="#support">האם זה בשבילי?</a></div>
+  <div class="ctas"><a class="btn" href="https://wa.me/972525424127" target="_blank" rel="noopener">בואו נדבר ←</a><a class="btn line" href="#support">למי זה מתאים?</a></div>
   <div class="promise"><span>קצר מועד מתוך בחירה</span><span>עברית · English</span><span>קליניקה ואונליין</span></div>
  </div>
  <div class="photo" role="img" aria-label="יעל ליד הים"></div>
 </header>
 
-<section class="why" id="why" data-name="למה יעל"><div class="wrap">
+<section class="why" id="why"><div class="wrap">
  <div class="kicker">למה דווקא יעל</div><div class="rule"></div>
  <h2>המטפלת שרוצה שתסיימו טיפול.</h2>
  <div class="whygrid">
@@ -133,7 +126,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
   <div><b>ישירות, בלי סוכנות</b><span>קובעים איתי. בלי מתווך ובלי עמלות.</span></div>
  </div>
 </div></section>
-<section class="short" id="short" data-name="Short-term therapy"><div class="wrap">
+<section class="short" id="short"><div class="wrap">
  <div>
   <div class="kicker">איך אני עובדת</div><div class="rule"></div>
   <h2>אני לא כאן כדי להשאיר אתכם בטיפול.</h2>
@@ -147,7 +140,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  <blockquote>״קשיים הם שערים לריפוי. כוחות הריפוי כבר נמצאים בתוכנו.״</blockquote>
 </div></section>
 
-<section class="support" id="support" data-name="Areas of support"><div class="wrap">
+<section class="support" id="support"><div class="wrap">
  <div class="kicker">תחומי טיפול</div><div class="rule"></div>
  <h2>אנשים מופתעים לגלות כמה זה רחב.</h2>
  <div class="areas">
@@ -161,7 +154,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  <div class="fit"><span>לא ברשימה? שאלו אותי — ואם אני לא ההתאמה הנכונה, אחבר אתכם למישהו שאני סומכת עליו.</span><a class="btn line" href="#contact">שאלו את יעל</a></div>
 </div></section>
 
-<section class="borders" id="borders" data-name="Across borders (relocation)" style="padding:0">
+<section class="borders" id="borders" style="padding:0">
  <div class="img" role="img" aria-label="אישה הולכת על גשר עץ"></div>
  <div class="copy">
   <div class="kicker">רילוקיישן</div><div class="rule"></div>
@@ -171,9 +164,9 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  </div>
 </section>
 
-<div class="quote" data-name="Quote band"><div class="script">מקומות חדשים.<br>אותם אתם.<br>יותר אפשרויות.</div><div class="sig">טיפול בלי גבולות</div></div>
+<div class="quote"><div class="script">מקומות חדשים.<br>אותם אתם.<br>יותר אפשרויות.</div><div class="sig">טיפול בלי גבולות</div></div>
 
-<section class="approach" id="approach" data-name="My approach (methods)" style="padding:0">
+<section class="approach" id="approach" style="padding:0">
  <div class="img" role="img" aria-label="נבט ירוק צומח מגדם עץ ישן"></div>
  <div class="copy">
   <div class="kicker">הגישה שלי</div><div class="rule"></div>
@@ -189,14 +182,14 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  </div>
 </section>
 
-<section class="art" data-name="Art gallery"><div class="wrap">
+<section class="art"><div class="wrap">
  <div class="kicker">מחדר הטיפולים</div><div class="rule"></div>
  <h2>יש דברים שקל יותר לצייר מאשר להגיד.</h2>
  <p>עם הרקע שלי בטיפול באמנות, ציור וסיפור הם לא פעם המקום שבו השיחה האמיתית מתחילה — לילד בן שלוש ולחייל כאחד.</p>
  <div class="gallery"><img src="../img/artwork1.jpg" alt=""><img src="../img/artwork2.jpg" alt=""><img src="../img/artwork3.jpg" alt=""><img src="../img/artwork4.jpg" alt=""><img src="../img/artwork5.jpg" alt=""></div>
 </div></section>
 
-<section class="about" id="about" data-name="About Yael"><div class="wrap">
+<section class="about" id="about"><div class="wrap">
  <img src="../img/profile.jpg" alt="יעל בקליניקה">
  <div>
   <div class="kicker">עליי</div><div class="rule"></div>
@@ -213,57 +206,27 @@ footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(
  </div>
 </div></section>
 
-<div class="pillars" data-name="להחלים · להסתגל · לצמוח · להשתייך"><div><b>להחלים</b><span>לעבד את מה שהיה קשה</span></div><div><b>להסתגל</b><span>לעבור שינויים בקלות רבה יותר</span></div><div><b>לצמוח</b><span>לבנות חיים עם משמעות</span></div><div><b>להשתייך</b><span>להרגיש בבית — איפה שלא תהיו</span></div></div>
-<section class="network" data-name="Trusted network (referrals)"><div class="wrap">
+<div class="pillars"><div><b>להחלים</b><span>לעבד את מה שהיה קשה</span></div><div><b>להסתגל</b><span>לעבור שינויים בקלות רבה יותר</span></div><div><b>לצמוח</b><span>לבנות חיים עם משמעות</span></div><div><b>להשתייך</b><span>להרגיש בבית — איפה שלא תהיו</span></div></div>
+<section class="network"><div class="wrap">
  <div class="kicker" style="color:#c9d3c2">העזרה הנכונה, גם אם זו לא אני</div><div class="rule"></div>
  <h2>רשת מטפלים שבדקתי אישית.</h2>
  <p>לא כל אחד צריך דווקא אותי — וזה בסדר. אני מכירה מטפלים מנוסים שראיינתי ואני סומכת עליהם. אם מישהו אחר מתאים לכם יותר, אחבר אתכם ישירות. בלי סוכנות, בלי מתווכים.</p>
  <p style="margin-top:22px"><a class="btn" href="#contact">עזרי לי למצוא את האדם הנכון</a></p>
 </div></section>
 
-<section class="contact" id="contact" data-name="Contact"><div class="wrap">
+<section class="contact" id="contact"><div class="wrap">
  <div>
   <div class="kicker">בואו נדבר</div><div class="rule"></div>
   <h2>הצעד הראשון יכול להיות הודעה אחת.</h2>
   <p>לא צריך עדיין את המילים הנכונות. כתבו שורה, ואחזור אליכם אישית.</p>
-  <div class="price">קובעים ישירות איתי — בלי עמלות סוכנות.<br><span class="small">מחיר מפגש: [לדוגמה]</span></div>
-  <p style="margin-top:22px"><a class="btn" href="#">וואטסאפ ליעל</a></p>
+  <div class="price">קובעים ישירות איתי — בלי עמלות סוכנות.</div>
+  <p style="margin-top:22px"><a class="btn" href="https://wa.me/972525424127" target="_blank" rel="noopener">וואטסאפ ליעל</a></p>
+  <p class="small">וואטסאפ: <a href="https://wa.me/972525424127" style="color:inherit" dir="ltr">+972 52-542-4127</a></p>
  </div>
- <form onsubmit="event.preventDefault();this.innerHTML='<h3>תודה.</h3><p class=small>יעל תחזור אליכם אישית.</p>'">
-  <input placeholder="שם" required><input placeholder="טלפון או מייל" required>
-  <select><option>בשביל מי?</option><option>בשבילי</option><option>בשביל הילד/ה שלי</option><option>בשביל הנער/ה שלי</option><option>בשביל המשפחה</option></select>
-  <textarea placeholder="בשורה אחת — מה קורה?"></textarea>
-  <select><option>קליניקה או אונליין?</option><option>קליניקה בסידני</option><option>אונליין</option><option>עוד לא בטוח/ה</option></select>
-  <button class="btn" type="submit">שליחה ליעל</button>
- </form>
 </div></section>
 
-<footer data-name="Footer"><div class="wrap">יעל קריו · פסיכותרפיסטית · טיפול בלי גבולות · סידני ואונליין · EN | עברית</div></footer>
-<a class="wa" href="#contact">וואטסאפ</a>
+<footer><div class="wrap">יעל קריו · פסיכותרפיסטית · טיפול בלי גבולות · סידני ואונליין · EN | עברית</div></footer>
+<a class="wa" href="https://wa.me/972525424127" target="_blank" rel="noopener">וואטסאפ</a>
 
-<div id="fb"><h4>ההערה שלך</h4><div class="where" id="fbwhere"></div><textarea id="fbtext" placeholder="מה היית משנה כאן?"></textarea>
- <div class="row"><button onclick="fbClose()">ביטול</button><button class="go" onclick="fbSave()">הוספת הערה</button></div></div>
-<div id="fbbar" style="display:none"><span><b id="fbn">0</b> הערות</span><button onclick="fbSend()">שליחה לאורן</button></div>
-
-<script>
-// Right-click (or long-press) anywhere → a note pinned to that part of the page; "Send to Oren" sends them all on WhatsApp.
-const FB_TO='61494821341', KEY='yael-site-notes';
-let notes=JSON.parse(localStorage.getItem(KEY)||'[]'), target=null;
-const box=document.getElementById('fb'), bar=document.getElementById('fbbar');
-function where(el){const s=el.closest('[data-name]');const name=s?s.dataset.name:'Page';const txt=(el.innerText||el.alt||el.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ').slice(0,60);return name+(txt?' — "'+txt+'"':'');}
-function fbOpen(x,y,el){target=el;document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));el.classList.add('fbmark');
- document.getElementById('fbwhere').textContent=where(el);box.style.display='block';
- box.style.left=Math.min(x,innerWidth-340)+'px';box.style.top=Math.min(y,innerHeight-230)+'px';document.getElementById('fbtext').value='';document.getElementById('fbtext').focus();}
-function fbClose(){box.style.display='none';document.querySelectorAll('.fbmark').forEach(e=>e.classList.remove('fbmark'));}
-function fbSave(){const t=document.getElementById('fbtext').value.trim();if(t){const n={where:where(target),note:t,page:location.pathname,at:new Date().toISOString()};notes.push(n);localStorage.setItem(KEY,JSON.stringify(notes));fetch('/api/note',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).then(r=>{if(r.ok){n.saved=1;localStorage.setItem(KEY,JSON.stringify(notes));render();}}).catch(()=>{});}fbClose();render();}
-function render(){document.getElementById('fbn').textContent=notes.length;bar.style.display=notes.length?'flex':'none';}
-function fbSend(){const msg='הערות של יעל על האתר (עברית):\n\n'+notes.map((n,i)=>(i+1)+'. '+n.where+'\n   '+n.note).join('\n\n');
- try{navigator.clipboard&&navigator.clipboard.writeText(msg);}catch(e){}window.open('https://wa.me/'+FB_TO+'?text='+encodeURIComponent(msg),'_blank');if(confirm('נשלח? למחוק את ההערות?')){notes=[];localStorage.setItem(KEY,'[]');render();}}
-document.addEventListener('contextmenu',e=>{if(box.contains(e.target))return;e.preventDefault();fbOpen(e.clientX,e.clientY,e.target);});
-let lp;document.addEventListener('touchstart',e=>{if(box.contains(e.target))return;const t=e.touches[0];lp=setTimeout(()=>fbOpen(t.clientX,t.clientY,e.target),650);},{passive:true});
-['touchend','touchmove'].forEach(ev=>document.addEventListener(ev,()=>clearTimeout(lp),{passive:true}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')fbClose();});
-render();
-</script>
 </body>
 </html>
