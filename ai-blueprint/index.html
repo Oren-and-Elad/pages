@@ -45,6 +45,24 @@
   .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
   .models { display: flex; gap: 1.4vw; flex-wrap: wrap; }
   .model { border: 2px dashed var(--data); border-radius: 12px; padding: 2.4vh 2vw; font-size: clamp(15px, 1.7vw, 22px); color: var(--data); font-weight: 600; }
+  .layers { display:flex; flex-direction:column; gap:1vh; max-width:900px; }
+  .layer { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1.6vh 1.4vw; display:flex; gap:1.2em; align-items:baseline; font-size:clamp(14px, 1.5vw, 19px); }
+  .layer b { min-width:13ch; color:var(--soft); font-weight:600; }
+  .layer.gatehl { border-color:var(--coord); background:#fdf6ec; }
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1.6vw; }
+  .step { background:#fff; border:1px solid var(--line); border-radius:14px; padding:2.2vh 1.2vw; font-size:clamp(13px, 1.4vw, 18px); }
+  .step b { display:block; color:var(--coord); font-size:.85em; margin-bottom:.6vh; }
+  .master-row { display:grid; grid-template-columns:repeat(5,1fr); gap:1vw; }
+  .fn { background:#fff; border:1px solid var(--line); border-top:6px solid var(--line); border-radius:14px; padding:2vh 1vw; text-align:center; font-size:clamp(13px, 1.4vw, 17px); font-weight:600; }
+  .fn .badge { display:block; margin-top:1vh; font-size:.7em; font-weight:700; letter-spacing:.05em; padding:.3em .8em; border-radius:999px; }
+  .fn[data-status="live"] { border-top-color:var(--teams); }
+  .fn[data-status="live"] .badge { background:#eef7f1; color:var(--teams); }
+  .fn[data-status="build"] { border-top-color:var(--coord); }
+  .fn[data-status="build"] .badge { background:#fdf1e3; color:var(--coord); }
+  .fn[data-status="planned"] { border-top-color:var(--line); border-top-style:dashed; }
+  .fn[data-status="planned"] .badge { background:#f4f3f1; color:var(--soft); }
+  .legend { display:flex; gap:2em; flex-wrap:wrap; margin-top:3vh; font-size:clamp(13px, 1.4vw, 16px); color:var(--soft); }
+  .legend .badge { padding:.3em .8em; border-radius:999px; font-weight:700; font-size:.85em; margin-right:.5em; }
   nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
   nav button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: .6em 1.2em; font-size: 15px; cursor: pointer; color: var(--ink); }
   nav .dots { display: flex; gap: 8px; }
@@ -55,6 +73,7 @@
     .slide { padding: 5vh 6vw 14vh; justify-content: flex-start; padding-top: 8vh; }
     .row { grid-template-columns: 1fr 1fr; } .stages { grid-template-columns: 1fr; }
     .gate { grid-template-columns: 1fr; justify-items: center; } .side { width: 100%; }
+    .steps { grid-template-columns: 1fr 1fr; } .master-row { grid-template-columns: 1fr 1fr; } .layer { flex-direction: column; }
   }
   @media print {
     @page { size: A4 landscape; margin: 0; }
@@ -64,6 +83,8 @@
     .slide:last-of-type { page-break-after: auto; break-after: auto; }
     .row { grid-template-columns: repeat(5, 1fr); }
     .stages { grid-template-columns: repeat(3, 1fr); }
+    .steps { grid-template-columns: repeat(4, 1fr); }
+    .master-row { grid-template-columns: repeat(5, 1fr); }
     .gate { grid-template-columns: 1fr auto 1fr; }
     .chip { padding: 2mm 3mm; font-size: 11pt; }
     .chips { gap: 2mm; }
@@ -140,6 +161,56 @@
   <p class="lead">We're never locked in. As better models arrive, we change the engine — the business keeps running.</p>
   <div class="models">
     <div class="model">Model A</div><div class="model">Model B</div><div class="model">Model C</div><div class="model">Next model</div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">Technical view</p>
+  <h1>How the pieces fit together</h1>
+  <p class="lead">The same model, one layer at a time.</p>
+  <div class="layers">
+    <div class="layer"><b>Steering</b> Leaders set goals and see results</div>
+    <div class="layer gatehl"><b>Coordination</b> One AI agent plans the work and routes it to the right team</div>
+    <div class="layer"><b>Function agents</b> Five teams, each working only inside its own function</div>
+    <div class="layer"><b>Shared context</b> Common facts every team can read — policies, calendars, the store list</div>
+    <div class="layer gatehl"><b>Access gate</b> Checks every request against what that team is allowed to see</div>
+    <div class="layer"><b>Company data</b> Existing systems — sales, stock, rosters, finance, campaigns</div>
+    <div class="layer"><b>AI models</b> Interchangeable — swapped in without changing anything above</div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">Technical view</p>
+  <h1>One request, start to finish</h1>
+  <p class="lead">A store manager asks for next week's roster.</p>
+  <div class="steps">
+    <div class="step"><b>1 · Ask</b>The manager asks the coordinating AI.</div>
+    <div class="step"><b>2 · Route</b>It's handed to the Store Operations team.</div>
+    <div class="step"><b>3 · Check</b>The access gate confirms that team may read rosters, and only rosters.</div>
+    <div class="step"><b>4 · Act &amp; log</b>The roster builder drafts it, the manager approves, the action is recorded.</div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">Single view</p>
+  <h1>The whole model, one page</h1>
+  <p class="lead">This is the canvas the rollout builds on — update each function's status as it moves.</p>
+  <div class="stack" style="margin-bottom:3vh">
+    <div class="box" style="--c:var(--steer)">Executive steering</div>
+    <div class="box" style="--c:var(--coord)">Coordination &amp; access gate</div>
+  </div>
+  <!-- update rollout progress: change each .fn's data-status to live | build | planned -->
+  <div class="master-row">
+    <div class="fn" data-status="live">Store Operations &amp; Rostering<span class="badge">Live</span></div>
+    <div class="fn" data-status="build">Finance<span class="badge">In build</span></div>
+    <div class="fn" data-status="planned">Merchandising<span class="badge">Planned</span></div>
+    <div class="fn" data-status="planned">Supply &amp; Warehousing<span class="badge">Planned</span></div>
+    <div class="fn" data-status="planned">Marketing<span class="badge">Planned</span></div>
+  </div>
+  <div class="legend">
+    <span><span class="badge" style="background:#eef7f1;color:var(--teams)">Live</span>in daily use</span>
+    <span><span class="badge" style="background:#fdf1e3;color:var(--coord)">In build</span>being built now</span>
+    <span><span class="badge" style="background:#f4f3f1;color:var(--soft)">Planned</span>next in line</span>
   </div>
 </section>
 
