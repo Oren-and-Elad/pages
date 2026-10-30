@@ -61,7 +61,8 @@ after(async () => {
   if (skip) return;
   ws?.close();
   if (proc && proc.exitCode === null) { const gone = new Promise(r => proc.once('exit', r)); proc.kill(); await gone; }
-  if (profile) rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  // Chrome's helper processes can still be writing the temp profile after the main one exits: removing it is best-effort.
+  if (profile) try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
 });
 
 test('opens on slide 1 of 5, with exactly one slide showing', { skip }, async () => {
