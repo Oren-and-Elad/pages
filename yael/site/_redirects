@@ -1,0 +1,2 @@
+/hebrew /he/ 301
+/hebrew/* /he/:splat 301
