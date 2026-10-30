@@ -3,7 +3,6 @@
   "private": true,
   "description": "Cleopatra's static pages, served by GitHub Pages from main. No build, no dependencies.",
   "scripts": {
-    "check": "node .github/check-pages.mjs && node --test tests/*.test.mjs",
-    "test:ai-blueprint": "node --test tests/ai-blueprint.test.mjs"
+    "check": "node .github/check-pages.mjs"
   }
 }

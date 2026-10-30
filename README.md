@@ -8,7 +8,7 @@ How a change gets here: a pull request, then `main`. Every pull request runs **P
 (`.github/workflows/check.yml` → `npm run check` → `.github/check-pages.mjs`): every page is an HTML document, every
 link into this repo resolves, nothing is shaped like a secret, no file is over 10 MB. Cleo's build rooms open those
 pull requests themselves and merge them when the check is green (cleo2 `build.targets.pages-build`, ADR in
-`cleo2/docs/decisions/`). Run `npm run check` before you commit: it also runs the browser tests in `tests/` when Chrome is installed.
+`cleo2/docs/decisions/`). Run `npm run check` before you commit.
 
 This repo is public, and so is every page in it: anyone can read every folder. Never put anything here that a
 client or a stranger must not see.

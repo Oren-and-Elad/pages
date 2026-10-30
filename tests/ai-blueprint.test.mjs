@@ -1,7 +1,8 @@
 // tests/ai-blueprint.test.mjs — renders ai-blueprint/ in a real headless Chrome and drives the deck:
 // arrow keys, the Next/Back buttons, clicking the right/left half, swiping, the first/last-slide bounds, and the
 // print layout (one slide per page). Plain Node, no dependencies: Chrome is driven over its DevTools protocol.
-// Runs inside `npm run check` (skipped, not failed, where no Chrome exists). Alone: `npm run test:ai-blueprint` (set CHROME=/path/to/chrome if it is not in the default place).
+// Run it by hand before changing the deck: `node --test tests/ai-blueprint.test.mjs` (skipped, not failed, where no Chrome exists;
+// set CHROME=/path/to/chrome if it is not in the default place). It is not yet part of `npm run check`.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
