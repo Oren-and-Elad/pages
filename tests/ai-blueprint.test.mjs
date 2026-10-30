@@ -1,7 +1,7 @@
 // tests/ai-blueprint.test.mjs — renders ai-blueprint/ in a real headless Chrome and drives the deck:
 // arrow keys, the Next/Back buttons, clicking the right/left half, swiping, the first/last-slide bounds, and the
 // print layout (one slide per page). Plain Node, no dependencies: Chrome is driven over its DevTools protocol.
-// Run: `npm run test:ai-blueprint` (set CHROME=/path/to/chrome if it is not in the default place).
+// Runs inside `npm run check` (skipped, not failed, where no Chrome exists). Alone: `npm run test:ai-blueprint` (set CHROME=/path/to/chrome if it is not in the default place).
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -37,8 +37,9 @@ const swipe = async (x0, x1) => {
   await new Promise(r => setTimeout(r, 50));
 };
 
+const skip = CHROME ? false : 'no Chrome on this machine (set CHROME=/path/to/chrome)';
 before(async () => {
-  assert.ok(CHROME, 'no Chrome found — set CHROME=/path/to/chrome');
+  if (skip) return;
   profile = mkdtempSync(path.join(tmpdir(), 'aibp-'));
   proc = spawn(CHROME, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--no-first-run', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {
@@ -57,19 +58,20 @@ before(async () => {
   for (let i = 0; i < 50 && (await evaluate('document.readyState')) !== 'complete'; i++) await new Promise(r => setTimeout(r, 100));
 });
 after(async () => {
+  if (skip) return;
   ws?.close();
   if (proc && proc.exitCode === null) { const gone = new Promise(r => proc.once('exit', r)); proc.kill(); await gone; }
   if (profile) rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 });
 
-test('opens on slide 1 of 5, with exactly one slide showing', async () => {
+test('opens on slide 1 of 5, with exactly one slide showing', { skip }, async () => {
   assert.equal(await evaluate(`document.querySelectorAll('.slide').length`), 5);
   assert.equal(await current(), 0);
   assert.equal(await visibleCount(), 1);
   assert.equal(await evaluate(`document.querySelectorAll('#dots i.on').length`), 1);
 });
 
-test('arrow keys move forward and back, and stop at both ends', async () => {
+test('arrow keys move forward and back, and stop at both ends', { skip }, async () => {
   await key('ArrowLeft');
   assert.equal(await current(), 0, 'Back on the first slide stays on the first slide');
   for (let n = 1; n <= 4; n++) { await key('ArrowRight'); assert.equal(await current(), n); }
@@ -80,21 +82,21 @@ test('arrow keys move forward and back, and stop at both ends', async () => {
   assert.equal(await visibleCount(), 1);
 });
 
-test('Next / Back buttons move one slide and do not also trigger the click-halves', async () => {
+test('Next / Back buttons move one slide and do not also trigger the click-halves', { skip }, async () => {
   await evaluate(`document.getElementById('prev').click()`);
   assert.equal(await current(), 2);
   await evaluate(`document.getElementById('next').click()`);
   assert.equal(await current(), 3);
 });
 
-test('clicking the right half goes forward, the left half goes back', async () => {
+test('clicking the right half goes forward, the left half goes back', { skip }, async () => {
   await clickAt(1000, 300);
   assert.equal(await current(), 4);
   await clickAt(200, 300);
   assert.equal(await current(), 3);
 });
 
-test('swiping left goes forward, swiping right goes back, a short drag does nothing', async () => {
+test('swiping left goes forward, swiping right goes back, a short drag does nothing', { skip }, async () => {
   await swipe(900, 300);
   assert.equal(await current(), 4);
   await swipe(300, 900);
@@ -103,7 +105,7 @@ test('swiping left goes forward, swiping right goes back, a short drag does noth
   assert.equal(await current(), 3);
 });
 
-test('print shows every slide, one per page, and hides the controls', async () => {
+test('print shows every slide, one per page, and hides the controls', { skip }, async () => {
   await send('Emulation.setEmulatedMedia', { media: 'print' });
   assert.equal(await visibleCount(), 5);
   assert.equal(await evaluate(`getComputedStyle(document.querySelector('nav')).display`), 'none');
@@ -113,7 +115,7 @@ test('print shows every slide, one per page, and hides the controls', async () =
   await send('Emulation.setEmulatedMedia', { media: '' });
 });
 
-test('nothing blueprint remains: light background, no blueprint words', async () => {
+test('nothing blueprint remains: light background, no blueprint words', { skip }, async () => {
   assert.equal(await evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(250, 249, 247)');
   const text = await evaluate(`document.body.innerText`);
   for (const w of ['Rev A', 'Sheet 1', 'Legend', 'orchestration']) assert.ok(!text.includes(w), `still says "${w}"`);
