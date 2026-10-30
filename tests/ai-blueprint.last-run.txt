@@ -1,0 +1,58 @@
+# Evidence: the ai-blueprint deck test, run 2026-10-30T02:08:30Z on f90f596
+# command: node .github/check-pages.mjs
+pages check: clean
+# exit code: 0
+# command: node --test --test-reporter=tap tests/ai-blueprint.test.mjs
+TAP version 13
+# Subtest: opens on slide 1 of 5, with exactly one slide showing
+ok 1 - opens on slide 1 of 5, with exactly one slide showing
+  ---
+  duration_ms: 473.407167
+  type: 'test'
+  ...
+# Subtest: arrow keys move forward and back, and stop at both ends
+ok 2 - arrow keys move forward and back, and stop at both ends
+  ---
+  duration_ms: 26.121709
+  type: 'test'
+  ...
+# Subtest: Next / Back buttons move one slide and do not also trigger the click-halves
+ok 3 - Next / Back buttons move one slide and do not also trigger the click-halves
+  ---
+  duration_ms: 4.593959
+  type: 'test'
+  ...
+# Subtest: clicking the right half goes forward, the left half goes back
+ok 4 - clicking the right half goes forward, the left half goes back
+  ---
+  duration_ms: 6.353583
+  type: 'test'
+  ...
+# Subtest: swiping left goes forward, swiping right goes back, a short drag does nothing
+ok 5 - swiping left goes forward, swiping right goes back, a short drag does nothing
+  ---
+  duration_ms: 983.444042
+  type: 'test'
+  ...
+# Subtest: print shows every slide, one per page, and hides the controls
+ok 6 - print shows every slide, one per page, and hides the controls
+  ---
+  duration_ms: 193.978375
+  type: 'test'
+  ...
+# Subtest: nothing blueprint remains: light background, no blueprint words
+ok 7 - nothing blueprint remains: light background, no blueprint words
+  ---
+  duration_ms: 1.756583
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15085.341791
+# exit code: 0
