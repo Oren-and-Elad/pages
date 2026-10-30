@@ -105,14 +105,29 @@ test('swiping left goes forward, swiping right goes back, a short drag does noth
   assert.equal(await current(), 3);
 });
 
-test('print shows every slide, one per page, and hides the controls', { skip }, async () => {
-  await send('Emulation.setEmulatedMedia', { media: 'print' });
-  assert.equal(await visibleCount(), 5);
-  assert.equal(await evaluate(`getComputedStyle(document.querySelector('nav')).display`), 'none');
-  const { data } = await send('Page.printToPDF', { preferCSSPageSize: true, printBackground: true });
-  const pages = (Buffer.from(data, 'base64').toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
-  assert.equal(pages, 5, `expected 5 printed pages, got ${pages}`);
-  await send('Emulation.setEmulatedMedia', { media: '' });
+test('print: every slide fits its own A4-landscape page and no two slides overlap', { skip }, async () => {
+  for (const [w, h] of [[800, 600], [1440, 900]]) {
+    await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+    await send('Emulation.setEmulatedMedia', { media: 'print' });
+    assert.equal(await visibleCount(), 5);
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('nav')).display`), 'none');
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('.stages')).gridTemplateColumns.split(' ').length`), 3, 'stages keep 3 columns');
+    const over = await evaluate(`[...document.querySelectorAll('.slide')].map((s, k) => [k + 1, s.scrollHeight, s.clientHeight]).filter(([, a, b]) => a > b)`);
+    assert.deepEqual(over, [], `slides overflowing [n, scrollHeight, clientHeight]: ${JSON.stringify(over)}`);
+    const hits = await evaluate(`(() => { const r = [...document.querySelectorAll('.slide')].map(s => s.getBoundingClientRect()); const o = [];
+      for (let a = 0; a < r.length; a++) for (let b = a + 1; b < r.length; b++)
+        if (r[a].top < r[b].bottom - 0.5 && r[b].top < r[a].bottom - 0.5) o.push([a + 1, b + 1]); return o; })()`);
+    assert.deepEqual(hits, [], `slides overlapping: ${JSON.stringify(hits)}`);
+    const { data } = await send('Page.printToPDF', { preferCSSPageSize: true, printBackground: true });
+    const pages = (Buffer.from(data, 'base64').toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+    assert.equal(pages, 5, `expected 5 printed pages at ${w}x${h}, got ${pages}`);
+    await send('Emulation.setEmulatedMedia', { media: '' });
+  }
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+});
+
+test('every function on slide 2 shows its own examples', { skip }, async () => {
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('.unit')].map(u => u.querySelectorAll('li').length)`), [2, 2, 2, 2, 2]);
 });
 
 test('nothing blueprint remains: light background, no blueprint words', { skip }, async () => {
