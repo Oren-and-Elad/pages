@@ -98,6 +98,7 @@ test('clicking the right half goes forward, the left half goes back', { skip }, 
 
 test('swiping left goes forward, swiping right goes back, a short drag does nothing', { skip }, async () => {
   await swipe(900, 300);
+  assert.equal(await evaluate('location.href'), PAGE, 'a swipe must not make the browser leave the deck (back/forward)');
   assert.equal(await current(), 4);
   await swipe(300, 900);
   assert.equal(await current(), 3);
