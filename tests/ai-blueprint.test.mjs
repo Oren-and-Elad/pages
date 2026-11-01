@@ -66,8 +66,8 @@ after(async () => {
   if (profile) try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
 });
 
-test('opens on slide 1 of 5, with exactly one slide showing', { skip }, async () => {
-  assert.equal(await evaluate(`document.querySelectorAll('.slide').length`), 5);
+test('opens on slide 1 of 8, with exactly one slide showing', { skip }, async () => {
+  assert.equal(await evaluate(`document.querySelectorAll('.slide').length`), 8);
   assert.equal(await current(), 0);
   assert.equal(await visibleCount(), 1);
   assert.equal(await evaluate(`document.querySelectorAll('#dots i.on').length`), 1);
@@ -76,43 +76,43 @@ test('opens on slide 1 of 5, with exactly one slide showing', { skip }, async ()
 test('arrow keys move forward and back, and stop at both ends', { skip }, async () => {
   await key('ArrowLeft');
   assert.equal(await current(), 0, 'Back on the first slide stays on the first slide');
-  for (let n = 1; n <= 4; n++) { await key('ArrowRight'); assert.equal(await current(), n); }
+  for (let n = 1; n <= 7; n++) { await key('ArrowRight'); assert.equal(await current(), n); }
   await key('ArrowRight');
-  assert.equal(await current(), 4, 'Next on the last slide stays on the last slide');
+  assert.equal(await current(), 7, 'Next on the last slide stays on the last slide');
   await key('ArrowLeft');
-  assert.equal(await current(), 3);
+  assert.equal(await current(), 6);
   assert.equal(await visibleCount(), 1);
 });
 
 test('Next / Back buttons move one slide and do not also trigger the click-halves', { skip }, async () => {
   await evaluate(`document.getElementById('prev').click()`);
-  assert.equal(await current(), 2);
+  assert.equal(await current(), 5);
   await evaluate(`document.getElementById('next').click()`);
-  assert.equal(await current(), 3);
+  assert.equal(await current(), 6);
 });
 
 test('clicking the right half goes forward, the left half goes back', { skip }, async () => {
   await clickAt(1000, 300);
-  assert.equal(await current(), 4);
+  assert.equal(await current(), 7);
   await clickAt(200, 300);
-  assert.equal(await current(), 3);
+  assert.equal(await current(), 6);
 });
 
 test('swiping left goes forward, swiping right goes back, a short drag does nothing', { skip }, async () => {
   await swipe(900, 300);
   assert.equal(await evaluate('location.href'), PAGE, 'a swipe must not make the browser leave the deck (back/forward)');
-  assert.equal(await current(), 4);
+  assert.equal(await current(), 7);
   await swipe(300, 900);
-  assert.equal(await current(), 3);
+  assert.equal(await current(), 6);
   await swipe(500, 530);
-  assert.equal(await current(), 3);
+  assert.equal(await current(), 6);
 });
 
 test('print: every slide fits its own A4-landscape page and no two slides overlap', { skip }, async () => {
   for (const [w, h] of [[800, 600], [1440, 900]]) {
     await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
     await send('Emulation.setEmulatedMedia', { media: 'print' });
-    assert.equal(await visibleCount(), 5);
+    assert.equal(await visibleCount(), 8);
     assert.equal(await evaluate(`getComputedStyle(document.querySelector('nav')).display`), 'none');
     assert.equal(await evaluate(`getComputedStyle(document.querySelector('.stages')).gridTemplateColumns.split(' ').length`), 3, 'stages keep 3 columns');
     const over = await evaluate(`[...document.querySelectorAll('.slide')].map((s, k) => [k + 1, s.scrollHeight, s.clientHeight]).filter(([, a, b]) => a > b)`);
@@ -123,7 +123,7 @@ test('print: every slide fits its own A4-landscape page and no two slides overla
     assert.deepEqual(hits, [], `slides overlapping: ${JSON.stringify(hits)}`);
     const { data } = await send('Page.printToPDF', { preferCSSPageSize: true, printBackground: true });
     const pages = (Buffer.from(data, 'base64').toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
-    assert.equal(pages, 5, `expected 5 printed pages at ${w}x${h}, got ${pages}`);
+    assert.equal(pages, 8, `expected 8 printed pages at ${w}x${h}, got ${pages}`);
     await send('Emulation.setEmulatedMedia', { media: '' });
   }
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
