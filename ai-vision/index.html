@@ -137,14 +137,69 @@
   nav .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all .3s; }
   nav .dots i.on { background: var(--accent); width: 22px; border-radius: 4px; }
 
+  /* ---- bold diagrams: drawn symbols, wordmark badges, people, motion ---- */
+  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
+  .ic.lg { display: block; width: clamp(30px, 3vw, 48px); height: clamp(30px, 3vw, 48px); margin: 0 0 1.4vh; color: var(--c, var(--accent)); stroke-width: 1.6; }
+  .hub > .ic.lg, .road > .ic.lg, .gate .side > .ic.lg, .labbox > .ic.lg, .livebox > .ic.lg { margin-left: auto; margin-right: auto; }
+  .fig { width: clamp(28px, 2.6vw, 42px); height: clamp(28px, 2.6vw, 42px); flex: none; fill: currentColor; color: var(--accent); }
+  .side, .hub, .road, .labbox, .livebox, .lock, .fn, .layer, .free .side { box-shadow: 0 1px 2px rgba(21,23,28,.06), 0 14px 32px -16px rgba(21,23,28,.28); }
+  .side { padding: 3.8vh 1.8vw; font-size: clamp(18px, 2.2vw, 32px); background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--c) 6%, var(--paper))); }
+  .side::before { height: 6px; }
+  .flow { max-width: 1320px; }
+  .hub { position: relative; border-width: 2px; font-size: clamp(18px, 2.3vw, 34px);
+    background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent) 20%, var(--paper)), var(--accent-soft)); }
+  .hub::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; pointer-events: none; animation: pulse 3.2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent); } 60% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  .road { border-width: 2px; font-size: clamp(15px, 1.7vw, 24px); background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--warn) 12%, var(--paper))); }
+  .road .ic.lg { color: var(--warn); }
+  .arrow { height: 4px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 18px);
+    background-size: 18px 4px; animation: stream .9s linear infinite; }
+  .arrow::after { top: -4px; border-left-color: var(--accent); }
+  @keyframes stream { to { background-position: 18px 0; } }
+  .chip { font-weight: 500; }
+  .bdgs { display: flex; flex-wrap: wrap; gap: .7vh .45vw; }
+  .bdg { display: inline-flex; align-items: center; gap: .45em; padding: .5em .75em; border-radius: 3px; background: var(--ink); color: var(--paper);
+    font-weight: 600; font-size: clamp(11px, 1.02vw, 15px); white-space: nowrap; line-height: 1.1; }
+  .bdg .ic { width: 1.05em; height: 1.05em; color: var(--accent); }
+  .bdg.lt { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+  .hub .bdgs, .road .bdgs { justify-content: center; margin-top: 1.4vh; }
+  .ppl { display: flex; align-items: center; gap: .7em; font-size: clamp(12px, 1.15vw, 17px); font-weight: 600; color: var(--ink); line-height: 1.2; font-family: var(--sans); }
+  .ppl small { display: block; font-weight: 400; color: var(--soft); font-size: .86em; margin-top: .2em; }
+  .ppl.who { font-size: clamp(11px, 1vw, 15px); padding: 0 0 1.4vh; margin: 0 0 1.8vh; border-bottom: 1px dashed var(--rule); color: var(--ink2); }
+  .ppl.who .fig { width: clamp(22px, 2vw, 32px); height: clamp(22px, 2vw, 32px); color: var(--c); }
+  .pcol { display: flex; flex-direction: column; gap: 1.8vh; flex: 1; min-width: 170px; justify-content: center; }
+  .layer .ppl + .bdgs, .layer .ppl + .chip { margin-top: 1.4vh; }
+  .layer.up, .layer.down { gap: 1.4vh; }
+  .layer.down { background: linear-gradient(180deg, var(--paper), var(--accent-soft)); border-color: var(--accent); }
+  .layer.down .fig, .pcol .fig { color: var(--ink); }
+  .agents .chip { display: flex; align-items: center; gap: .55em; }
+  .agents .chip .ic { color: var(--c, var(--ink2)); }
+  .arch { grid-template-columns: 1.25fr auto 1fr auto .95fr auto 1.15fr auto 1.15fr; max-width: 1440px; }
+  .arch .layer { padding: 2.2vh 1vw; }
+  .arch .hub, .arch .road { padding: 2.4vh .9vw; }
+  .arch .hub { font-size: clamp(15px, 1.6vw, 26px); } .arch .road { font-size: clamp(13px, 1.35vw, 21px); }
+  .arch .chip { font-size: clamp(11px, 1.02vw, 15px); }
+  .gate .side, .labbox, .livebox { padding-top: 3.6vh; }
+  .lock { flex-direction: column; gap: .8vh; width: clamp(96px, 11vw, 150px); height: clamp(96px, 11vw, 150px); border-width: 2px; }
+  .lock .ic { width: 42%; height: 42%; color: var(--accent); }
+  /* each diagram builds in, in order, when its slide arrives */
+  .slide.on .seq > * { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .slide.on .seq > *:nth-child(2) { animation-delay: .1s; } .slide.on .seq > *:nth-child(3) { animation-delay: .2s; }
+  .slide.on .seq > *:nth-child(4) { animation-delay: .3s; } .slide.on .seq > *:nth-child(5) { animation-delay: .4s; }
+  .slide.on .seq > *:nth-child(6) { animation-delay: .5s; } .slide.on .seq > *:nth-child(7) { animation-delay: .6s; }
+  .slide.on .seq > *:nth-child(8) { animation-delay: .7s; } .slide.on .seq > *:nth-child(9) { animation-delay: .8s; }
+  .slide.on .seq > .arrow { animation: rise .7s both, stream .9s linear infinite; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+
   @media screen and (max-width: 760px) {
     body { overflow: auto; }
     .slide { padding: 8vh 6vw 14vh; justify-content: flex-start; display: none; transform: none; }
     .slide.on { display: flex; }
     .stages, .free, .lab, .fns, .gate { grid-template-columns: 1fr; }
     .flow, .arch { flex-direction: column; display: flex; align-items: stretch; }
-    .arrow { width: 2px; height: 22px; margin: .8vh auto; background: var(--soft); }
-    .arrow::after { right: -5px; top: auto; bottom: -1px; border: 6px solid transparent; border-top: 9px solid var(--soft); border-bottom: 0; }
+    .arrow { width: 4px; height: 26px; margin: .8vh auto; background: repeating-linear-gradient(180deg, var(--accent) 0 8px, transparent 8px 14px); background-size: 4px 14px; animation: none; }
+    .slide.on .seq > .arrow { animation: none; }
+    .arrow::after { right: -5px; top: auto; bottom: -1px; border: 6px solid transparent; border-top: 9px solid var(--accent); border-bottom: 0; }
     .wall { width: 60%; height: 6px; }
     .gate { justify-items: center; } .gate .side { width: 100%; }
   }
@@ -163,23 +218,43 @@
     .gate, .lab { grid-template-columns: 1fr auto 1fr; }
     .chip { padding: 2mm 3mm; font-size: 10.5pt; } .arch .chip { padding: 1.2mm 2mm; font-size: 8.5pt; }
     .lead { margin-bottom: 8mm; }
+    .slide .seq > *, .slide.on .seq > *, .arrow, .slide.on .seq > .arrow, .hub::after { animation: none !important; }
+    .arrow { background: var(--accent); }
+    .side, .hub, .road, .labbox, .livebox, .lock, .fn, .layer { box-shadow: none !important; }
+    .flow { flex-wrap: nowrap; } .pcol { min-width: 0; }
+    .bdg { font-size: 7.5pt; } .ppl { font-size: 8.5pt; } .arch .chip { font-size: 8pt; }
     nav { display: none; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
-  @media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; }
+    .slide.on .seq > *, .slide.on .seq > .arrow, .arrow, .hub::after { animation: none !important; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 15v3"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v7L4.5 19A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.8-3L14 9V2"/><path d="M7 15h10"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4M12 16V8M17 16v-6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5M9 13h7M9 17h7"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><path d="M7.5 12H20"/><path d="M15 7l5 5-5 5"/></symbol>
+  <symbol id="i-agent" viewBox="0 0 24 24"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+  <symbol id="i-person" viewBox="0 0 32 32"><circle cx="16" cy="9" r="5.6"/><path d="M5 30c0-7 4.9-11.6 11-11.6S27 23 27 30z"/></symbol>
+  <symbol id="i-team" viewBox="0 0 44 32"><circle cx="10" cy="11" r="4.2"/><path d="M1.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="34" cy="11" r="4.2"/><path d="M25.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="22" cy="9" r="5.2"/><path d="M11.5 31c0-7 4.6-11.4 10.5-11.4S32.5 24 32.5 31z"/></symbol>
+</svg>
 
 <section class="slide on">
   <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="../logo.svg" alt="Cleopatra logo">Cleopatra</span></div>
   <p class="kicker">AI future vision</p>
   <h1 class="big">You have a plan.</h1>
   <p class="lead">A clear, safe path to AI across the business — one function at a time, on what you already own.</p>
-  <div class="flow">
-    <div class="side card" style="--c:var(--data)">Your data</div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--coord)">One governed road</div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--teams)">AI that does real work</div>
+  <div class="flow seq">
+    <div class="side card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg>Your data</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--coord)"><svg class="ic lg"><use href="#i-shield"/></svg>One governed road</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-agent"/></svg>AI that does real work</div>
   </div>
 </section>
 
@@ -187,10 +262,10 @@
   <p class="kicker">The operating model</p>
   <h1>Three steps</h1>
   <p class="lead">First function live, then the second, then every function.</p>
-  <div class="flow">
-    <div class="side card" style="--c:var(--steer)">1 · Chief of staff<small>An always-on agent for the executives</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--coord)">2 · Head agent<small>One per function, directing its workers</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--teams)">3 · Worker agents<small>Inside each function's own container</small></div>
+  <div class="flow seq">
+    <div class="side card" style="--c:var(--steer)"><div class="ppl who"><svg class="fig"><use href="#i-team"/></svg><span>Executives steer and approve</span></div><svg class="ic lg"><use href="#i-agent"/></svg>1 · Chief of staff<small>An always-on agent for the executives</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--coord)"><div class="ppl who"><svg class="fig"><use href="#i-person"/></svg><span>A function lead directs it</span></div><svg class="ic lg"><use href="#i-agent"/></svg>2 · Head agent<small>One per function, directing its workers</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)"><div class="ppl who"><svg class="fig"><use href="#i-team"/></svg><span>The team checks the work</span></div><svg class="ic lg"><use href="#i-agent"/></svg>3 · Worker agents<small>Inside each function's own container</small></div>
   </div>
 </section>
 
@@ -198,21 +273,30 @@
   <p class="kicker">The whole picture</p>
   <h1>Every part, end to end</h1>
   <p class="lead">From the systems you run today to the agents that work for each function.</p>
-  <div class="arch">
-    <div class="layer card"><p class="tag">Your systems</p><div class="col">
-      <div class="chip src">Qlik Sense</div><div class="chip src">Dayforce</div><div class="chip src">POS sales</div>
-      <div class="chip src">Store traffic counters</div><div class="chip src">Stock &amp; operations feeds</div><div class="chip src">Finance</div></div></div>
+  <div class="arch seq">
+    <div class="layer card up"><p class="tag">Upstream · people and systems</p>
+      <div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Store teams<small>at the POS</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Workforce team<small>rosters in Dayforce</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Finance team</span></div>
+      <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div></div>
     <div class="arrow">→</div>
-    <div class="hub">MotherDuck<small>one governed central layer</small>
+    <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>one governed central layer</small>
       <ul><li>Hosted in Sydney (AWS ap-southeast-2)</li><li>Secure Views</li><li>Read-only shares</li></ul></div>
     <div class="arrow">→</div>
-    <div class="road">MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
+    <div class="road"><svg class="ic lg"><use href="#i-link"/></svg>MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small>
+      <div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Claude</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>ChatGPT</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Cursor</span></div></div>
     <div class="arrow">→</div>
     <div class="layer card"><p class="tag">The agents</p><div class="agents">
-      <div class="chip cos">Chief-of-staff agent · always on, for the executives</div>
-      <div class="chip head">Head agent · one per function</div>
-      <div class="chip work">Worker agents · inside each function's own container</div>
-      <div class="chip labchip">Beside it: the lab, separate from the live business</div></div></div>
+      <div class="chip cos" style="--c:var(--ink)"><svg class="ic"><use href="#i-agent"/></svg>Chief-of-staff agent · always on, for the executives</div>
+      <div class="chip head" style="--c:var(--warn)"><svg class="ic"><use href="#i-agent"/></svg>Head agent · one per function</div>
+      <div class="chip work" style="--c:var(--pos)"><svg class="ic"><use href="#i-agent"/></svg>Worker agents · inside each function's own container</div>
+      <div class="chip labchip" style="--c:var(--pos)"><svg class="ic"><use href="#i-flask"/></svg>Beside it: the lab, separate from the live business</div></div></div>
+    <div class="arrow">→</div>
+    <div class="layer card down"><p class="tag">Downstream · people acting</p>
+      <div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Executives<small>steer and read results</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Function leads<small>direct their head agent</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Store managers<small>receive rosters and insights</small></span></div>
+      <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Dashboards, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Reports</span></div></div>
   </div>
 </section>
 
@@ -220,14 +304,19 @@
   <p class="kicker">The data spine</p>
   <h1>Many sources, one governed centre, one road in</h1>
   <p class="lead">Agents never reach into systems directly. They use one standard connection to one governed layer.</p>
-  <div class="flow">
-    <div class="col"><div class="chip src">Qlik Sense</div><div class="chip src">Dayforce</div><div class="chip src">POS sales</div><div class="chip src">Store traffic counters</div><div class="chip src">Stock &amp; operations feeds</div><div class="chip src">Finance</div></div>
+  <div class="flow seq">
+    <div class="pcol"><div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Store, workforce and finance teams<small>feed the data</small></span></div>
+      <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div></div>
     <div class="arrow">→</div>
-    <div class="hub">MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small></div>
+    <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small></div>
     <div class="arrow">→</div>
-    <div class="road">MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
+    <div class="road"><svg class="ic lg"><use href="#i-link"/></svg>MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
     <div class="arrow">→</div>
-    <div class="col"><div class="chip live">Agent</div><div class="chip live">Agent</div><div class="chip live">Agent</div></div>
+    <div class="col agents"><div class="chip live"><svg class="ic"><use href="#i-agent"/></svg>Agent</div><div class="chip live"><svg class="ic"><use href="#i-agent"/></svg>Agent</div><div class="chip live"><svg class="ic"><use href="#i-agent"/></svg>Agent</div></div>
+    <div class="arrow">→</div>
+    <div class="pcol"><div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Executives<small>steer and read results</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Function leads<small>direct their agents</small></span></div>
+      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Store managers<small>act on rosters and insights</small></span></div></div>
   </div>
 </section>
 
@@ -235,7 +324,7 @@
   <p class="kicker">Where agents could work</p>
   <h1>One head agent per function</h1>
   <p class="lead">Examples of the work an agent could take on in each function — ideas to choose from, not results.</p>
-  <div class="fns">
+  <div class="fns seq">
     <div class="fn card" style="--c:var(--teams)"><h3>Merchandising</h3><p>Sell-through, weeks of cover, open-to-buy, allocation and replenishment, markdown</p></div>
     <div class="fn card" style="--c:var(--coord)"><h3>Store Operations</h3><p>Like-for-like sales, foot traffic, conversion, ATV and UPT</p></div>
     <div class="fn card" style="--c:var(--steer)"><h3>Workforce Planning &amp; Rostering</h3><p>Wage-to-sales, rosters matched to foot traffic and peak trade</p></div>
@@ -249,7 +338,7 @@
   <p class="kicker">How we roll it out</p>
   <h1>Vertical by vertical — no big bang</h1>
   <p class="lead">Each function goes live on its own slice of data. No large infrastructure project up front.</p>
-  <div class="stages">
+  <div class="stages seq">
     <div class="stage"><h3>First <span>· one function</span></h3><div class="chips">
       <div class="chip live">Merchandising</div><div class="chip">Store Operations</div><div class="chip">Workforce Planning &amp; Rostering</div><div class="chip">Finance</div><div class="chip">Marketing &amp; Digital</div><div class="chip">Supply Chain</div></div></div>
     <div class="stage"><h3>Next <span>· add one</span></h3><div class="chips">
@@ -264,7 +353,7 @@
   <p class="kicker">Open architecture</p>
   <h1>Three freedoms — never locked in</h1>
   <p class="lead">Every part can change without rebuilding the rest.</p>
-  <div class="free">
+  <div class="free seq">
     <div class="side card" style="--c:var(--data)"><b>1</b>Swap the model<small>It sits on top of the frontier model — Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
     <div class="side card" style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
     <div class="side card" style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
@@ -275,10 +364,10 @@
   <p class="kicker">Governance by architecture</p>
   <h1>Safe because of how it's built</h1>
   <p class="lead">Not a policy document — the design itself limits what each agent can see.</p>
-  <div class="gate">
-    <div class="side card" style="--c:var(--teams)">Each agent</div>
-    <div class="lock">Its own<br>slice</div>
-    <div class="side card" style="--c:var(--data)">MotherDuck</div>
+  <div class="gate seq">
+    <div class="side card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-agent"/></svg>Each agent</div>
+    <div class="lock"><svg class="ic"><use href="#i-lock"/></svg><span>Its own<br>slice</span></div>
+    <div class="side card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck</div>
   </div>
   <ul class="points"><li>Shares are read-only by design — an agent on a share cannot write</li><li>A share exposes only the tables you name — the agent does not see that other tables exist</li><li>Secure Views filter rows and hide or mask columns</li><li>Every query the agent writes is visible and traceable</li><li>Data resident in Sydney (AWS ap-southeast-2)</li></ul>
 </section>
@@ -287,10 +376,10 @@
   <p class="kicker">The lab</p>
   <h1>A lab to build your own agents</h1>
   <p class="lead">People build and shape their own agents on top of the MotherDuck MCP server — full access to shape the agent, inside the governed ecosystem.</p>
-  <div class="lab">
-    <div class="labbox">The lab<small>build and shape your own agents</small></div>
+  <div class="lab seq">
+    <div class="labbox" style="--c:var(--pos)"><svg class="ic lg"><use href="#i-flask"/></svg>The lab<small>build and shape your own agents</small></div>
     <div class="wall" aria-label="separated"></div>
-    <div class="livebox">Live business<small>only proven agents cross over</small></div>
+    <div class="livebox" style="--c:var(--ink)"><svg class="ic lg"><use href="#i-chart"/></svg>Live business<small>only proven agents cross over</small></div>
   </div>
 </section>
 
@@ -298,9 +387,9 @@
   <p class="kicker">What stays</p>
   <h1>Qlik Sense stays</h1>
   <p class="lead">We build beside Qlik and reuse its logic as the blueprint, so the numbers match.</p>
-  <div class="flow">
-    <div class="hub">MotherDuck</div><div class="arrow">→</div>
-    <div class="col"><div class="chip live">Qlik Sense — as today</div><div class="chip live">New AI agents</div></div>
+  <div class="flow seq">
+    <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck</div><div class="arrow">→</div>
+    <div class="col agents"><div class="chip live"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense — as today</div><div class="chip live"><svg class="ic"><use href="#i-agent"/></svg>New AI agents</div></div>
   </div>
   <p class="note">Replacing Qlik is only a future option. The implications of replacing it are not known today, and nothing here commits to it.</p>
 </section>
@@ -309,10 +398,10 @@
   <p class="kicker">The sensible next step</p>
   <h1>Start with one function</h1>
   <p class="lead">Start with Merchandising, connect its slice of data, prove the value — then decide what's next.</p>
-  <div class="flow">
-    <div class="side card" style="--c:var(--steer)">Choose one function<small>Merchandising first</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--data)">Connect its data</div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--teams)">Prove it works</div>
+  <div class="flow seq">
+    <div class="side card" style="--c:var(--steer)"><svg class="ic lg"><use href="#i-target"/></svg>Choose one function<small>Merchandising first</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg>Connect its data</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-chart"/></svg>Prove it works</div>
   </div>
 </section>
 
