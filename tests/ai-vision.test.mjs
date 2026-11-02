@@ -1,8 +1,10 @@
 // tests/ai-vision.test.mjs — renders ai-vision/ (from disk, file://, no server of any kind) in a real headless
 // Chrome and checks the one-picture deck (Sir, 2 Nov 2026): seven scenes over one picture of the whole system, the
 // camera fitting each scene's part of the picture, detail shown only when zoomed in, the "play a question" flow
-// down to the data and back, the milestones (Retail done, then the Retail agent + Merch, then every function),
-// every caption fitting the screen at common sizes, phone width, self-containment and dark mode.
+// down to the governed data layer (never the sources) and back, data flowing into that layer on the data scene,
+// every slice under its own wire, the milestones (Retail done, then the Retail agent + Merch, then every function),
+// the lab beside the functions, every caption fitting the screen at common sizes, phone width, self-containment
+// and dark mode.
 // Same harness as tests/ai-blueprint.test.mjs: plain Node, Chrome driven over its DevTools protocol on loopback
 // (127.0.0.1 only, closed at the end of the run) — no tunnel, no web server.
 // Run: `node --test tests/ai-vision.test.mjs` (skipped, not failed, where no Chrome exists;
@@ -84,11 +86,6 @@ async function screenshot(name) {
   assert.ok(statSync(file).size > 1000, `${name} screenshot is suspiciously small`);
   return file;
 }
-const MS = {
-  1: ['Agent surfaces', 'Downstream systems · order entry', 'Merchandising agent', 'MotherDuck · governed layer', 'MotherDuck MCP Server', 'POS sales', 'Qlik Sense', 'Stock & operations feeds'],
-  2: ['Agent surfaces', 'Chat', 'Dayforce', 'Downstream systems · Dayforce ingestion', 'MotherDuck · governed layer', 'MotherDuck MCP Server', 'POS sales', 'Rosters and insights', 'Store Operations agent', 'Store traffic counters'],
-};
-
 const solidIds = () => evaluate(`[...document.querySelectorAll('#world [data-ms][id]')].filter(e => !e.classList.contains('gh')).map(e => e.id).sort()`);
 
 test('seven scenes over one picture, one caption at a time', { skip }, async () => {
@@ -123,18 +120,33 @@ test('level of detail: tool names and data slices show only when that layer is i
   assert.equal(await shown('#n-tools .chips'), true, 'tools show on the AI Hub');
 });
 
-test('one question: it travels down to the data and the answer comes back', { skip }, async () => {
+test('alignment: every slice of the governed layer sits under its own wire, and zoomed layers share the caption margins', { skip }, async () => {
+  await goTo(2); await settle();
+  const off = await evaluate(`(() => {
+    const m = getComputedStyle(world).transform.match(/matrix\\(([^)]+)\\)/)[1].split(',').map(Number); // a, b, c, d, tx, ty
+    const want = { 'sl-retail': X.retail, 'sl-merch': X.merch, 'sl-exec': MID, 'sl-buying': X.buying, 'sl-more': X.more, 'sl-lab': X.lab };
+    return Object.entries(want).map(([id, x]) => { const r = document.getElementById(id).getBoundingClientRect(), s = deck.getBoundingClientRect().width / deck.offsetWidth;
+      return [id, Math.abs((r.left + r.width / 2) / s - (m[4] + x * m[0]))]; });
+  })()`);
+  for (const [id, d] of off) assert.ok(d < 1.5, `${id} is ${d.toFixed(1)}px off its wire`);
+  const caption = await rect('.panel.on .pts'), gov = await rect('#n-gov');
+  assert.ok(Math.abs(caption[0] - gov[0]) < 2 && Math.abs(caption[2] - gov[2]) < 2, 'the data layer spans the caption margins');
+});
+
+test('one question: it travels down to the governed data layer, never the sources, and the answer comes back', { skip }, async () => {
   await goTo(1);
   let seen = 0;
   for (let k = 0; k < 30 && !seen; k++) { await sleep(100); seen = await evaluate(`document.querySelectorAll('#dots circle').length`); }
   assert.ok(seen > 0, 'dots are travelling');
   assert.equal(await evaluate(`document.querySelector('.s-question').classList.contains('answered')`), false);
-  for (let k = 0; k < 40 && !(await evaluate(`document.querySelector('.s-question').classList.contains('answered')`)); k++) await sleep(250);
+  // paced for a live room (about 17 s end to end)
+  for (let k = 0; k < 120 && !(await evaluate(`document.querySelector('.s-question').classList.contains('answered')`)); k++) await sleep(250);
   assert.equal(await evaluate(`document.querySelector('.s-question').classList.contains('answered')`), true, 'the answer shows');
   assert.deepEqual(await evaluate(`[...document.querySelectorAll('#world .done')].map(e => e.id).sort()`),
-    ['n-buying', 'n-check', 'n-cos', 'n-exec', 'n-gov', 'n-merch', 'n-retail', 's-dayforce', 's-pos', 's-qlik', 's-stock', 's-traffic']);
+    ['n-buying', 'n-check', 'n-cos', 'n-exec', 'n-gov', 'n-merch', 'n-retail']);
+  assert.ok(await evaluate(`Math.max(...down.flatMap(p => p.segs.map(s => Math.max(s[1], s[3]))))`) <= 676, 'no dot goes past the governed layer');
   await screenshot('question-answered');
-  await goTo(2);
+  await goTo(3);
   assert.equal(await evaluate(`document.querySelectorAll('#world .done, #world .lit, #dots circle').length`), 0, 'leaving the scene clears the flow');
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await goTo(1);
@@ -142,12 +154,26 @@ test('one question: it travels down to the data and the answer comes back', { sk
   await send('Emulation.setEmulatedMedia', { features: [] });
 });
 
+test('the data scene: data keeps flowing from the sources into the governed layer, and stops when you leave', { skip }, async () => {
+  await goTo(2); await sleep(1600);
+  const ys = () => evaluate(`[...document.querySelectorAll('#dots .flow')].map(c => +c.getAttribute('cy'))`);
+  const a = await ys(); await sleep(300); const b = await ys();
+  assert.equal(a.length, 14, 'two dots for each of the seven real sources');
+  assert.ok(a.some((y, i) => y !== b[i]), 'the dots move');
+  assert.ok(b.every(y => y >= 782 && y <= 852), 'they stay between the sources and the layer');
+  await goTo(3);
+  assert.equal(await evaluate(`document.querySelectorAll('#dots circle').length`), 0, 'leaving the scene stops the flow');
+});
+
 test('milestones: Retail is done, then the Retail agent and Merch, then every function', { skip }, async () => {
   await goTo(5); await settle();
   const want = {
-    1: ['n-retail', 's-dayforce', 's-pos', 's-traffic'],
-    2: ['n-check', 'n-cos', 'n-gov', 'n-merch', 'n-retail', 'n-road', 's-dayforce', 's-pos', 's-qlik', 's-stock', 's-traffic', 'sl-exec', 'sl-merch', 'sl-retail'],
+    1: ['n-retail', 's-dayforce', 's-statelake'],
+    2: ['n-check', 'n-cos', 'n-gov', 'n-merch', 'n-retail', 'n-road', 's-dayforce', 's-qlik', 's-statelake', 's-wms', 'sl-exec', 'sl-merch', 'sl-retail', 't-dayforce', 't-order'],
   };
+  const shown = sel => evaluate(`getComputedStyle(document.querySelector('${sel}')).visibility === 'visible'`);
+  assert.equal(await shown('#t-dayforce'), true, 'the tools show on the milestones scene');
+  assert.match(await evaluate(`document.getElementById('t-dayforce').textContent + ' / ' + document.getElementById('t-order').textContent`), /Write to Dayforce.*Retail \/ Book an order.*Merch/);
   for (const m of [1, 2, 3]) {
     await evaluate(`document.querySelector('.msbtn [data-m="${m}"]').click()`);
     assert.equal(await current(), 5, 'a step does not change the scene');
@@ -162,13 +188,17 @@ test('milestones: Retail is done, then the Retail agent and Merch, then every fu
   assert.equal(await evaluate(`document.querySelectorAll('#world .gh').length`), 0, 'outside the milestones scene the whole picture is solid');
 });
 
-test('the close asks for the whole strategy', { skip }, async () => {
+test('the lab: the full picture, with the lab as one more container beside the functions', { skip }, async () => {
   await goTo(6); await settle();
-  assert.match(await evaluate(`document.querySelector('.ask').textContent`), /Approve the AI strategy/);
-  assert.ok(await evaluate(`+getComputedStyle(document.getElementById('world')).opacity`) < .1, 'the picture steps back behind the close');
+  assert.equal(await evaluate(`+getComputedStyle(world).opacity`), 1, 'the whole picture stays on screen');
+  assert.equal(await evaluate(`document.querySelectorAll('.ask, .next3, #labscene').length`), 0, 'no path or decision boxes');
+  assert.equal(await evaluate(`+getComputedStyle(document.getElementById('n-lab')).opacity`), 1);
+  assert.ok(await evaluate(`+getComputedStyle(document.getElementById('n-retail')).opacity`) < .5, 'the live functions step back');
+  const [lab, more] = [await rect('#n-lab'), await rect('#n-more')];
+  assert.ok(lab[0] > more[2] && lab[3] === more[3], 'the lab sits beside the functions, on the same baseline');
 });
 
-test('every caption fits the screen at common sizes, and nothing moves once a scene settles', { skip }, async () => {
+test('every caption fits the screen at common sizes, and no transition is left running once a scene settles', { skip }, async () => {
   for (const [width, height] of [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1080]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
     await evaluate(`dispatchEvent(new Event('resize'))`);

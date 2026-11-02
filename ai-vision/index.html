@@ -53,19 +53,19 @@
 
   /* where the camera may place the picture: set per layout, read by fit() */
   #view { position: absolute; pointer-events: none; }
-  #deck.left #view { left: 560px; top: 96px; width: 980px; height: 784px; }
+  #deck.left #view { left: 556px; top: 96px; width: 1004px; height: 784px; }
   #deck.top #view { left: 96px; top: 318px; width: 1408px; height: 556px; }
   #deck.portrait #view { left: 36px; top: 760px; width: 828px; height: 800px; }
 
   /* ---- the picture ---- */
-  #world { position: absolute; left: 0; top: 0; width: 1240px; height: 940px; transform-origin: 0 0; transition: transform var(--cam), opacity .6s ease; }
-  #world.dim { opacity: .04; }
-  .L { position: absolute; left: 0; width: 1240px; border-radius: 22px; transition: opacity .6s ease; }
+  #world { position: absolute; left: 0; top: 0; width: 1440px; height: 940px; transform-origin: 0 0; transition: transform var(--cam), opacity .6s ease; }
+  .L { position: absolute; left: 0; width: 1440px; border-radius: 22px; transition: opacity .6s ease; }
   .L::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: color-mix(in srgb, var(--c) 5%, transparent); border: 1px solid color-mix(in srgb, var(--c) 16%, transparent); }
   .L3 { --c: var(--l3); top: 0; height: 470px; } .L2 { --c: var(--l2); top: 486px; height: 154px; } .L1 { --c: var(--l1); top: 656px; height: 284px; }
   .ltag { position: absolute; left: 34px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); transform-origin: center; white-space: nowrap;
     font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
   .ltag b { color: var(--ink); font-weight: 500; }
+  #deck.top .ltag { opacity: 0; }
   /* the layer in focus stays bright; the others recede */
   #world[data-focus="l1"] :is(.L2, .L3, .y2, .y3), #world[data-focus="l2"] :is(.L1, .L3, .y1, .y3), #world[data-focus="l3"] :is(.L1, .L2, .y1, .y2) { opacity: .25; }
   /* level of detail: .d2 only shows when the camera is on that layer */
@@ -79,9 +79,9 @@
   .fig { width: 30px; height: 30px; fill: currentColor; flex: none; }
   .ic { width: 1.1em; height: 1.1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-  .exec { left: 520px; top: 16px; width: 200px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; font-size: 19px; }
+  .exec { left: 499px; top: 16px; width: 200px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; font-size: 19px; }
   .exec .fig { color: var(--ink); }
-  .cos { left: 120px; top: 98px; width: 1000px; height: 76px; background: var(--ink); color: var(--paper); border-color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
+  .cos { left: 120px; top: 98px; width: 958px; height: 72px; background: var(--ink); color: var(--paper); border-color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
   .cos b { font-size: 22px; display: block; letter-spacing: -.01em; }
   .cos .mono { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
   .cos .on { color: #3fbf86; }
@@ -89,50 +89,59 @@
   .cos .acts span { border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent); border-radius: 7px; padding: 6px 10px; font-size: 13px; }
   .cos .acts i { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
 
-  .fn { top: 208px; width: 235px; height: 244px; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .fn { top: 200px; width: 212px; height: 260px; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
   .fn .fh { display: flex; justify-content: space-between; align-items: baseline; }
-  .fn .fh b { font-size: 21px; letter-spacing: -.01em; }
+  .fn .fh b { font-size: 20px; letter-spacing: -.01em; }
   .fn .fh .mono { color: var(--ink2); }
-  .team { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--fill); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .team { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--fill); font-size: 14px; font-weight: 600; line-height: 1.2; }
   .team .fig { width: 24px; height: 24px; color: var(--ink2); }
   .team small { font-size: 12px; font-weight: 400; }
-  .head { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; padding: 2px 4px; }
+  .head { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; padding: 2px 4px; }
   .dmd { width: 16px; height: 16px; background: var(--l3); transform: rotate(45deg); border-radius: 3px; flex: none; margin: 0 3px; }
   .ags { display: flex; flex-direction: column; gap: 6px; padding-left: 14px; border-left: 2px solid color-mix(in srgb, var(--l3) 35%, transparent); margin-left: 10px; }
-  .ag { font-size: 15px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--l3) 45%, transparent); background: color-mix(in srgb, var(--l3) 8%, var(--paper)); }
-  .tool { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 600; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--pos) 12%, var(--paper)); }
+  .ag { font-size: 14px; font-weight: 500; padding: 6px 10px; line-height: 1.3; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--l3) 45%, transparent); background: color-mix(in srgb, var(--l3) 8%, var(--paper)); }
+  .tool { display: flex; align-items: center; gap: 8px; font-size: 14px; white-space: nowrap; font-weight: 600; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--pos) 12%, var(--paper)); }
   .tool .tk { width: 18px; height: 18px; border-radius: 50%; background: var(--pos); color: #fff; display: grid; place-items: center; font-size: 11px; }
   .tool em { margin-left: auto; font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--pos); }
   .fn.later { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); }
   .fn.later .fh b, .fn.later .head { color: var(--ink2); }
   .fn.later .dmd { background: var(--muted); }
   .fn.later p { margin: 4px 0 0; font-size: 14px; color: var(--ink2); line-height: 1.4; }
+  /* the lab: a container like the functions, kept apart from the live business */
+  .fn.lab { top: 98px; height: 362px; border: 1.5px dashed color-mix(in srgb, var(--pos) 70%, transparent); background: color-mix(in srgb, var(--pos) 5%, var(--paper)); box-shadow: none; }
+  .fn.lab .fh b { display: flex; align-items: center; gap: 8px; } .fn.lab .fh .ic { color: var(--pos); width: 22px; height: 22px; }
+  .fn.lab .golive { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 999px; background: var(--pos); color: #fff; font-size: 14px; font-weight: 600; }
+  #world[data-focus="lab"] :is(#n-exec, #n-cos, #n-retail, #n-merch, #n-buying, #n-more) { opacity: .35; }
+  #world[data-focus="lab"] #n-lab { box-shadow: 0 0 0 5px color-mix(in srgb, var(--pos) 22%, transparent); }
 
-  .hub { left: 120px; top: 504px; width: 1000px; height: 122px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 36px 1fr; border-color: color-mix(in srgb, var(--l2) 55%, transparent); }
+  .hub { left: 120px; top: 504px; width: 1200px; height: 130px; overflow: hidden; display: grid; grid-template-columns: 4fr 8fr; grid-template-rows: 36px 1fr; border-color: color-mix(in srgb, var(--l2) 55%, transparent); }
   .check { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; background: color-mix(in srgb, var(--l2) 14%, var(--paper)); border-bottom: 1px solid color-mix(in srgb, var(--l2) 35%, transparent); font-size: 16px; font-weight: 600; transition: background .4s ease; }
   .check .ic { color: var(--l2); }
   .check small { display: inline; margin-left: 6px; }
-  .cell { padding: 12px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .cell { padding: 18px 18px 12px; display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; } /* top-aligned: both titles share a line */
   .cell + .cell { border-left: 1px solid var(--hair); }
   .cell > b { font-size: 20px; display: flex; align-items: center; gap: 10px; }
   .cell > b .ic { color: var(--l2); }
   .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .chip { font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background: var(--fill); border: 1px solid var(--hair); transition: opacity .4s ease; }
+  .chip { font-size: 13px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background: var(--fill); border: 1px solid var(--hair); transition: opacity .4s ease; }
 
-  .gov { left: 120px; top: 676px; width: 1000px; height: 92px; border: 1.5px solid color-mix(in srgb, var(--l1) 60%, transparent);
+  .gov { left: 120px; top: 676px; width: 1200px; height: 110px; border: 1.5px solid color-mix(in srgb, var(--l1) 60%, transparent);
     background: linear-gradient(180deg, color-mix(in srgb, var(--l1) 12%, var(--paper)), color-mix(in srgb, var(--l1) 4%, var(--paper))); }
   .gov .gt { position: absolute; left: 20px; top: 12px; display: flex; align-items: center; gap: 12px; }
   .gov .gt .ic { width: 34px; height: 34px; padding: 7px; border-radius: 9px; background: var(--l1); color: var(--paper); stroke-width: 1.8; }
   .gov .gt b { font-size: 20px; display: block; letter-spacing: -.01em; }
   .gov .gt small { font-size: 13px; }
-  .slice { position: absolute; top: 56px; height: 26px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 0 9px;
+  .slice { position: absolute; top: 70px; height: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 0 9px;
     border-radius: 6px; background: var(--paper); border: 1px solid color-mix(in srgb, var(--l1) 40%, transparent); white-space: nowrap; }
   .slice i { width: 8px; height: 8px; border-radius: 2px; background: var(--l1); }
-  .gov .note { position: absolute; right: 18px; top: 14px; font-size: 12px; color: var(--ink2); text-align: right; line-height: 1.35; }
-  .src { top: 818px; width: 130px; height: 54px; display: flex; align-items: center; gap: 8px; padding: 0 11px; font-size: 15px; font-weight: 600; line-height: 1.15; }
+  .slice.ex { background: var(--l1); color: var(--paper); border-color: var(--l1); } .slice.ex i { background: var(--paper); }
+  .slice.fut { background: transparent; border-style: dashed; color: var(--ink2); } .slice.fut i { background: var(--muted); }
+  .slice.lb { border-color: color-mix(in srgb, var(--pos) 60%, transparent); } .slice.lb i { background: var(--pos); }
+  .gov .note { position: absolute; right: 20px; top: 14px; font-size: 13px; color: var(--ink2); text-align: right; line-height: 1.35; }
+  .src { top: 846px; width: 136px; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 11px; font-size: 15px; font-weight: 600; line-height: 1.15; }
   .src .ic { color: var(--l1); width: 18px; height: 18px; }
   .src.fut { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); color: var(--ink2); font-weight: 500; }
-  .srcnote { position: absolute; left: 120px; top: 886px; width: 1000px; text-align: center; color: var(--ink2); }
+  .srcnote { position: absolute; left: 120px; top: 914px; width: 1200px; text-align: center; color: var(--ink2); }
 
   /* the drawn connections, and the dots that travel them */
   #wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
@@ -140,13 +149,15 @@
   #wires .w.up { marker-end: url(#tip); }
   #wires .dot { fill: var(--accent); }
   #wires .dot.back { fill: var(--ans); }
+  #wires .dot.flow { fill: var(--l1); }
   .lit { border-color: var(--accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow); }
   .cos.lit { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), var(--shadow); }
   .check.lit { background: color-mix(in srgb, var(--l2) 32%, var(--paper)); }
   .done { border-color: var(--ans) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--ans) 22%, transparent), var(--shadow); }
 
-  /* milestones: only the boxes the chosen step builds are solid */
+  /* milestones: only the boxes the chosen step builds are solid; the tools show here too */
   [data-ms].gh { opacity: .22; filter: grayscale(1); }
+  #world[data-focus="ms"] #n-tools .d2 { opacity: 1; visibility: visible; transition: opacity .5s ease .45s, visibility 0s; }
 
   /* ---- caption panels: one per scene, crossfaded ---- */
   .panel { position: absolute; z-index: 4; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
@@ -164,6 +175,7 @@
   .pts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 0; padding: 0; list-style: none; }
   .pts li { border-left: 2px solid var(--c); padding: 2px 0 2px 16px; font-size: 17px; line-height: 1.42; text-wrap: pretty; }
   .pts li b { font-weight: 600; }
+  .pts.one { grid-template-columns: 1fr; gap: 14px; }
   .fine { font-size: 13px; color: var(--ink2); margin: 10px 0 0 18px; }
 
   /* title */
@@ -218,30 +230,6 @@
   .mslist[hidden] { display: none; }
   .msnote { font-size: 13px; color: var(--ink2); margin: 14px 0 0; }
 
-  /* the lab + the decision, drawn in the picture's place */
-  .labscene { position: absolute; z-index: 4; left: 590px; top: 50%; transform: translateY(-50%); width: 920px; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
-  .labscene.on { opacity: 1; visibility: visible; transition: opacity .5s ease .4s, visibility 0s; }
-  .promo { display: grid; grid-template-columns: 1fr 220px 1fr; align-items: stretch; }
-  .box { border-radius: 14px; padding: 26px 22px; text-align: center; font-weight: 700; font-size: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-  .box small { font-weight: 400; color: var(--ink2); font-size: 15px; }
-  .box .ic { width: 50px; height: 50px; padding: 12px; border-radius: 13px; margin-bottom: 10px; stroke-width: 1.6; }
-  .labbox { border: 1.5px dashed var(--pos); background: color-mix(in srgb, var(--pos) 5%, var(--paper)); }
-  .labbox .ic { color: var(--pos); background: color-mix(in srgb, var(--pos) 14%, var(--paper)); }
-  .livebox { border: 1px solid var(--hair); background: var(--paper); box-shadow: var(--shadow); }
-  .livebox .ic { color: var(--accent); background: var(--accent-soft); }
-  .gate { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-  .gate::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
-  .gate b { position: relative; padding: 10px 18px; border-radius: 999px; background: var(--pos); color: #fff; font-size: 16px; white-space: nowrap; }
-  .gate small { position: relative; background: var(--canvas); padding: 4px 8px; color: var(--ink2); font-size: 13px; text-align: center; }
-  .next3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 18px; }
-  .next3 div { border-radius: 12px; border: 1px solid var(--hair); background: var(--paper); padding: 16px 18px; font-size: 19px; font-weight: 600; box-shadow: var(--shadow); }
-  .next3 span { display: block; font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
-  .next3 .dn { border-color: color-mix(in srgb, var(--pos) 45%, transparent); background: color-mix(in srgb, var(--pos) 6%, var(--paper)); } .next3 .dn span { color: var(--pos); }
-  .next3 small { display: block; font-weight: 400; color: var(--ink2); font-size: 14px; margin-top: 4px; }
-  .ask { margin-top: 18px; padding: 18px 22px; border-radius: 14px; background: var(--ink); color: var(--paper); display: flex; align-items: center; gap: 16px; font-size: 21px; font-weight: 600; }
-  .ask .mono { color: color-mix(in srgb, var(--paper) 60%, var(--ink)); }
-  .labscene .kicker { margin-top: 30px; }
-
   /* phone held upright: caption on top, the picture underneath */
   #deck.portrait .mark { left: 48px; top: 40px; font-size: 18px; }
   #deck.portrait nav { right: 48px; top: 30px; transform: scale(1.4); transform-origin: right top; }
@@ -256,11 +244,9 @@
   #deck.portrait .s-question.answered .cause:nth-of-type(n+2), #deck.portrait .checked { display: none; }
   #deck.portrait .msbtn { flex-direction: row; } #deck.portrait .msbtn button { font-size: 22px; }
   #deck.portrait .mslist { font-size: 24px; }
-  #deck.portrait .labscene { left: 48px; top: 820px; transform: none; width: 804px; }
-  #deck.portrait .next3 { grid-template-columns: 1fr; }
 
   @media (prefers-reduced-motion: reduce) {
-    #world, .L, .n, .d2, .panel, .panel.on, .labscene, .labscene.on, .steps li, .steps li::before { transition: none !important; }
+    #world, .L, .n, .d2, .panel, .panel.on, .steps li, .steps li::before { transition: none !important; }
   }
   @media print { nav { display: none; } }
 </style>
@@ -288,12 +274,12 @@
     <div class="L L2"><span class="ltag">Layer 2 · <b>AI Hub</b></span></div>
     <div class="L L1"><span class="ltag">Layer 1 · <b>Data</b></span></div>
 
-    <svg id="wires" width="1240" height="940" viewBox="0 0 1240 940">
+    <svg id="wires" width="1440" height="940" viewBox="0 0 1440 940">
       <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--rule)"/></marker></defs>
       <g id="wireset"></g><g id="dots"></g>
     </svg>
 
-    <!-- Layer 3 -->
+    <!-- Layer 3: the executives' line runs straight down the middle (x 599); the function containers sit either side; the lab sits apart on the right -->
     <div class="n y3 exec" id="n-exec"><svg class="fig"><use href="#i-team"/></svg><div><b>Executives</b><small class="d2">ask in plain words</small></div></div>
     <div class="n y3 cos" id="n-cos" data-ms="2 3"><div><span class="mono"><span class="on">●</span> Always on · for the executives</span><b>Chief of staff agent</b></div>
       <div class="acts d2"><span><i>Ask</i>Cross-function questions, in context</span><span><i>Watch</i>Every source, flags what matters</span></div></div>
@@ -302,42 +288,50 @@
       <div class="tool" data-ms="1 2 3"><span class="tk">✓</span>Rostering tool<em>live</em></div>
       <div class="head" data-ms="2 3"><span class="dmd"></span>Head agent</div>
       <div class="ags" data-ms="2 3"><span class="ag">Rostering agent</span></div></div>
-    <div class="n y3 fn" id="n-merch" data-ms="2 3" style="left:375px"><div class="fh"><b>Merch</b><span class="mono">Merchandising</span></div>
+    <div class="n y3 fn" id="n-merch" data-ms="2 3" style="left:347px"><div class="fh"><b>Merch</b><span class="mono">Merchandising</span></div>
       <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Merch team<small class="d2">merchandise planners</small></div></div>
       <div class="head"><span class="dmd"></span>Head agent</div>
       <div class="ags"><span class="ag">Merchandising agent</span><span class="ag">Order entry</span></div></div>
-    <div class="n y3 fn" id="n-buying" data-ms="3" style="left:630px"><div class="fh"><b>Buying</b><span class="mono">Range</span></div>
+    <div class="n y3 fn" id="n-buying" data-ms="3" style="left:639px"><div class="fh"><b>Buying</b><span class="mono">Range</span></div>
       <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Buying team<small class="d2">buyers</small></div></div>
       <div class="head"><span class="dmd"></span>Head agent</div>
       <div class="ags"><span class="ag">Its own agents</span></div></div>
-    <div class="n y3 fn later" id="n-more" data-ms="3" style="left:885px"><div class="fh"><b>Every function</b></div>
+    <div class="n y3 fn later" id="n-more" data-ms="3" style="left:866px"><div class="fh"><b>Every function</b></div>
       <div class="head"><span class="dmd"></span>A head agent each</div>
       <p>Marketing, Finance, Logistics, HR and IT, one container at a time.</p></div>
+    <div class="n y3 fn lab" id="n-lab" data-ms="3" style="left:1108px"><div class="fh"><b><svg class="ic"><use href="#i-flask"/></svg>Lab</b><span class="mono">Sandbox</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Anyone with an idea<small class="d2">from any function</small></div></div>
+      <div class="head"><span class="dmd"></span>Lab agents</div>
+      <div class="ags"><span class="ag">Built and shaped by your people</span><span class="ag">Tested on the same data</span></div>
+      <div class="golive">Proven agents go live ›</div></div>
 
     <!-- Layer 2 -->
     <div class="n y2 hub" id="n-hub">
       <div class="check" id="n-check" data-ms="2 3"><svg class="ic"><use href="#i-shield"/></svg>Access check<small class="d2">every request, against who is asking · every exchange logged</small></div>
-      <div class="cell" id="n-road" data-ms="2 3"><b><svg class="ic"><use href="#i-link"/></svg>One standard road in</b><small class="d2">MCP · any AI tool, any agent, any model. Claude today, swappable.</small></div>
+      <div class="cell" id="n-road" data-ms="2 3"><b><svg class="ic"><use href="#i-link"/></svg>One standard road in</b><small class="d2">MCP: any AI tool, agent or model. Claude today, swappable.</small></div>
       <div class="cell" id="n-tools"><b><svg class="ic"><use href="#i-tool"/></svg>Tools agents act with</b>
-        <div class="chips d2"><span class="chip" data-ms="2 3">Dayforce</span><span class="chip" data-ms="2 3">Chat</span><span class="chip" data-ms="2 3">Order entry</span><span class="chip" data-ms="3">Mail</span><span class="chip" data-ms="3">Office 365</span><span class="chip" data-ms="3">SharePoint</span><span class="chip" data-ms="3">Contracts search</span></div></div>
+        <div class="chips d2"><span class="chip" id="t-dayforce" data-ms="2 3">Write to Dayforce · Retail</span><span class="chip" id="t-order" data-ms="2 3">Book an order · Merch</span><span class="chip" data-ms="2 3">Chat</span><span class="chip" data-ms="3">Mail</span><span class="chip" data-ms="3">Office 365</span><span class="chip" data-ms="3">Contracts search</span></div></div>
     </div>
 
-    <!-- Layer 1 -->
+    <!-- Layer 1: each slice sits under its own wire -->
     <div class="n y1 gov" id="n-gov" data-ms="2 3">
       <div class="gt"><svg class="ic"><use href="#i-shield"/></svg><div><b>Governed data layer</b><small>MotherDuck · your definitions · hosted in Sydney</small></div></div>
-      <div class="note d2">Qlik Sense stays beside it.<br>Read-only: an agent cannot write.</div>
-      <span class="slice d2" id="sl-retail" data-ms="2 3" style="left:237px"><i></i>Retail slice</span>
-      <span class="slice d2" id="sl-merch" data-ms="2 3" style="left:492px"><i></i>Merch slice</span>
-      <span class="slice d2" id="sl-buying" data-ms="3" style="left:747px"><i></i>Buying slice</span>
-      <span class="slice d2" id="sl-exec" data-ms="2 3" style="left:1002px"><i></i>Executives: all</span>
+      <div class="note d2">Agents only read here. Any change goes through an approved tool.<br>Your Qlik dashboards keep running as they do today.</div>
+      <span class="slice d2" id="sl-retail" data-ms="2 3" style="left:106px"><i></i>Retail slice</span>
+      <span class="slice d2" id="sl-merch" data-ms="2 3" style="left:333px"><i></i>Merch slice</span>
+      <span class="slice d2 ex" id="sl-exec" data-ms="2 3" style="left:479px"><i></i>Executives: all</span>
+      <span class="slice d2" id="sl-buying" data-ms="3" style="left:625px"><i></i>Buying slice</span>
+      <span class="slice d2 fut" id="sl-more" data-ms="3" style="left:852px"><i></i>One slice each</span>
+      <span class="slice d2 lb" id="sl-lab" data-ms="3" style="left:1094px"><i></i>Lab slice</span>
     </div>
-    <div class="n y1 src" id="s-dayforce" data-ms="1 2 3" style="left:120px"><svg class="ic"><use href="#i-db"/></svg>Dayforce</div>
-    <div class="n y1 src" id="s-pos" data-ms="1 2 3" style="left:265px"><svg class="ic"><use href="#i-db"/></svg>POS sales</div>
-    <div class="n y1 src" id="s-traffic" data-ms="1 2 3" style="left:410px"><svg class="ic"><use href="#i-db"/></svg>Traffic counters</div>
-    <div class="n y1 src" id="s-qlik" data-ms="2 3" style="left:555px"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</div>
-    <div class="n y1 src" id="s-stock" data-ms="2 3" style="left:700px"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; ops</div>
-    <div class="n y1 src" id="s-finance" data-ms="3" style="left:845px"><svg class="ic"><use href="#i-db"/></svg>Finance</div>
-    <div class="n y1 src fut" style="left:990px">+ future source</div>
+    <div class="n y1 src" id="s-statelake" data-ms="1 2 3" style="left:120px"><svg class="ic"><use href="#i-db"/></svg>Statelake / RDS</div>
+    <div class="n y1 src" id="s-wms" data-ms="2 3" style="left:272px"><svg class="ic"><use href="#i-db"/></svg>WMS</div>
+    <div class="n y1 src" id="s-dayforce" data-ms="1 2 3" style="left:424px"><svg class="ic"><use href="#i-db"/></svg>Dayforce</div>
+    <div class="n y1 src" id="s-bc" data-ms="3" style="left:576px"><svg class="ic"><use href="#i-db"/></svg>Business Central</div>
+    <div class="n y1 src" id="s-sharepoint" data-ms="3" style="left:728px"><svg class="ic"><use href="#i-db"/></svg>SharePoint</div>
+    <div class="n y1 src" id="s-qlik" data-ms="2 3" style="left:880px"><svg class="ic"><use href="#i-db"/></svg>Qlik</div>
+    <div class="n y1 src" id="s-dolfin" data-ms="3" style="left:1032px"><svg class="ic"><use href="#i-db"/></svg>Dolfin</div>
+    <div class="n y1 src fut" style="left:1184px">+ future source</div>
     <div class="srcnote y1 mono d2">Sources connected as each project needs them</div>
   </div>
 
@@ -359,14 +353,14 @@
     <p class="q"><small>An executive asks</small>“Why has our flagship store taken such a conversion hit last month?”</p>
     <ol class="steps" id="steps">
       <li>The chief of staff splits it by function</li>
-      <li>Each head agent asks through the access check</li>
-      <li>Each reads only its own slice of the data</li>
+      <li>Head agents, and the chief of staff directly, pass the access check</li>
+      <li>Each reads only its own slice of the governed data</li>
       <li class="back">The answer is checked, then sent back</li>
     </ol>
     <div class="answer">
       <p class="sum">Conversion fell from 14.2% to 11.6%. Two causes inside your control explain most of it. A promotion explains the rest.</p>
       <div class="cause"><span>01</span><div><b>Staffing on peak days</b><small>Retail · Dayforce, traffic, sales</small></div></div>
-      <div class="cause"><span>02</span><div><b>Size gaps in top footwear</b><small>Merch · Qlik, stock feeds</small></div></div>
+      <div class="cause"><span>02</span><div><b>Size gaps in top footwear</b><small>Merch · Qlik, WMS stock</small></div></div>
       <div class="cause"><span>03</span><div><b>Promotion brought browsers, not buyers</b><small>Buying · no action needed</small></div></div>
       <p class="checked"><b>Checked before sending:</b> recomputed from raw sales and traffic, every figure linked to its source.</p>
       <p class="illus">Illustrative figures</p>
@@ -379,7 +373,7 @@
     <h1>One governed centre. Each agent sees only its slice.</h1>
     <ul class="pts" style="--c:var(--l1)">
       <li><b>Every source lands in one place</b>, on your definitions, so every agent reads the same numbers.</li>
-      <li><b>Each agent gets a read-only slice.</b> It cannot write, and cannot see tables it is not given.</li>
+      <li><b>Each agent reads only its own slice.</b> It cannot change data here, or see tables it is not given.</li>
       <li><b>Every query is visible and traceable.</b> Data stays in Sydney (AWS ap-southeast-2).</li>
     </ul>
   </section>
@@ -390,7 +384,7 @@
     <ul class="pts" style="--c:var(--l2)">
       <li><b>Agents never reach into systems directly.</b> Every request passes the access check and is logged.</li>
       <li><b>Any AI tool, agent or model</b> uses the same road. Claude today; swap it and nothing else changes.</li>
-      <li><b>Agents act through your tools:</b> Dayforce, chat, order entry, mail, Office 365, SharePoint.</li>
+      <li><b>Agents act only through approved tools:</b> write to Dayforce, book an order, chat, mail, Office 365.</li>
     </ul>
   </section>
 
@@ -398,7 +392,7 @@
     <p class="kicker">Layer 3 · AI + people</p>
     <h1>Agents do the work. People steer.</h1>
     <ul class="pts" style="--c:var(--l3)">
-      <li><b>An always-on chief of staff</b> answers the executives and watches every source.</li>
+      <li><b>An always-on chief of staff</b> answers the executives, with its own straight line to the AI Hub.</li>
       <li><b>Each function gets its own container:</b> a head agent over the agents that do the work.</li>
       <li><b>People approve and direct.</b> Today's dashboards and Qlik stay; agents sit beside them.</li>
     </ul>
@@ -413,30 +407,21 @@
       <button type="button" data-m="3" aria-pressed="false"><span>03</span>Every function</button>
     </div>
     <ul class="mslist" data-for="1"><li>Rostering tool live for the Retail team</li><li>Built on Dayforce, sales and traffic data</li><li>Logins and roles: each person sees only their stores</li></ul>
-    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent: a head agent and a rostering agent</li><li>Merch joins with its agent from day one</li><li>The governed data layer, the AI Hub and the access check</li><li>Chief of staff, always on, for the executives</li></ul>
-    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>Mail, Office 365, SharePoint and contracts search</li><li>Finance data in the governed layer</li></ul>
+    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent, which writes rosters back to Dayforce</li><li>Merch joins with its agent from day one, and books orders</li><li>The governed data layer, the AI Hub and the access check</li><li>Chief of staff, always on, for the executives</li></ul>
+    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>The lab: your people build and test their own agents</li><li>Mail, Office 365, SharePoint and contracts search</li><li>Business Central, SharePoint and Dolfin in the governed layer</li></ul>
     <p class="msnote">Each step reuses what the last one built. The order after Merch is illustrative.</p>
   </section>
 
-  <section class="panel left s-lab" data-scene="lab">
-    <p class="kicker">The lab + the path</p>
+  <section class="panel left s-lab" data-scene="lab" style="--c:var(--pos)">
+    <p class="kicker">The lab</p>
     <h1>Experiment in the lab. What proves out goes live.</h1>
-    <p class="lead">The lab is the same picture: same data layer, same road. People build and shape their own agents there, kept apart from the live business.</p>
+    <p class="lead">The lab sits beside the functions, on the same AI Hub and the same governed data, kept apart from the live business.</p>
+    <ul class="pts one" style="--c:var(--pos)">
+      <li><b>Anyone with an idea</b> builds and shapes their own agents.</li>
+      <li><b>Agents are tested on the same data</b> the live business uses.</li>
+      <li><b>Proven agents move into a function</b> and go live.</li>
+    </ul>
   </section>
-  <div class="labscene" id="labscene">
-    <div class="promo">
-      <div class="box labbox"><svg class="ic"><use href="#i-flask"/></svg>The lab<small>build and shape your own agents</small></div>
-      <div class="gate"><b>Deploy to prod ›</b><small>only proven agents cross over</small></div>
-      <div class="box livebox"><svg class="ic"><use href="#i-chart"/></svg>Live business<small>the same three layers, in production</small></div>
-    </div>
-    <p class="kicker">The path</p>
-    <div class="next3">
-      <div class="dn"><span>01 · Done</span>Retail rostering<small>live for the Retail team</small></div>
-      <div><span>02 · Next</span>Retail agent + Merch<small>Merch with its agent from day one</small></div>
-      <div><span>03</span>Every function<small>one container at a time</small></div>
-    </div>
-    <div class="ask"><span class="mono">The decision today</span>Approve the AI strategy: three layers, built one function at a time.</div>
-  </div>
 
   <nav aria-label="Slides">
     <button id="prev" type="button" aria-label="Previous slide">←</button>
@@ -451,25 +436,28 @@
 
   // Each scene: which caption panel, where the camera looks (a region of the 1240 x 940 picture), which layer is in focus.
   const SCENES = [
-    { id: 'title',    layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
-    { id: 'question', layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
-    { id: 'l1',       layout: 'top',  cam: [96, 650, 1048, 290],  focus: 'l1' },
-    { id: 'l2',       layout: 'top',  cam: [96, 470, 1048, 186],  focus: 'l2' },
-    { id: 'l3',       layout: 'top',  cam: [96, 0, 1048, 470],    focus: 'l3' },
-    { id: 'ms',       layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
-    { id: 'lab',      layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all', dim: true },
+    { id: 'title',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+    { id: 'question', layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+    { id: 'l1',       layout: 'top',  cam: [120, 650, 1200, 290], focus: 'l1' }, // x 120..1320 = the boxes' edges, so they line up
+    { id: 'l2',       layout: 'top',  cam: [120, 470, 1200, 186], focus: 'l2' }, // with the caption's margins
+    { id: 'l3',       layout: 'top',  cam: [120, 0, 1200, 470],   focus: 'l3' },
+    { id: 'ms',       layout: 'left', cam: [0, 0, 1440, 940],     focus: 'ms' },
+    { id: 'lab',      layout: 'left', cam: [0, 0, 1440, 940],     focus: 'lab' },
   ];
   const panels = [...document.querySelectorAll('.panel')];
 
   // ---- the drawn connections (also the paths the question travels) ----
-  const X = { retail: 237, merch: 492, buying: 747, more: 1002 }, MID = 620;
-  const SX = { dayforce: 185, pos: 330, traffic: 475, qlik: 620, stock: 765, finance: 910, future: 1055 };
+  // Column centres: every container's wire runs straight down into its own slice. The executives' line (MID)
+  // runs from the executives through the chief of staff straight to the AI Hub and the "Executives: all" slice.
+  const X = { retail: 226, merch: 453, buying: 745, more: 972, lab: 1214 }, MID = 599;
+  const COS = 170, FN = 200, FNB = 460, HUB = 504, HUBB = 634, GOV = 676; // box edges (top / bottom) the wires join
+  const SX = [188, 340, 492, 644, 796, 948, 1100, 1252]; // the eight source tiles (the last is "+ future source")
   const WIRES = [
-    [MID, 74, MID, 98],
-    ...Object.values(X).map(x => [x, 174, x, 208]),
-    ...Object.values(X).map(x => [x, 452, x, 504]),
-    ...[X.retail, X.merch, X.buying, X.more].map(x => [x, 626, x, 676]),
-    ...Object.values(SX).map(x => [x, 818, x, 770, 'up']),
+    [MID, 74, MID, 98], [MID, COS, MID, HUB], [MID, HUBB, MID, GOV],
+    ...[X.retail, X.merch, X.buying, X.more].map(x => [x, COS, x, FN]),
+    ...Object.values(X).map(x => [x, FNB, x, HUB]),
+    ...Object.values(X).map(x => [x, HUBB, x, GOV]),
+    ...SX.map(x => [x, 846, x, 788, 'up']),
   ];
   const NS = 'http://www.w3.org/2000/svg';
   const wireset = document.getElementById('wireset'), dotsG = document.getElementById('dots');
@@ -511,14 +499,14 @@
   }
   document.querySelectorAll('.msbtn [data-m]').forEach(b => b.onclick = () => milestone(+b.dataset.m));
 
-  // ---- one question: dots travel down to the data and the answer comes back up ----
+  // ---- one question: dots travel down to the governed data layer (never past it) and the answer comes back up ----
   const Q = document.querySelector('.s-question'), stepsLi = [...document.querySelectorAll('#steps li')];
+  const FN3 = [X.retail, X.merch, X.buying];
   const down = [
     { step: 0, lit: ['n-exec', 'n-cos'], segs: [[MID, 74, MID, 98]] },
-    { step: 0, lit: ['n-retail', 'n-merch', 'n-buying'], segs: [X.retail, X.merch, X.buying].map(x => [MID, 174, x, 208]) },
-    { step: 1, lit: ['n-check'], segs: [X.retail, X.merch, X.buying].map(x => [x, 452, x, 504]) },
-    { step: 2, lit: ['n-gov'], segs: [X.retail, X.merch, X.buying].map(x => [x, 626, x, 676]) },
-    { step: 2, lit: ['s-dayforce', 's-pos', 's-traffic', 's-qlik', 's-stock'], segs: ['dayforce', 'pos', 'traffic', 'qlik', 'stock'].map(k => [SX[k], 770, SX[k], 818]) },
+    { step: 0, lit: ['n-retail', 'n-merch', 'n-buying'], segs: [...FN3.map(x => [MID, COS, x, FN]), [MID, COS, MID, FNB]] },
+    { step: 1, lit: ['n-check'], segs: [...FN3, MID].map(x => [x, FNB, x, HUB]) },
+    { step: 2, lit: ['n-gov'], segs: [...FN3, MID].map(x => [x, HUBB, x, GOV]) },
   ];
   const up = down.slice().reverse().map(p => ({ step: 3, segs: p.segs.map(([a, b, c, d]) => [c, d, a, b]) }));
   let run = 0;
@@ -551,20 +539,40 @@
     resetQuestion();
     const me = run;
     if (still.matches) { down.forEach(p => (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'))); finishQuestion(); return; }
-    await wait(1000);
+    await wait(1000); // paced for a live room: about 17 seconds end to end
     for (const p of down) {
       if (me !== run) return;
-      markStep(p.step); await travel(p.segs, false, 650);
+      markStep(p.step); await travel(p.segs, false, 1950);
       if (me !== run) return;
       (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'));
-      await wait(150);
+      await wait(450);
     }
-    await wait(400); markStep(3);
-    for (const p of up) { if (me !== run) return; await travel(p.segs, true, 420); }
+    await wait(1200); markStep(3);
+    for (const p of up) { if (me !== run) return; await travel(p.segs, true, 1260); }
     if (me !== run) return;
-    await wait(200); finishQuestion();
+    await wait(600); finishQuestion();
   }
   document.getElementById('replay').onclick = playQuestion;
+
+  // ---- the data scene: data keeps flowing up from each source into the governed layer while it is on screen ----
+  let flowRun = 0;
+  function flow(on) {
+    flowRun++; dotsG.querySelectorAll('.flow').forEach(c => c.remove());
+    if (!on || still.matches) return;
+    const me = flowRun;
+    // two dots per real source, half a cycle apart; each starts hidden behind its tile and ends hidden behind the layer
+    SX.slice(0, -1).forEach((x, i) => [0, 800].forEach(lag => {
+      const t0 = performance.now() + 900 + i * 230 + lag; // starts once the camera has arrived
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('r', 4.5); c.setAttribute('class', 'dot flow'); c.setAttribute('cx', x); c.setAttribute('cy', 852);
+      dotsG.appendChild(c);
+      (function tick(t) {
+        if (me !== flowRun) return c.remove();
+        if (t >= t0) c.setAttribute('cy', 852 - 70 * (((t - t0) / 1600) % 1));
+        requestAnimationFrame(tick);
+      })(performance.now());
+    }));
+  }
 
   // ---- moving between scenes ----
   const count = document.getElementById('count'), pad = n => String(n).padStart(2, '0');
@@ -574,11 +582,10 @@
     deck.dataset.scene = sc.id;
     deck.classList.toggle('left', sc.layout === 'left'); deck.classList.toggle('top', sc.layout === 'top');
     panels.forEach(p => p.classList.toggle('on', p.dataset.scene === sc.id));
-    document.getElementById('labscene').classList.toggle('on', sc.id === 'lab');
     world.dataset.focus = sc.focus;
-    world.classList.toggle('dim', !!sc.dim);
     milestone(sc.id === 'ms' ? msCur : 0);
     if (sc.id === 'question') playQuestion(); else resetQuestion();
+    flow(sc.id === 'l1');
     camera(instant || still.matches);
     count.innerHTML = `<b>${pad(scene + 1)}</b> / ${pad(SCENES.length)}`;
     document.getElementById('prev').disabled = scene === 0;
