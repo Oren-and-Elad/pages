@@ -5,133 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Future Vision — You Have a Plan</title>
 <meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1f2328; --soft: #6b6f76; --line: #e4e1dc; --bg: #faf9f7;
-    --steer: #3d3a36; --coord: #b7791f; --teams: #2f855a; --data: #8a4b9e;
+    --bg: #0b1020; --bg2: #121a33; --card: rgba(255,255,255,.045); --line: rgba(255,255,255,.12);
+    --ink: #f3f5fa; --soft: #9aa3b8; --dim: #5d6680;
+    --steer: #8fa3ff; --coord: #f5b84a; --teams: #3ddc97; --data: #c48bff;
+    --display: "Space Grotesk", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
+  html, body { margin: 0; height: 100%; color: var(--ink);
+    background: radial-gradient(120% 90% at 85% 0%, #1b2550 0%, var(--bg) 55%) fixed, var(--bg);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
   body { overflow: hidden; }
   /* a sideways swipe changes slide: the browser must not take it as back/forward */
   html, body { overscroll-behavior-x: none; touch-action: pan-y; }
-  .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center;
-    padding: 6vh 8vw 12vh; }
-  .slide.on { display: flex; }
-  .kicker { font-size: clamp(13px, 1.4vw, 18px); letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin: 0 0 1.2vh; }
-  h1 { font-size: clamp(28px, 4.4vw, 60px); line-height: 1.1; margin: 0 0 1.5vh; font-weight: 700; }
-  .lead { font-size: clamp(17px, 2vw, 26px); color: var(--soft); margin: 0 0 5vh; max-width: 46ch; line-height: 1.4; }
-  .stack { display: flex; flex-direction: column; gap: 1.6vh; max-width: 760px; }
-  .box { border-radius: 14px; padding: 2.2vh 2vw; font-size: clamp(16px, 1.9vw, 24px); font-weight: 600;
-    background: #fff; border: 1px solid var(--line); border-left: 8px solid var(--c); display: flex; justify-content: space-between; gap: 1em; align-items: baseline; }
-  .box small { font-weight: 400; color: var(--soft); font-size: .75em; text-align: right; }
-  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.4vw; }
-  .unit { background: #fff; border: 1px solid var(--line); border-top: 6px solid var(--teams); border-radius: 14px;
-    padding: 2.4vh 1.2vw; font-size: clamp(14px, 1.5vw, 20px); font-weight: 600; min-height: 16vh; }
-  .unit ul { margin: 1.4vh 0 0; padding-left: 1.1em; font-weight: 400; color: var(--soft); font-size: .85em; line-height: 1.5; }
-  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; }
-  .stage h3 { margin: 0 0 1.4vh; font-size: clamp(15px, 1.7vw, 22px); }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+    padding: 6vh 7vw 12vh; opacity: 0; visibility: hidden; transform: translateY(18px);
+    transition: opacity .5s ease, transform .5s ease, visibility 0s linear .5s; }
+  .slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s ease, transform .5s ease; }
+  .kicker { font-size: clamp(12px, 1.2vw, 16px); letter-spacing: .2em; text-transform: uppercase; color: var(--coord);
+    margin: 0 0 1.6vh; font-weight: 600; }
+  h1 { font-family: var(--display); font-size: clamp(30px, 4.6vw, 66px); line-height: 1.04; margin: 0 0 2vh;
+    font-weight: 700; letter-spacing: -.02em; }
+  .big { font-size: clamp(44px, 8vw, 116px); background: linear-gradient(90deg, #fff 30%, var(--steer)); -webkit-background-clip: text;
+    background-clip: text; color: transparent; }
+  .lead { font-size: clamp(16px, 1.8vw, 24px); color: var(--soft); margin: 0 0 5vh; max-width: 52ch; line-height: 1.45; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; backdrop-filter: blur(6px); }
+
+  /* flow of cards with drawn connectors */
+  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; max-width: 1200px; }
+  .side { flex: 1; min-width: 150px; padding: 3.2vh 1.6vw; font-family: var(--display); font-weight: 600;
+    font-size: clamp(16px, 1.9vw, 26px); position: relative; overflow: hidden; }
+  .side::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 4px; background: var(--c); }
+  .side small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .62em; margin-top: 1vh; line-height: 1.4; }
+  .arrow { align-self: center; width: clamp(28px, 3.5vw, 56px); height: 2px; margin: 0 .6vw; position: relative;
+    background: linear-gradient(90deg, var(--dim), var(--soft)); font-size: 0; }
+  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--soft); border-right: 0; }
+
+  .col { display: flex; flex-direction: column; gap: 1vh; flex: 1; min-width: 150px; justify-content: center; }
+  .chip { border-radius: 12px; padding: 1.3vh 1vw; font-size: clamp(13px, 1.3vw, 17px); background: var(--card);
+    border: 1px solid var(--line); color: var(--dim); }
+  .col .chip { color: var(--ink); }
+  .chip.live { border-color: var(--teams); background: rgba(61,220,151,.1); color: var(--ink); font-weight: 600; }
+  .chip.src { border-left: 3px solid var(--data); }
+  .hub { flex: 1.2; min-width: 180px; align-self: center; text-align: center; padding: 3.4vh 1.4vw; border-radius: 20px;
+    background: radial-gradient(circle at 50% 0%, rgba(196,139,255,.28), rgba(196,139,255,.06)); border: 1px solid var(--data);
+    font-family: var(--display); font-weight: 700; font-size: clamp(16px, 1.9vw, 26px); box-shadow: 0 0 60px rgba(196,139,255,.18); }
+  .hub small, .road small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; line-height: 1.4; }
+  .road { flex: .9; min-width: 140px; align-self: center; text-align: center; border-radius: 999px; padding: 2.2vh 1.2vw;
+    background: linear-gradient(90deg, rgba(245,184,74,.25), rgba(245,184,74,.08)); border: 1px solid var(--coord);
+    font-family: var(--display); font-weight: 700; font-size: clamp(14px, 1.5vw, 20px); }
+
+  /* rollout */
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; max-width: 1200px; }
+  .stage h3 { font-family: var(--display); margin: 0 0 1.4vh; font-size: clamp(15px, 1.6vw, 22px); }
   .stage h3 span { color: var(--soft); font-weight: 400; }
-  .chips { display: flex; flex-direction: column; gap: 1vh; }
-  .chip { border-radius: 10px; padding: 1.4vh 1vw; font-size: clamp(13px, 1.4vw, 18px); background: #fff; border: 1px solid var(--line); color: #b5b2ad; }
-  .chip.live { border-color: var(--teams); background: #eef7f1; color: var(--ink); font-weight: 600; }
+  .chips { display: flex; flex-direction: column; gap: .9vh; }
+
+  /* functions */
+  .fns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4vw; max-width: 1200px; }
+  .fn { padding: 2.4vh 1.4vw; }
+  .fn h3 { margin: 0 0 1.2vh; font-family: var(--display); font-size: clamp(15px, 1.6vw, 21px); }
+  .fn h3::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: .6em; vertical-align: middle; }
+  .fn p { margin: 0; color: var(--soft); font-size: clamp(12px, 1.2vw, 16px); line-height: 1.5; }
+  .fine { margin-top: 3vh; font-size: clamp(12px, 1.2vw, 15px); color: var(--dim); }
+
+  /* architecture */
+  .arch { display: grid; grid-template-columns: 1.1fr auto 1.1fr auto .9fr auto 1.5fr; align-items: center; max-width: 1300px; gap: 0; }
+  .arch .layer { padding: 2vh 1.1vw; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .arch .tag { font-size: clamp(10px, .95vw, 13px); letter-spacing: .14em; text-transform: uppercase; color: var(--soft); margin: 0 0 1vh; font-weight: 600; }
+  .arch .chip { padding: .9vh .8vw; font-size: clamp(11px, 1.1vw, 15px); }
+  .arch .col { gap: .7vh; min-width: 0; }
+  .arch .hub, .arch .road { align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  .arch .hub ul { list-style: none; padding: 0; margin: 1.4vh 0 0; font-family: "Inter", sans-serif; font-weight: 500; font-size: .58em; color: var(--ink); }
+  .arch .hub li { padding: .5vh 0; border-top: 1px solid var(--line); }
+  .agents { display: flex; flex-direction: column; gap: .8vh; }
+  .agents .chip { color: var(--ink); }
+  .agents .cos { border-color: var(--steer); background: rgba(143,163,255,.12); font-weight: 600; }
+  .agents .head { border-color: var(--coord); background: rgba(245,184,74,.1); font-weight: 600; }
+  .agents .work { border-color: var(--teams); background: rgba(61,220,151,.08); }
+  .agents .labchip { border-style: dashed; border-color: var(--teams); color: var(--soft); margin-top: .6vh; }
+
+  /* freedoms / gate / lab */
+  .free { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8vw; max-width: 1150px; }
+  .free .side b { display: block; font-size: 2.2em; color: var(--c); line-height: 1; margin-bottom: 1.2vh; }
   .gate { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3vw; max-width: 900px; }
-  .side { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4vh 2vw; text-align: center;
-    font-size: clamp(16px, 2vw, 26px); font-weight: 600; border-top: 6px solid var(--c); }
-  .lock { width: clamp(70px, 9vw, 120px); height: clamp(70px, 9vw, 120px); border-radius: 50%; background: var(--coord); color: #fff;
-    display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: clamp(12px, 1.3vw, 16px); line-height: 1.2; }
-  .points { list-style: none; padding: 0; margin: 5vh 0 0; display: flex; gap: 3vw; flex-wrap: wrap; font-size: clamp(15px, 1.7vw, 22px); }
+  .gate .side { text-align: center; }
+  .lock { width: clamp(80px, 10vw, 136px); height: clamp(80px, 10vw, 136px); border-radius: 50%; border: 2px solid var(--coord);
+    background: radial-gradient(circle, rgba(245,184,74,.35), rgba(245,184,74,.05)); color: var(--ink); display: flex; align-items: center;
+    justify-content: center; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(12px, 1.3vw, 17px); line-height: 1.2;
+    box-shadow: 0 0 50px rgba(245,184,74,.25); }
+  .points { list-style: none; padding: 0; margin: 5vh 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4vh 2.4vw;
+    font-size: clamp(14px, 1.45vw, 19px); max-width: 1150px; line-height: 1.4; }
   .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
-  .models { display: flex; gap: 1.4vw; flex-wrap: wrap; }
-  .model { border: 2px dashed var(--data); border-radius: 12px; padding: 2.4vh 2vw; font-size: clamp(15px, 1.7vw, 22px); color: var(--data); font-weight: 600; }
-  .layers { display:flex; flex-direction:column; gap:1vh; max-width:900px; }
-  .layer { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1.6vh 1.4vw; display:flex; gap:1.2em; align-items:baseline; font-size:clamp(14px, 1.5vw, 19px); }
-  .layer b { min-width:13ch; color:var(--soft); font-weight:600; }
-  .layer.gatehl { border-color:var(--coord); background:#fdf6ec; }
-  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1.6vw; }
-  .step { background:#fff; border:1px solid var(--line); border-radius:14px; padding:2.2vh 1.2vw; font-size:clamp(13px, 1.4vw, 18px); }
-  .step b { display:block; color:var(--coord); font-size:.85em; margin-bottom:.6vh; }
-  .master-row { display:grid; grid-template-columns:repeat(5,1fr); gap:1vw; }
-  .fn { background:#fff; border:1px solid var(--line); border-top:6px solid var(--line); border-radius:14px; padding:2vh 1vw; text-align:center; font-size:clamp(13px, 1.4vw, 17px); font-weight:600; }
-  .fn .badge { display:block; margin-top:1vh; font-size:.7em; font-weight:700; letter-spacing:.05em; padding:.3em .8em; border-radius:999px; }
-  .fn[data-status="live"] { border-top-color:var(--teams); }
-  .fn[data-status="live"] .badge { background:#eef7f1; color:var(--teams); }
-  .fn[data-status="build"] { border-top-color:var(--coord); }
-  .fn[data-status="build"] .badge { background:#fdf1e3; color:var(--coord); }
-  .fn[data-status="planned"] { border-top-color:var(--line); border-top-style:dashed; }
-  .fn[data-status="planned"] .badge { background:#f4f3f1; color:var(--soft); }
-  .unit .src { display:block; margin-top:1.2vh; font-size:.7em; font-weight:700; letter-spacing:.05em; color:var(--teams); }
-  .unit.ext { border-top-style:dashed; border-top-color:var(--data); }
-  .unit.ext .src { color:var(--data); }
-  .plug { margin-top:3vh; font-size:clamp(14px, 1.5vw, 19px); color:var(--soft); max-width:60ch; line-height:1.4; }
-  .plug b { color:var(--ink); }
-  .levels { display:grid; grid-template-columns:1fr 1fr; gap:2.4vw; max-width:1000px; }
-  .levels h3 { margin:0 0 1.4vh; font-size:clamp(15px, 1.7vw, 22px); }
-  .levels h3 span { color:var(--soft); font-weight:400; }
-  .levels .models { gap:1vw; }
-  .levels .model { padding:1.8vh 1.4vw; }
-  .levels .model.sol { border-color:var(--teams); color:var(--teams); }
-  .legend { display:flex; gap:2em; flex-wrap:wrap; margin-top:3vh; font-size:clamp(13px, 1.4vw, 16px); color:var(--soft); }
-  .legend .badge { padding:.3em .8em; border-radius:999px; font-weight:700; font-size:.85em; margin-right:.5em; }
+  .lab { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3vw; align-items: center; max-width: 950px; }
+  .labbox, .live { border-radius: 20px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
+  .labbox { border: 2px dashed var(--teams); background: rgba(61,220,151,.07); }
+  .live { border: 1px solid var(--line); background: var(--card); }
+  .labbox small, .live small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
+  .wall { width: 6px; height: 22vh; background: linear-gradient(var(--steer), var(--data)); border-radius: 4px; justify-self: center; }
+  .note { margin-top: 4vh; font-size: clamp(13px, 1.4vw, 17px); color: var(--soft); max-width: 70ch; line-height: 1.5;
+    border-left: 3px solid var(--coord); padding-left: 1em; }
+
   nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
-  nav button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: .6em 1.2em; font-size: 15px; cursor: pointer; color: var(--ink); }
+  nav button { border: 1px solid var(--line); background: rgba(255,255,255,.06); border-radius: 999px; padding: .6em 1.2em; font-size: 14px;
+    cursor: pointer; color: var(--ink); font-family: inherit; }
   nav .dots { display: flex; gap: 8px; }
-  nav .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
-  nav .dots i.on { background: var(--ink); }
+  nav .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all .3s; }
+  nav .dots i.on { background: var(--coord); width: 22px; border-radius: 4px; }
+
   @media (max-width: 760px) {
     body { overflow: auto; }
-    .slide { padding: 5vh 6vw 14vh; justify-content: flex-start; padding-top: 8vh; }
-    .row { grid-template-columns: 1fr 1fr; } .stages { grid-template-columns: 1fr; }
-    .gate { grid-template-columns: 1fr; justify-items: center; } .side { width: 100%; }
-    .steps { grid-template-columns: 1fr 1fr; } .levels { grid-template-columns: 1fr; } .master-row { grid-template-columns: 1fr 1fr; } .layer { flex-direction: column; }
+    .slide { padding: 8vh 6vw 14vh; justify-content: flex-start; display: none; transform: none; }
+    .slide.on { display: flex; }
+    .stages, .free, .lab, .fns, .gate { grid-template-columns: 1fr; }
+    .flow, .arch { flex-direction: column; display: flex; align-items: stretch; }
+    .arrow { width: 2px; height: 22px; margin: .8vh auto; background: var(--soft); }
+    .arrow::after { right: -5px; top: auto; bottom: -1px; border: 6px solid transparent; border-top: 9px solid var(--soft); border-bottom: 0; }
+    .wall { width: 60%; height: 6px; }
+    .gate { justify-items: center; } .gate .side { width: 100%; }
   }
   @media print {
     @page { size: A4 landscape; margin: 0; }
-    html, body { height: auto; overflow: visible; }
-    .slide { display: flex !important; position: relative; inset: auto; width: 297mm; height: 210mm; overflow: hidden;
-      padding: 14mm 20mm; justify-content: center; page-break-after: always; break-after: page; }
+    :root { --ink: #1f2328; --soft: #5b606a; --dim: #9a9ea6; --line: #dcd9d3; --card: #fff;
+      --steer: #3d4a8f; --coord: #b7791f; --teams: #2f855a; --data: #8a4b9e; }
+    html, body { height: auto; overflow: visible; background: #fff; }
+    .slide { opacity: 1; visibility: visible; transform: none; transition: none; display: flex !important; position: relative; inset: auto;
+      width: 297mm; height: 210mm; overflow: hidden; padding: 14mm 18mm; justify-content: center; page-break-after: always; break-after: page; }
     .slide:last-of-type { page-break-after: auto; break-after: auto; }
-    .row { grid-template-columns: repeat(5, 1fr); }
-    .stages { grid-template-columns: repeat(3, 1fr); }
-    .steps { grid-template-columns: repeat(4, 1fr); }
-    .master-row { grid-template-columns: repeat(5, 1fr); }
-    .gate { grid-template-columns: 1fr auto 1fr; }
-    .chip { padding: 2mm 3mm; font-size: 11pt; }
-    .chips { gap: 2mm; }
+    .big { color: var(--ink); background: none; }
+    .hub, .road, .lock { box-shadow: none; }
+    .card { backdrop-filter: none; }
+    .stages, .free { grid-template-columns: repeat(3, 1fr); } .fns { grid-template-columns: repeat(3, 1fr); }
+    .gate, .lab { grid-template-columns: 1fr auto 1fr; }
+    .chip { padding: 2mm 3mm; font-size: 10.5pt; } .arch .chip { padding: 1.2mm 2mm; font-size: 8.5pt; }
     .lead { margin-bottom: 8mm; }
     nav { display: none; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
-
-  .flow { display:flex; align-items:stretch; gap:1.2vw; flex-wrap:wrap; max-width:1100px; }
-  .flow .side { flex:1; min-width:150px; padding:3vh 1.4vw; }
-  .flow .side small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
-  .arrow { align-self:center; font-size:clamp(22px,3vw,40px); color:var(--soft); }
-  .col { display:flex; flex-direction:column; gap:1vh; flex:1; min-width:140px; }
-  .col .chip { color:var(--ink); }
-  .hub { flex:1.2; min-width:170px; background:#f6effa; border:2px solid var(--data); border-radius:16px; padding:3vh 1.4vw;
-    text-align:center; font-weight:700; font-size:clamp(15px,1.8vw,24px); align-self:center; }
-  .hub small, .road small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
-  .road { flex:.8; min-width:120px; align-self:center; text-align:center; background:var(--coord); color:#fff; border-radius:999px;
-    padding:2vh 1vw; font-weight:700; font-size:clamp(14px,1.6vw,20px); }
-  .road small { color:#fdf1e3; }
-  .free { display:grid; grid-template-columns:repeat(3,1fr); gap:2vw; max-width:1100px; }
-  .free .side { text-align:left; }
-  .free .side b { display:block; font-size:2em; color:var(--c); line-height:1; margin-bottom:1vh; }
-  .free .side small { display:block; font-weight:400; color:var(--soft); font-size:.7em; margin-top:1vh; line-height:1.4; }
-  .lab { display:grid; grid-template-columns:1fr auto 1fr; gap:3vw; align-items:center; max-width:950px; }
-  .sandbox { border:3px dashed var(--teams); border-radius:18px; padding:4vh 2vw; text-align:center; background:#f3faf5;
-    font-weight:700; font-size:clamp(16px,2vw,26px); }
-  .sandbox small, .live small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
-  .wall { width:8px; height:22vh; background:var(--steer); border-radius:4px; justify-self:center; }
-  .live { border:1px solid var(--line); border-top:6px solid var(--steer); border-radius:18px; padding:4vh 2vw; text-align:center;
-    background:#fff; font-weight:700; font-size:clamp(16px,2vw,26px); }
-  .note { margin-top:4vh; font-size:clamp(13px,1.4vw,17px); color:var(--soft); max-width:70ch; line-height:1.45;
-    border-left:4px solid var(--coord); padding-left:1em; }
-  .big { font-size:clamp(40px,7vw,96px); line-height:1.02; }
-  @media (max-width: 760px) { .free, .lab { grid-template-columns:1fr; } .wall { width:60%; height:8px; } .arrow { transform:rotate(90deg); } }
-  @media print { .free { grid-template-columns:repeat(3,1fr); } .lab { grid-template-columns:1fr auto 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; } }
 </style>
 </head>
 <body>
@@ -139,11 +154,11 @@
 <section class="slide on">
   <p class="kicker">AI future vision</p>
   <h1 class="big">You have a plan.</h1>
-  <p class="lead">A clear, safe path to AI across the business — one step at a time, on what you already own.</p>
+  <p class="lead">A clear, safe path to AI across the business — one function at a time, on what you already own.</p>
   <div class="flow">
-    <div class="side" style="--c:var(--data)">Your data</div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--coord)">One governed road</div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--teams)">AI that does real work</div>
+    <div class="side card" style="--c:var(--data)">Your data</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--coord)">One governed road</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)">AI that does real work</div>
   </div>
 </section>
 
@@ -152,9 +167,31 @@
   <h1>Three steps</h1>
   <p class="lead">First function live, then the second, then every function.</p>
   <div class="flow">
-    <div class="side" style="--c:var(--steer)">1 · Chief of staff<small>An always-on agent for the executives</small></div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--coord)">2 · Head agent<small>One per function, directing its workers</small></div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--teams)">3 · Worker agents<small>Inside each function's own container</small></div>
+    <div class="side card" style="--c:var(--steer)">1 · Chief of staff<small>An always-on agent for the executives</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--coord)">2 · Head agent<small>One per function, directing its workers</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)">3 · Worker agents<small>Inside each function's own container</small></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">The whole picture</p>
+  <h1>Every part, end to end</h1>
+  <p class="lead">From the systems you run today to the agents that work for each function.</p>
+  <div class="arch">
+    <div class="layer card"><p class="tag">Your systems</p><div class="col">
+      <div class="chip src">Qlik Sense</div><div class="chip src">Dayforce</div><div class="chip src">POS sales</div>
+      <div class="chip src">Store traffic counters</div><div class="chip src">Stock &amp; operations feeds</div><div class="chip src">Finance</div></div></div>
+    <div class="arrow">→</div>
+    <div class="hub">MotherDuck<small>one governed central layer</small>
+      <ul><li>Hosted in Sydney (AWS ap-southeast-2)</li><li>Secure Views</li><li>Read-only shares</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="road">MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
+    <div class="arrow">→</div>
+    <div class="layer card"><p class="tag">The agents</p><div class="agents">
+      <div class="chip cos">Chief-of-staff agent · always on, for the executives</div>
+      <div class="chip head">Head agent · one per function</div>
+      <div class="chip work">Worker agents · inside each function's own container</div>
+      <div class="chip labchip">Beside it: the lab, separate from the live business</div></div></div>
   </div>
 </section>
 
@@ -163,7 +200,7 @@
   <h1>Many sources, one governed centre, one road in</h1>
   <p class="lead">Agents never reach into systems directly. They use one standard connection to one governed layer.</p>
   <div class="flow">
-    <div class="col"><div class="chip">Sales</div><div class="chip">Stock</div><div class="chip">Rosters</div><div class="chip">Finance</div></div>
+    <div class="col"><div class="chip src">Qlik Sense</div><div class="chip src">Dayforce</div><div class="chip src">POS sales</div><div class="chip src">Store traffic counters</div><div class="chip src">Stock &amp; operations feeds</div><div class="chip src">Finance</div></div>
     <div class="arrow">→</div>
     <div class="hub">MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small></div>
     <div class="arrow">→</div>
@@ -174,17 +211,32 @@
 </section>
 
 <section class="slide">
+  <p class="kicker">Where agents could work</p>
+  <h1>One head agent per function</h1>
+  <p class="lead">Examples of the work an agent could take on in each function — ideas to choose from, not results.</p>
+  <div class="fns">
+    <div class="fn card" style="--c:var(--teams)"><h3>Merchandising</h3><p>Sell-through, weeks of cover, open-to-buy, allocation and replenishment, markdown</p></div>
+    <div class="fn card" style="--c:var(--coord)"><h3>Store Operations</h3><p>Like-for-like sales, foot traffic, conversion, ATV and UPT</p></div>
+    <div class="fn card" style="--c:var(--steer)"><h3>Workforce Planning &amp; Rostering</h3><p>Wage-to-sales, rosters matched to foot traffic and peak trade</p></div>
+    <div class="fn card" style="--c:var(--data)"><h3>Finance</h3><p>Like-for-like sales, wage-to-sales, open-to-buy</p></div>
+    <div class="fn card" style="--c:var(--coord)"><h3>Marketing &amp; Digital</h3><p>Foot traffic, conversion, peak trade campaigns</p></div>
+    <div class="fn card" style="--c:var(--teams)"><h3>Supply Chain</h3><p>Allocation and replenishment, weeks of cover</p></div>
+  </div>
+</section>
+
+<section class="slide">
   <p class="kicker">How we roll it out</p>
   <h1>Vertical by vertical — no big bang</h1>
   <p class="lead">Each function goes live on its own slice of data. No large infrastructure project up front.</p>
   <div class="stages">
     <div class="stage"><h3>First <span>· one function</span></h3><div class="chips">
-      <div class="chip live">Function 1</div><div class="chip">Function 2</div><div class="chip">Function 3</div><div class="chip">Function 4</div></div></div>
+      <div class="chip live">Merchandising</div><div class="chip">Store Operations</div><div class="chip">Workforce Planning &amp; Rostering</div><div class="chip">Finance</div><div class="chip">Marketing &amp; Digital</div><div class="chip">Supply Chain</div></div></div>
     <div class="stage"><h3>Next <span>· add one</span></h3><div class="chips">
-      <div class="chip live">Function 1</div><div class="chip live">Function 2</div><div class="chip">Function 3</div><div class="chip">Function 4</div></div></div>
+      <div class="chip live">Merchandising</div><div class="chip live">Store Operations</div><div class="chip">Workforce Planning &amp; Rostering</div><div class="chip">Finance</div><div class="chip">Marketing &amp; Digital</div><div class="chip">Supply Chain</div></div></div>
     <div class="stage"><h3>Then <span>· keep going</span></h3><div class="chips">
-      <div class="chip live">Function 1</div><div class="chip live">Function 2</div><div class="chip live">Function 3</div><div class="chip">Function 4</div></div></div>
+      <div class="chip live">Merchandising</div><div class="chip live">Store Operations</div><div class="chip live">Workforce Planning &amp; Rostering</div><div class="chip">Finance</div><div class="chip">Marketing &amp; Digital</div><div class="chip">Supply Chain</div></div></div>
   </div>
+  <p class="fine">Only the first function is chosen. The order after it is illustrative.</p>
 </section>
 
 <section class="slide">
@@ -192,9 +244,9 @@
   <h1>Three freedoms — never locked in</h1>
   <p class="lead">Every part can change without rebuilding the rest.</p>
   <div class="free">
-    <div class="side" style="--c:var(--data)"><b>1</b>Swap the model<small>It sits on top of the frontier model — Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
-    <div class="side" style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
-    <div class="side" style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
+    <div class="side card" style="--c:var(--data)"><b>1</b>Swap the model<small>It sits on top of the frontier model — Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
+    <div class="side card" style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
+    <div class="side card" style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
   </div>
 </section>
 
@@ -203,9 +255,9 @@
   <h1>Safe because of how it's built</h1>
   <p class="lead">Not a policy document — the design itself limits what each agent can see.</p>
   <div class="gate">
-    <div class="side" style="--c:var(--teams)">Each agent</div>
+    <div class="side card" style="--c:var(--teams)">Each agent</div>
     <div class="lock">Its own<br>slice</div>
-    <div class="side" style="--c:var(--data)">MotherDuck</div>
+    <div class="side card" style="--c:var(--data)">MotherDuck</div>
   </div>
   <ul class="points"><li>Shares are read-only by design — an agent on a share cannot write</li><li>A share exposes only the tables you name — the agent does not see that other tables exist</li><li>Secure Views filter rows and hide or mask columns</li><li>Every query the agent writes is visible and traceable</li><li>Data resident in Sydney (AWS ap-southeast-2)</li></ul>
 </section>
@@ -215,7 +267,7 @@
   <h1>A lab to build your own agents</h1>
   <p class="lead">People build and shape their own agents on top of the MotherDuck MCP server — full access to shape the agent, inside the governed ecosystem.</p>
   <div class="lab">
-    <div class="sandbox">The lab<small>build and shape your own agents</small></div>
+    <div class="labbox">The lab<small>build and shape your own agents</small></div>
     <div class="wall" aria-label="separated"></div>
     <div class="live">Live business<small>only proven agents cross over</small></div>
   </div>
@@ -235,11 +287,11 @@
 <section class="slide">
   <p class="kicker">The sensible next step</p>
   <h1>Start with one function</h1>
-  <p class="lead">Pick one area, connect its slice of data, prove the value — then decide what's next.</p>
+  <p class="lead">Start with Merchandising, connect its slice of data, prove the value — then decide what's next.</p>
   <div class="flow">
-    <div class="side" style="--c:var(--steer)">Choose one function</div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--data)">Connect its data</div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--teams)">Prove it works</div>
+    <div class="side card" style="--c:var(--steer)">Choose one function<small>Merchandising first</small></div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--data)">Connect its data</div><div class="arrow">→</div>
+    <div class="side card" style="--c:var(--teams)">Prove it works</div>
   </div>
 </section>
 
