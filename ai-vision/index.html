@@ -99,10 +99,10 @@
     font-size: clamp(14px, 1.45vw, 19px); max-width: 1150px; line-height: 1.4; }
   .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
   .lab { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3vw; align-items: center; max-width: 950px; }
-  .labbox, .live { border-radius: 20px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
+  .labbox, .livebox { border-radius: 20px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
   .labbox { border: 2px dashed var(--teams); background: rgba(61,220,151,.07); }
-  .live { border: 1px solid var(--line); background: var(--card); }
-  .labbox small, .live small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
+  .livebox { border: 1px solid var(--line); background: var(--card); }
+  .labbox small, .livebox small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
   .wall { width: 6px; height: 22vh; background: linear-gradient(var(--steer), var(--data)); border-radius: 4px; justify-self: center; }
   .note { margin-top: 4vh; font-size: clamp(13px, 1.4vw, 17px); color: var(--soft); max-width: 70ch; line-height: 1.5;
     border-left: 3px solid var(--coord); padding-left: 1em; }
@@ -266,7 +266,7 @@
   <div class="lab">
     <div class="labbox">The lab<small>build and shape your own agents</small></div>
     <div class="wall" aria-label="separated"></div>
-    <div class="live">Live business<small>only proven agents cross over</small></div>
+    <div class="livebox">Live business<small>only proven agents cross over</small></div>
   </div>
 </section>
 
