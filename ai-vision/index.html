@@ -150,11 +150,11 @@
 <section class="slide">
   <p class="kicker">The operating model</p>
   <h1>Three steps</h1>
-  <p class="lead">Leaders steer. One coordinator routes. Function teams do the work.</p>
+  <p class="lead">First function live, then the second, then every function.</p>
   <div class="flow">
-    <div class="side" style="--c:var(--steer)">1 · Steer<small>Leaders set goals and see results</small></div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--coord)">2 · Coordinate<small>One AI turns goals into routed work</small></div><div class="arrow">→</div>
-    <div class="side" style="--c:var(--teams)">3 · Do<small>An AI team per function, kept apart</small></div>
+    <div class="side" style="--c:var(--steer)">1 · Chief of staff<small>An always-on agent for the executives</small></div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--coord)">2 · Head agent<small>One per function, directing its workers</small></div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--teams)">3 · Worker agents<small>Inside each function's own container</small></div>
   </div>
 </section>
 
@@ -165,9 +165,9 @@
   <div class="flow">
     <div class="col"><div class="chip">Sales</div><div class="chip">Stock</div><div class="chip">Rosters</div><div class="chip">Finance</div></div>
     <div class="arrow">→</div>
-    <div class="hub">One governed central layer<small>cleaned, controlled, in one place</small></div>
+    <div class="hub">MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small></div>
     <div class="arrow">→</div>
-    <div class="road">One MCP road<small>a single standard connection</small></div>
+    <div class="road">MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
     <div class="arrow">→</div>
     <div class="col"><div class="chip live">Agent</div><div class="chip live">Agent</div><div class="chip live">Agent</div></div>
   </div>
@@ -192,7 +192,7 @@
   <h1>Three freedoms — never locked in</h1>
   <p class="lead">Every part can change without rebuilding the rest.</p>
   <div class="free">
-    <div class="side" style="--c:var(--data)"><b>1</b>Swap the model<small>Change the AI model underneath as better ones arrive.</small></div>
+    <div class="side" style="--c:var(--data)"><b>1</b>Swap the model<small>It sits on top of the frontier model — Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
     <div class="side" style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
     <div class="side" style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
   </div>
@@ -205,17 +205,17 @@
   <div class="gate">
     <div class="side" style="--c:var(--teams)">Each agent</div>
     <div class="lock">Its own<br>slice</div>
-    <div class="side" style="--c:var(--data)">Governed data</div>
+    <div class="side" style="--c:var(--data)">MotherDuck</div>
   </div>
-  <ul class="points"><li>Read-only, per-agent slices</li><li>Rows and columns masked</li><li>Every query traceable</li><li>Data stays in Sydney</li></ul>
+  <ul class="points"><li>Shares are read-only by design — an agent on a share cannot write</li><li>A share exposes only the tables you name — the agent does not see that other tables exist</li><li>Secure Views filter rows and hide or mask columns</li><li>Every query the agent writes is visible and traceable</li><li>Data resident in Sydney (AWS ap-southeast-2)</li></ul>
 </section>
 
 <section class="slide">
   <p class="kicker">The lab</p>
-  <h1>Try ideas in a sandbox first</h1>
-  <p class="lead">New agents are tested on a safe copy, walled off from the live business.</p>
+  <h1>A lab to build your own agents</h1>
+  <p class="lead">People build and shape their own agents on top of the MotherDuck MCP server — full access to shape the agent, inside the governed ecosystem.</p>
   <div class="lab">
-    <div class="sandbox">Lab sandbox<small>experiment freely</small></div>
+    <div class="sandbox">The lab<small>build and shape your own agents</small></div>
     <div class="wall" aria-label="separated"></div>
     <div class="live">Live business<small>only proven agents cross over</small></div>
   </div>
@@ -223,13 +223,13 @@
 
 <section class="slide">
   <p class="kicker">What stays</p>
-  <h1>Your existing reporting stays</h1>
-  <p class="lead">Today's dashboards keep running. AI is added alongside them, on the same governed data.</p>
+  <h1>Qlik Sense stays</h1>
+  <p class="lead">We build beside Qlik and reuse its logic as the blueprint, so the numbers match.</p>
   <div class="flow">
-    <div class="hub">Governed central layer</div><div class="arrow">→</div>
-    <div class="col"><div class="chip live">Existing reports &amp; dashboards</div><div class="chip live">New AI agents</div></div>
+    <div class="hub">MotherDuck</div><div class="arrow">→</div>
+    <div class="col"><div class="chip live">Qlik Sense — as today</div><div class="chip live">New AI agents</div></div>
   </div>
-  <p class="note">This is a direction, not a replacement plan. Nothing here commits to retiring or changing any current reporting tool; that is your decision, case by case.</p>
+  <p class="note">Replacing Qlik is only a future option. The implications of replacing it are not known today, and nothing here commits to it.</p>
 </section>
 
 <section class="slide">
