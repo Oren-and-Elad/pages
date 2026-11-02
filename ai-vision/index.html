@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Future Vision — You Have a Plan</title>
+<title>AI Future Vision</title>
 <meta name="robots" content="noindex">
 <style>
   /* Fonts are vendored next to the page (SIL OFL, see fonts/): nothing loads from outside this folder. */
@@ -14,302 +14,255 @@
   @font-face { font-family: "DM Mono"; font-weight: 400; font-display: swap; src: url(fonts/dm-mono-latin-400-normal.woff2) format("woff2"); }
   @font-face { font-family: "DM Mono"; font-weight: 500; font-display: swap; src: url(fonts/dm-mono-latin-500-normal.woff2) format("woff2"); }
 
-  /* Theme tokens from the keel ai operating-model piece: paper on canvas, one blue accent, hairlines, square corners.
-     Layer colours: AI + UI green, AI Hub amber, Data blue. */
+  /* Layout: one picture of the whole system (people + agents / AI Hub / data) that the deck travels across.
+     The caption panel sits left (whole-picture scenes) or on top (one-layer scenes); the camera fits the scene's
+     region of the picture into the space that is left. Tokens from the keel ai operating-model piece. */
   :root {
-    --canvas:#f6f7f9; --paper:#ffffff; --deep:#e7eaee;
-    --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
-    --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e;
-    --hair:rgba(21,23,28,.12);
-    --teams: var(--pos); --coord: var(--warn); --data: var(--accent); --steer: var(--ink);
+    --canvas:#f6f7f9; --paper:#ffffff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f0f2f5;
+    --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.12);
+    --l3: var(--pos); --l2: var(--warn); --l1: var(--accent); --ans: var(--pos);
     --shadow: 0 1px 1px rgba(21,23,28,.04), 0 2px 4px rgba(21,23,28,.04), 0 16px 36px -20px rgba(21,23,28,.28);
-    --r: 12px; --r-sm: 7px;
     --sans: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-    /* the deck is laid out on a 1600 x 900 stage and scaled to the window (see fit() below) */
-    --padx: 96px; --strip: 64px; --head: 104px;
+    --cam: 1.1s cubic-bezier(.65, 0, .35, 1);
   }
-  @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --deep:#15171c;
-    --ink:#eef0f3; --ink2:#c5cad1; --muted:#9aa1ad; --rule:#565d68; --fill:#15171c;
-    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --pos:#3fbf86; --warn:#d9a052;
-    --hair:rgba(238,240,243,.14); --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6); color-scheme:dark; } }
+  @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --ink:#eef0f3; --ink2:#c5cad1; --muted:#8b93a0; --rule:#4a505b; --fill:#23262e;
+    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --pos:#3fbf86; --warn:#d9a052; --hair:rgba(238,240,243,.14);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.7); color-scheme:dark; } }
 
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--canvas); color: var(--ink); font-family: var(--sans);
-    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { overflow: hidden; font-size: 20px; line-height: 1.45; }
-  /* a sideways swipe changes slide: the browser must not take it as back/forward */
-  html, body { overscroll-behavior-x: none; touch-action: pan-y; }
+  html, body { margin: 0; height: 100%; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; line-height: 1.4; }
+  html, body { overscroll-behavior: none; touch-action: pan-y; }
+  button { font: inherit; color: inherit; }
 
-  /* ---- the stage ---- */
-  #deck { position: fixed; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; }
-  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: safe center;
-    padding: var(--head) var(--padx) 64px; visibility: hidden; }
-  .slide.on { visibility: visible; }
-  .slide:has(> .edge.top) { padding-top: calc(var(--strip) + 80px); }
-  .slide:has(> .edge.bot) { padding-bottom: calc(var(--strip) + 28px); }
-  .inner { width: 100%; max-width: 1408px; margin: 0 auto; }
-
-  /* header: the brand mark on the left of every slide (not the title), the controls on the right */
-  .mark { position: absolute; top: 40px; left: var(--padx); display: flex; align-items: center; gap: 10px;
-    font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; font-size: 13px; font-weight: 500; color: var(--ink); }
-  .slide:has(> .edge.top) .mark { top: calc(var(--strip) + 30px); }
+  /* ---- stage: 1600 x 900 (or 900 x 1600 on a phone held upright), scaled to fill the window ---- */
+  #deck { position: fixed; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; overflow: hidden; }
+  .mark { position: absolute; top: 38px; left: 96px; z-index: 6; display: flex; align-items: center; gap: 10px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .1em; font-size: 13px; font-weight: 500; }
   .mark .by { color: var(--muted); text-transform: none; letter-spacing: .02em; font-weight: 400; }
-  .mark img { width: 20px; height: 20px; }
-  .slide:first-of-type .mark { display: none; }
+  #deck[data-scene="title"] .mark { visibility: hidden; } /* the title has the big lockup */
+  .mark img { width: 20px; height: 20px; object-fit: cover; clip-path: inset(2.5% round 21%); }
   .dia { width: 9px; height: 9px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; display: inline-block; }
-  img.logo, .mark img, .brand img { object-fit: cover; clip-path: inset(2.5% round 21%); }
-
-  nav { position: absolute; top: 30px; right: var(--padx); display: flex; align-items: center; gap: 4px; z-index: 5;
-    font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: var(--ink2); }
-  #deck:has(.slide.on > .edge.top) nav { top: calc(var(--strip) + 20px); }
-  nav button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--hair); background: var(--paper);
-    border-radius: 10px; cursor: pointer; color: var(--ink); font: 500 18px/1 var(--sans); padding: 0; }
-  nav button:hover { border-color: var(--rule); background: var(--fill); }
+  nav { position: absolute; top: 28px; right: 96px; z-index: 6; display: flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: var(--ink2); }
+  nav button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--hair); background: var(--paper); border-radius: 10px; cursor: pointer; font-size: 18px; padding: 0; }
+  nav button:hover { background: var(--fill); }
   nav button:disabled { opacity: .35; cursor: default; }
-  nav button:focus-visible, .steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  #count { min-width: 76px; text-align: center; }
-  #count b { color: var(--ink); font-weight: 500; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #count { min-width: 76px; text-align: center; } #count b { color: var(--ink); font-weight: 500; }
 
-  /* ---- type ---- */
-  .kicker { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2);
-    margin: 0 0 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-  .kicker::before { content: ""; width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; }
-  h1 { font-size: 56px; line-height: 1.04; margin: 0 0 26px; font-weight: 600; letter-spacing: -.02em; max-width: 30ch; text-wrap: balance; }
-  .lead { font-size: 23px; color: var(--ink2); margin: 0 0 36px; max-width: 46ch; line-height: 1.45; text-wrap: pretty; }
-  .tag, .ztag { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin: 0 0 10px; font-weight: 500; }
-  .card { background: var(--paper); border: 1px solid var(--hair); border-radius: var(--r); box-shadow: var(--shadow); }
-  .ic { width: 1.1em; height: 1.1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.18em; }
-  .ic.lg { display: block; width: 56px; height: 56px; padding: 14px; border-radius: 14px; color: var(--c, var(--accent)); stroke-width: 1.6; margin: 0 0 16px;
-    background: color-mix(in srgb, var(--c, var(--accent)) 13%, var(--paper)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, var(--accent)) 22%, transparent); }
-  .fig { width: 34px; height: 34px; flex: none; fill: currentColor; color: var(--ink); }
+  /* where the camera may place the picture: set per layout, read by fit() */
+  #view { position: absolute; pointer-events: none; }
+  #deck.left #view { left: 560px; top: 96px; width: 980px; height: 784px; }
+  #deck.top #view { left: 96px; top: 318px; width: 1408px; height: 556px; }
+  #deck.portrait #view { left: 36px; top: 760px; width: 828px; height: 800px; }
 
-  /* badges */
-  .bdgs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .bdg { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: var(--r-sm); background: var(--ink); color: var(--paper);
-    font-weight: 600; font-size: 15px; white-space: nowrap; line-height: 1.15; box-shadow: 0 1px 2px rgba(21,23,28,.18); }
-  .bdg .ic { color: var(--accent); }
-  .bdg.lt { background: var(--fill); color: var(--ink); border: 1px solid var(--hair); box-shadow: none; }
-  .bdg.fut { background: transparent; color: var(--muted); border: 1px dashed var(--rule); font-weight: 500; box-shadow: none; }
-  .bdg small { font-weight: 400; color: var(--ink2); font-size: .9em; }
+  /* ---- the picture ---- */
+  #world { position: absolute; left: 0; top: 0; width: 1240px; height: 940px; transform-origin: 0 0; transition: transform var(--cam), opacity .6s ease; }
+  #world.dim { opacity: .04; }
+  .L { position: absolute; left: 0; width: 1240px; border-radius: 22px; transition: opacity .6s ease; }
+  .L::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: color-mix(in srgb, var(--c) 5%, transparent); border: 1px solid color-mix(in srgb, var(--c) 16%, transparent); }
+  .L3 { --c: var(--l3); top: 0; height: 470px; } .L2 { --c: var(--l2); top: 486px; height: 154px; } .L1 { --c: var(--l1); top: 656px; height: 284px; }
+  .ltag { position: absolute; left: 34px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); transform-origin: center; white-space: nowrap;
+    font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+  .ltag b { color: var(--ink); font-weight: 500; }
+  /* the layer in focus stays bright; the others recede */
+  #world[data-focus="l1"] :is(.L2, .L3, .y2, .y3), #world[data-focus="l2"] :is(.L1, .L3, .y1, .y3), #world[data-focus="l3"] :is(.L1, .L2, .y1, .y2) { opacity: .25; }
+  /* level of detail: .d2 only shows when the camera is on that layer */
+  .d2 { opacity: 0; visibility: hidden; transition: opacity .5s ease .35s, visibility 0s linear .85s; }
+  #world[data-focus="l1"] :is(.y1 .d2, .d2.y1), #world[data-focus="l2"] .y2 .d2, #world[data-focus="l3"] .y3 .d2 { opacity: 1; visibility: visible; transition: opacity .5s ease .45s, visibility 0s; }
 
-  /* a connector between two boxes: a line and a head, drawn, never animated */
-  .arrow { align-self: center; justify-self: center; position: relative; width: 44px; height: 2px; background: var(--muted); font-size: 0; margin: 0 8px; }
-  .arrow::before { content: ""; position: absolute; left: -3px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-  .arrow::after { content: ""; position: absolute; right: -2px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--muted); border-right: 0; }
-  .vlink { width: 2px; height: 14px; background: var(--rule); margin-left: 59px; }
+  .n { position: absolute; border-radius: 12px; background: var(--paper); border: 1px solid var(--hair); box-shadow: var(--shadow); transition: opacity .4s ease, border-color .4s ease, box-shadow .4s ease, background .4s ease; }
+  .n b { font-weight: 600; }
+  .n small { display: block; color: var(--ink2); font-size: 13px; line-height: 1.35; }
+  .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
+  .fig { width: 30px; height: 30px; fill: currentColor; flex: none; }
+  .ic { width: 1.1em; height: 1.1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* ---- 1 · title: the three layers ---- */
-  .title .inner { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
-  .brand { display: flex; align-items: center; gap: 18px; margin: 0 0 56px; flex-wrap: wrap; }
-  .brand .wm { font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; font-size: 22px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
-  .brand .wm .dia { width: 11px; height: 11px; }
-  .brand .co { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; padding-left: 18px; border-left: 1px solid var(--rule); }
-  .brand .co small { font-family: var(--mono); font-size: 12px; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); margin-right: 2px; }
-  .brand .co img { width: 34px; height: 34px; }
-  .title h1 { font-size: 76px; letter-spacing: -.03em; margin-bottom: 28px; max-width: none; text-wrap: wrap; }
-  .title .lead { margin: 0; }
-  .vstack { display: flex; flex-direction: column; }
-  .band { position: relative; display: grid; grid-template-columns: 64px 170px 1fr; align-items: center; gap: 26px; padding: 26px 32px 26px 26px;
-    font-weight: 600; font-size: 32px; letter-spacing: -.015em; line-height: 1.1; overflow: hidden;
-    background: linear-gradient(100deg, color-mix(in srgb, var(--c) 8%, var(--paper)), var(--paper) 50%); }
-  .band::after { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 4px; border-radius: 0 4px 4px 0; background: var(--c); }
-  .band .ic.lg { margin: 0; width: 64px; height: 64px; padding: 16px; border-radius: 16px; }
-  .band .num { color: var(--c); }
-  .num { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: 6px; }
-  .band small { font-weight: 400; color: var(--ink2); font-size: 17px; line-height: 1.45; letter-spacing: 0; }
-  .vstack .vlink { margin-left: 57px; height: 14px; background: none; border-left: 2px dotted var(--rule); width: 0; }
+  .exec { left: 520px; top: 16px; width: 200px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; font-size: 19px; }
+  .exec .fig { color: var(--ink); }
+  .cos { left: 120px; top: 98px; width: 1000px; height: 76px; background: var(--ink); color: var(--paper); border-color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
+  .cos b { font-size: 22px; display: block; letter-spacing: -.01em; }
+  .cos .mono { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
+  .cos .on { color: #3fbf86; }
+  .cos .acts { display: flex; gap: 10px; }
+  .cos .acts span { border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent); border-radius: 7px; padding: 6px 10px; font-size: 13px; }
+  .cos .acts i { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
 
-  /* ---- the zoomed layers: the neighbouring layers stay visible as strips at the very top and bottom ---- */
-  .edge { position: absolute; left: 0; right: 0; height: var(--strip); display: flex; align-items: center; gap: 22px; padding: 0 var(--padx);
-    background: color-mix(in srgb, var(--c) 9%, var(--canvas)); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); }
-  .edge.top { top: 0; border-bottom: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
-  .edge.bot { bottom: 0; border-top: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
-  .edge::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c); }
-  .edge .en { font-family: var(--sans); text-transform: none; letter-spacing: -.01em; font-weight: 600; font-size: 20px; color: var(--ink); white-space: nowrap; }
-  .edge .en em { font-family: var(--mono); font-style: normal; font-weight: 500; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin-right: 12px; }
-  .edge .cx { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .edge .cx b { font-weight: 500; text-transform: none; letter-spacing: 0; font-family: var(--sans); font-size: 15px; color: var(--ink);
-    background: var(--paper); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); border-radius: 3px; padding: 5px 11px; }
-  .edge.top .cx b::before { content: "↓"; color: var(--c); font-weight: 700; margin-right: 7px; }
-  .edge.bot .cx b::before { content: "↑"; color: var(--c); font-weight: 700; margin-right: 7px; }
+  .fn { top: 208px; width: 235px; height: 244px; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .fn .fh { display: flex; justify-content: space-between; align-items: baseline; }
+  .fn .fh b { font-size: 21px; letter-spacing: -.01em; }
+  .fn .fh .mono { color: var(--ink2); }
+  .team { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--fill); font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .team .fig { width: 24px; height: 24px; color: var(--ink2); }
+  .team small { font-size: 12px; font-weight: 400; }
+  .head { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; padding: 2px 4px; }
+  .dmd { width: 16px; height: 16px; background: var(--l3); transform: rotate(45deg); border-radius: 3px; flex: none; margin: 0 3px; }
+  .ags { display: flex; flex-direction: column; gap: 6px; padding-left: 14px; border-left: 2px solid color-mix(in srgb, var(--l3) 35%, transparent); margin-left: 10px; }
+  .ag { font-size: 15px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--l3) 45%, transparent); background: color-mix(in srgb, var(--l3) 8%, var(--paper)); }
+  .tool { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 600; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--pos) 12%, var(--paper)); }
+  .tool .tk { width: 18px; height: 18px; border-radius: 50%; background: var(--pos); color: #fff; display: grid; place-items: center; font-size: 11px; }
+  .tool em { margin-left: auto; font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--pos); }
+  .fn.later { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); }
+  .fn.later .fh b, .fn.later .head { color: var(--ink2); }
+  .fn.later .dmd { background: var(--muted); }
+  .fn.later p { margin: 4px 0 0; font-size: 14px; color: var(--ink2); line-height: 1.4; }
 
-  .z h1 { font-size: 50px; max-width: none; margin-bottom: 20px; }
-  .pv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 0 0 26px; }
-  .pv div { border-left: 2px solid var(--c); padding: 2px 0 2px 16px; font-size: 17px; line-height: 1.42; color: var(--ink); text-wrap: pretty; }
-  .pv b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin-bottom: 5px; }
+  .hub { left: 120px; top: 504px; width: 1000px; height: 122px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 36px 1fr; border-color: color-mix(in srgb, var(--l2) 55%, transparent); }
+  .check { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; background: color-mix(in srgb, var(--l2) 14%, var(--paper)); border-bottom: 1px solid color-mix(in srgb, var(--l2) 35%, transparent); font-size: 16px; font-weight: 600; transition: background .4s ease; }
+  .check .ic { color: var(--l2); }
+  .check small { display: inline; margin-left: 6px; }
+  .cell { padding: 12px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .cell + .cell { border-left: 1px solid var(--hair); }
+  .cell > b { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  .cell > b .ic { color: var(--l2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background: var(--fill); border: 1px solid var(--hair); transition: opacity .4s ease; }
 
-  .zd { display: grid; grid-template-columns: 1.15fr auto .9fr auto 1.25fr; align-items: stretch; }
-  .zd .layer { padding: 20px 22px; display: flex; flex-direction: column; justify-content: center; }
-  .zd .tag + .bdgs + .tag, .zd .bdgs + .tag { margin-top: 18px; }
-  .hub, .road { --c: var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-radius: var(--r); padding: 26px 22px;
-    font-weight: 700; font-size: 30px; letter-spacing: -.015em; line-height: 1.1;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 13%, var(--paper)), color-mix(in srgb, var(--c) 4%, var(--paper)));
-    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
-    box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 7%, transparent), var(--shadow); }
-  .hub .ic.lg, .road .ic.lg { background: var(--c); color: var(--paper); box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--c) 70%, transparent); }
-  .road { --c: var(--warn); font-size: 25px; }
-  .hub small, .road small { display: block; font-weight: 400; color: var(--ink2); font-size: 15px; margin-top: 10px; line-height: 1.4; letter-spacing: 0; max-width: 30ch; }
-  .hub .bdgs { justify-content: center; margin-top: 16px; }
+  .gov { left: 120px; top: 676px; width: 1000px; height: 92px; border: 1.5px solid color-mix(in srgb, var(--l1) 60%, transparent);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--l1) 12%, var(--paper)), color-mix(in srgb, var(--l1) 4%, var(--paper))); }
+  .gov .gt { position: absolute; left: 20px; top: 12px; display: flex; align-items: center; gap: 12px; }
+  .gov .gt .ic { width: 34px; height: 34px; padding: 7px; border-radius: 9px; background: var(--l1); color: var(--paper); stroke-width: 1.8; }
+  .gov .gt b { font-size: 20px; display: block; letter-spacing: -.01em; }
+  .gov .gt small { font-size: 13px; }
+  .slice { position: absolute; top: 56px; height: 26px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 0 9px;
+    border-radius: 6px; background: var(--paper); border: 1px solid color-mix(in srgb, var(--l1) 40%, transparent); white-space: nowrap; }
+  .slice i { width: 8px; height: 8px; border-radius: 2px; background: var(--l1); }
+  .gov .note { position: absolute; right: 18px; top: 14px; font-size: 12px; color: var(--ink2); text-align: right; line-height: 1.35; }
+  .src { top: 818px; width: 130px; height: 54px; display: flex; align-items: center; gap: 8px; padding: 0 11px; font-size: 15px; font-weight: 600; line-height: 1.15; }
+  .src .ic { color: var(--l1); width: 18px; height: 18px; }
+  .src.fut { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); color: var(--ink2); font-weight: 500; }
+  .srcnote { position: absolute; left: 120px; top: 886px; width: 1000px; text-align: center; color: var(--ink2); }
 
-  /* layer 1: the governed layer sits above the sources that feed it; agents read from it on the right */
-  .dgrid { display: grid; grid-template-columns: 1.55fr auto 1fr; align-items: start; }
-  .dgrid > .arrow { align-self: start; margin-top: 76px; }
-  .dcol { display: flex; flex-direction: column; }
-  .dcol > .layer { padding: 18px 22px; }
-  .dcol > .layer .bdgs + .tag { margin-top: 14px; }
-  .hub.wide { flex-direction: row; text-align: left; justify-content: flex-start; gap: 20px; padding: 22px 24px; min-height: 130px; }
-  .hub.wide .ic.lg { margin: 0; }
-  .hub.wide .hubt { flex: 1; }
-  .hub.wide small { margin-top: 6px; max-width: none; }
-  .hub.wide .bdgs { margin: 12px 0 0; justify-content: flex-start; }
-  .hub.wide .bdg.lt { background: var(--paper); }
-  .feeds { display: flex; align-items: center; justify-content: center; gap: 18px; height: 38px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-  .feeds i { position: relative; width: 2px; height: 100%; background: var(--rule); }
-  .feeds i::before { content: ""; position: absolute; left: -5px; top: -1px; border: 6px solid transparent; border-bottom: 9px solid var(--rule); border-top: 0; }
-  .dgrid > .layer { padding: 20px 22px; }
-  .slices { display: flex; flex-direction: column; gap: 8px; }
-  .slice { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 9px 12px 9px 9px; border: 1px solid var(--hair);
-    border-radius: var(--r-sm); background: var(--paper); font-size: 16px; font-weight: 600; line-height: 1.25; }
-  .slice > .ic { width: 34px; height: 34px; padding: 8px; border-radius: 9px; background: color-mix(in srgb, var(--c) 13%, var(--paper)); }
-  .slice small { display: block; font-weight: 400; color: var(--ink2); font-size: 14px; }
-  .slice .ic { color: var(--c); }
-  .tbl { display: flex; gap: 3px; }
-  .tbl i { width: 10px; height: 16px; border-radius: 1px; background: var(--fill); border: 1px solid var(--rule); }
-  .tbl i.y { background: var(--c); border-color: var(--c); }
+  /* the drawn connections, and the dots that travel them */
+  #wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  #wires .w { stroke: var(--rule); stroke-width: 2; fill: none; }
+  #wires .w.up { marker-end: url(#tip); }
+  #wires .dot { fill: var(--accent); }
+  #wires .dot.back { fill: var(--ans); }
+  .lit { border-color: var(--accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow); }
+  .cos.lit { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), var(--shadow); }
+  .check.lit { background: color-mix(in srgb, var(--l2) 32%, var(--paper)); }
+  .done { border-color: var(--ans) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--ans) 22%, transparent), var(--shadow); }
 
-  .claims { list-style: none; padding: 0; margin: 20px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 32px; font-size: 15.5px; line-height: 1.38; }
-  .claims li { display: flex; gap: 10px; } .claims li .ic { color: var(--pos); margin-top: 2px; }
-  .claims li.q { color: var(--ink2); font-style: italic; }
+  /* milestones: only the boxes the chosen step builds are solid */
+  [data-ms].gh { opacity: .22; filter: grayscale(1); }
 
-  .tools { margin-top: 16px; padding: 14px 20px; display: flex; align-items: center; gap: 22px; }
-  .tools .ztag { margin: 0; flex: none; width: 168px; line-height: 1.5; }
-  .tools .bdg { font-size: 14px; padding: 7px 11px; }
-  [data-z="hub"] .pv { margin-bottom: 18px; } [data-z="hub"] .pv div { font-size: 16px; } [data-z="hub"] h1 { margin-bottom: 16px; }
-  [data-z="hub"] .free3 div { padding-top: 13px; padding-bottom: 13px; }
-  [data-z="hub"] .hub, [data-z="hub"] .road { padding: 18px 20px; } [data-z="hub"] .zd .layer { padding: 16px 20px; }
-  [data-z="hub"] .zd .ic.lg { width: 44px; height: 44px; padding: 11px; border-radius: 12px; margin-bottom: 10px; }
-  [data-z="hub"] .hub { font-size: 27px; } [data-z="hub"] .road { font-size: 23px; } [data-z="hub"] .ztag { margin-bottom: 8px; }
-  [data-z="hub"] .tools, [data-z="hub"] .free3 { margin-top: 12px; } [data-z="hub"] .free3 small { font-size: 14.5px; }
-  [data-z="hub"] .zd .bdgs + .tag { margin-top: 14px; }
-  .free3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 14px; }
-  .free3 div { position: relative; padding: 16px 20px 16px 66px; background: var(--paper); border-radius: var(--r); border: 1px solid var(--hair);
-    font-weight: 600; font-size: 19px; box-shadow: var(--shadow); }
-  .free3 b { position: absolute; left: 18px; top: 15px; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px;
-    background: color-mix(in srgb, var(--c) 14%, var(--paper)); color: var(--c); font-family: var(--mono); font-weight: 500; font-size: 13px; }
-  .free3 small { display: block; font-weight: 400; color: var(--ink2); font-size: 15px; margin-top: 4px; line-height: 1.4; text-wrap: pretty; }
+  /* ---- caption panels: one per scene, crossfaded ---- */
+  .panel { position: absolute; z-index: 4; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
+  .panel.on { opacity: 1; visibility: visible; transition: opacity .45s ease .35s, visibility 0s; }
+  .panel.left { left: 96px; top: 110px; width: 430px; bottom: 50px; display: flex; flex-direction: column; justify-content: center; }
+  .panel.top { left: 96px; right: 96px; top: 104px; height: 200px; }
+  #deck::before { content: ""; position: absolute; z-index: 3; pointer-events: none; transition: opacity .5s ease; }
+  #deck.left::before { left: 0; top: 0; bottom: 0; width: 560px; background: linear-gradient(90deg, var(--canvas) 88%, transparent); }
+  #deck.top::before { left: 0; right: 0; top: 0; height: 312px; background: linear-gradient(180deg, var(--canvas) 92%, transparent); }
+  .kicker { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin: 0 0 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+  .kicker::before { content: ""; width: 8px; height: 8px; background: var(--c, var(--accent)); transform: rotate(45deg); border-radius: 1px; flex: none; }
+  h1 { font-size: 46px; line-height: 1.05; margin: 0 0 18px; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; }
+  .panel.top h1 { font-size: 44px; margin-bottom: 20px; }
+  .lead { font-size: 20px; color: var(--ink2); margin: 0 0 28px; line-height: 1.45; text-wrap: pretty; }
+  .pts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 0; padding: 0; list-style: none; }
+  .pts li { border-left: 2px solid var(--c); padding: 2px 0 2px 16px; font-size: 17px; line-height: 1.42; text-wrap: pretty; }
+  .pts li b { font-weight: 600; }
+  .fine { font-size: 13px; color: var(--ink2); margin: 10px 0 0 18px; }
 
-  /* layer 3 */
-  .layer.down { background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--accent) 5%, var(--paper))); }
-  .ppl .fig { width: 44px; height: 44px; padding: 9px; border-radius: 11px; background: var(--fill); }
-  .ppl { display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 600; line-height: 1.2; }
-  .ppl + .ppl { margin-top: 16px; }
-  .ppl small { display: block; font-weight: 400; color: var(--ink2); font-size: 15px; margin-top: 3px; }
-  .agents { display: flex; flex-direction: column; gap: 10px; }
-  .chip { display: flex; align-items: center; gap: 14px; border-radius: var(--r-sm); padding: 11px 14px 11px 11px; font-size: 17px; font-weight: 600; line-height: 1.25;
-    border: 1px solid color-mix(in srgb, var(--c) 30%, var(--hair)); background: color-mix(in srgb, var(--c) 5%, var(--paper)); }
-  .chip .ic { color: var(--c); width: 36px; height: 36px; padding: 8px; border-radius: 9px; background: color-mix(in srgb, var(--c) 13%, var(--paper)); }
-  .chip span { font-weight: 400; color: var(--ink2); }
+  /* title */
+  .brand { display: flex; align-items: center; gap: 16px; margin: 0 0 44px; flex-wrap: wrap; }
+  .brand .wm { font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+  .brand .co { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; padding-left: 16px; border-left: 1px solid var(--rule); }
+  .brand .co small { font-family: var(--mono); font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); }
+  .brand img { width: 30px; height: 30px; object-fit: cover; clip-path: inset(2.5% round 21%); }
+  .s-title h1 { font-size: 64px; letter-spacing: -.03em; }
+  .legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend button { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--hair);
+    background: var(--paper); cursor: pointer; font-size: 17px; font-weight: 600; }
+  .legend button:hover { border-color: var(--rule); }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+  .legend small { font-family: var(--mono); font-size: 11px; color: var(--ink2); letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
 
-  /* ---- milestones: only one department's boxes are solid, the rest are ghosted ---- */
-  .msctl { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; margin: 0 0 22px; }
-  .steps { display: flex; gap: 6px; flex-wrap: wrap; }
-  .steps button { display: flex; gap: 10px; align-items: baseline; padding: 10px 16px; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
-    border: 1px solid var(--hair); background: var(--paper); color: var(--ink2); border-radius: var(--r-sm); }
-  .steps button:hover { border-color: var(--rule); }
-  .steps button .mono { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: 13px; }
-  .steps button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
-  .steps button[aria-pressed="true"] .mono { color: var(--accent); }
-  .msnote { font-size: 16px; color: var(--ink2); }
-  .msgrid { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
-  .mrow { position: relative; display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: center; padding: 20px 22px 20px 26px;
-    background: linear-gradient(100deg, color-mix(in srgb, var(--c) 7%, var(--paper)), var(--paper) 40%); }
-  .mrow::after { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 4px 4px 0; background: var(--c); }
-  .mrow .num { color: var(--c); }
-  .mrow .ml { font-weight: 600; font-size: 22px; letter-spacing: -.01em; }
-  .mstack .vlink { margin-left: 44px; height: 12px; background: none; border-left: 2px dotted var(--rule); width: 0; }
-  .bxs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .bx { padding: 8px 13px; border-radius: var(--r-sm); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); color: var(--ink); font-weight: 600; font-size: 15px; line-height: 1.2;
-    background: color-mix(in srgb, var(--c) 14%, var(--paper)); box-shadow: 0 1px 2px rgba(21,23,28,.08); }
-  .bx.gh { border: 1px dashed var(--rule); color: var(--muted); font-weight: 500; background: transparent; box-shadow: none; }
-  .bx.gh::after { content: attr(data-lbl); margin-left: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  .added { padding: 22px 24px; }
-  .added .mono { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
-  .added ul { list-style: none; padding: 0; margin: 12px 0 0; font-size: 16px; line-height: 1.4; }
-  .added li { padding: 10px 0 10px 22px; border-top: 1px solid var(--hair); position: relative; }
-  .added li::before { content: "+"; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
-  .added ul[hidden] { display: none; }
-  .added h4 { display: none; }
+  /* one question */
+  .q { font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -.01em; margin: 0 0 22px; text-wrap: balance; }
+  .q small { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: 8px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; counter-reset: s; }
+  .steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 10px; font-size: 16px; color: var(--muted); padding: 7px 0; transition: color .3s ease; counter-increment: s; }
+  .steps li::before { content: counter(s); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--rule); font-family: var(--mono); font-size: 12px; transition: all .3s ease; }
+  .steps li.now { color: var(--ink); } .steps li.now::before { border-color: var(--accent); background: var(--accent); color: var(--paper); }
+  .steps li.past { color: var(--ink2); } .steps li.past::before { border-color: var(--accent); color: var(--accent); }
+  .steps li.back.now::before { border-color: var(--ans); background: var(--ans); }
+  .answer { display: none; }
+  .s-question.answered .steps { display: none; }
+  .s-question.answered .answer { display: block; animation: none; }
+  .answer .sum { font-size: 17px; line-height: 1.45; margin: 0 0 14px; }
+  .cause { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--hair); }
+  .cause > span { font-family: var(--mono); font-size: 12px; color: var(--ans); padding-top: 3px; }
+  .cause b { display: block; font-size: 16px; }
+  .cause small { display: block; font-size: 13px; color: var(--ink2); margin-top: 2px; }
+  .checked { font-size: 13px; color: var(--ink2); border-top: 1px solid var(--hair); padding-top: 10px; margin: 2px 0 0; }
+  .checked b { color: var(--ans); font-weight: 600; }
+  .illus { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .replay { margin-top: 18px; align-self: flex-start; display: inline-flex; gap: 8px; align-items: center; padding: 9px 14px; border-radius: 9px; border: 1px solid var(--hair); background: var(--paper); cursor: pointer; font-size: 14px; font-weight: 600; }
+  .replay:hover { background: var(--fill); }
 
-  /* ---- the lab + the path ---- */
-  .lab .lead { margin-bottom: 30px; }
-  .promo { display: grid; grid-template-columns: 1fr 260px 1fr; align-items: stretch; }
-  .labbox, .livebox { border-radius: var(--r); padding: 28px 24px; text-align: center; font-weight: 700; font-size: 28px; letter-spacing: -.015em;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .labbox { --c: var(--teams); border: 1.5px dashed var(--teams); background: color-mix(in srgb, var(--pos) 5%, var(--paper)); }
+  /* milestones */
+  .msbtn { display: flex; flex-direction: column; gap: 6px; margin: 0 0 18px; }
+  .msbtn button { display: grid; grid-template-columns: 34px 1fr; align-items: center; text-align: left; gap: 6px; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--hair); background: var(--paper); cursor: pointer; font-size: 17px; font-weight: 600; color: var(--ink2); }
+  .msbtn button span { font-family: var(--mono); font-size: 12px; color: var(--muted); font-weight: 500; }
+  .msbtn button { grid-template-columns: 34px 1fr auto; }
+  .msbtn em { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+  .msbtn em.dn { background: color-mix(in srgb, var(--pos) 14%, var(--paper)); color: var(--pos); }
+  .msbtn button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--accent); }
+  .msbtn button[aria-pressed="true"] span { color: var(--accent); }
+  .mslist { list-style: none; margin: 0; padding: 0; font-size: 15px; line-height: 1.4; }
+  .mslist li { padding: 8px 0 8px 22px; border-top: 1px solid var(--hair); position: relative; }
+  .mslist li::before { content: "+"; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+  .mslist[hidden] { display: none; }
+  .msnote { font-size: 13px; color: var(--ink2); margin: 14px 0 0; }
+
+  /* the lab + the decision, drawn in the picture's place */
+  .labscene { position: absolute; z-index: 4; left: 590px; top: 50%; transform: translateY(-50%); width: 920px; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
+  .labscene.on { opacity: 1; visibility: visible; transition: opacity .5s ease .4s, visibility 0s; }
+  .promo { display: grid; grid-template-columns: 1fr 220px 1fr; align-items: stretch; }
+  .box { border-radius: 14px; padding: 26px 22px; text-align: center; font-weight: 700; font-size: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .box small { font-weight: 400; color: var(--ink2); font-size: 15px; }
+  .box .ic { width: 50px; height: 50px; padding: 12px; border-radius: 13px; margin-bottom: 10px; stroke-width: 1.6; }
+  .labbox { border: 1.5px dashed var(--pos); background: color-mix(in srgb, var(--pos) 5%, var(--paper)); }
+  .labbox .ic { color: var(--pos); background: color-mix(in srgb, var(--pos) 14%, var(--paper)); }
   .livebox { border: 1px solid var(--hair); background: var(--paper); box-shadow: var(--shadow); }
-  
-  .labbox small, .livebox small { display: block; font-weight: 400; color: var(--ink2); font-size: 16px; margin-top: 8px; letter-spacing: 0; }
-  .gatecol { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
-  .gatecol .wall { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
-  .gatecol .lift { position: relative; display: flex; align-items: center; gap: 10px; padding: 11px 18px; background: var(--pos); color: #fff;
-    border-radius: 999px; box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--pos) 80%, transparent); font-weight: 600; font-size: 17px; white-space: nowrap; }
-  .gatecol .lift::after { content: ""; border: 6px solid transparent; border-left: 9px solid #fff; border-right: 0; }
-  .gatecol small { position: relative; background: var(--canvas); padding: 2px 8px; color: var(--ink2); font-size: 14px; }
-  .nexttag { margin: 40px 0 14px; }
-  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
-  .side { position: relative; padding: 22px 24px; font-weight: 600; font-size: 23px; letter-spacing: -.01em; overflow: hidden; }
-  .side .ic.lg { width: 48px; height: 48px; padding: 12px; border-radius: 12px; margin-bottom: 14px; }
-  .side small { display: block; font-weight: 400; color: var(--ink2); font-size: 16px; margin-top: 4px; letter-spacing: 0; }
+  .livebox .ic { color: var(--accent); background: var(--accent-soft); }
+  .gate { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  .gate::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
+  .gate b { position: relative; padding: 10px 18px; border-radius: 999px; background: var(--pos); color: #fff; font-size: 16px; white-space: nowrap; }
+  .gate small { position: relative; background: var(--canvas); padding: 4px 8px; color: var(--ink2); font-size: 13px; text-align: center; }
+  .next3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .next3 div { border-radius: 12px; border: 1px solid var(--hair); background: var(--paper); padding: 16px 18px; font-size: 19px; font-weight: 600; box-shadow: var(--shadow); }
+  .next3 span { display: block; font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
+  .next3 .dn { border-color: color-mix(in srgb, var(--pos) 45%, transparent); background: color-mix(in srgb, var(--pos) 6%, var(--paper)); } .next3 .dn span { color: var(--pos); }
+  .next3 small { display: block; font-weight: 400; color: var(--ink2); font-size: 14px; margin-top: 4px; }
+  .ask { margin-top: 18px; padding: 18px 22px; border-radius: 14px; background: var(--ink); color: var(--paper); display: flex; align-items: center; gap: 16px; font-size: 21px; font-weight: 600; }
+  .ask .mono { color: color-mix(in srgb, var(--paper) 60%, var(--ink)); }
+  .labscene .kicker { margin-top: 30px; }
 
-  /* ---- phone: one slide at a time, scrolling, everything in one column ---- */
-  @media screen and (max-width: 760px) {
-    body { overflow: auto; font-size: 16px; }
-    #deck { position: static; width: auto !important; height: auto !important; transform: none !important; }
-    .slide { position: static; display: none; }
-    .slide, .slide:has(> .edge.top), .slide:has(> .edge.bot) { padding: 24px 20px 104px; }
-    .slide.on { display: flex; }
-    .mark, .slide:has(> .edge.top) .mark { position: static; order: -1; margin: 0 0 22px; font-size: 11px; flex-wrap: wrap; }
-    .slide:has(> .edge.top) .mark { order: 0; margin-top: 18px; }
-    nav, #deck:has(.slide.on > .edge.top) nav { position: fixed; top: auto; bottom: 18px; left: 50%; right: auto; transform: translateX(-50%);
-      background: var(--paper); border: 1px solid var(--hair); border-radius: 6px; padding: 4px; box-shadow: var(--shadow); }
-    h1, .title h1 { font-size: 32px; } .lead { font-size: 18px; margin-bottom: 24px; }
-    .title .inner, .pv, .claims, .free3, .zd, .flow, .promo, .msgrid, .mrow { grid-template-columns: 1fr; }
-    .title .inner { gap: 32px; } .brand { margin-bottom: 28px; }
-    .zd[style] { grid-template-columns: 1fr !important; } /* the layer slides set their column widths inline */
-    .band { grid-template-columns: 36px 1fr; font-size: 24px; padding: 18px; gap: 14px; } .band small { grid-column: 1 / -1; font-size: 15px; }
-    .band .ic.lg { width: 34px; height: 34px; } .vstack .vlink { margin-left: 34px; }
-    .edge { position: static; height: auto; flex-wrap: wrap; padding: 12px 20px; margin: 0 -20px; gap: 10px; }
-    .edge.top { margin-top: -24px; } .edge.bot { margin-top: 28px; margin-bottom: -40px; }
-    .arrow { width: 2px; height: 26px; margin: 8px auto; }
-    .arrow::after { right: -5px; top: auto; bottom: -2px; border: 6px solid transparent; border-top: 9px solid var(--muted); border-bottom: 0; }
-    .arrow::before { left: -3px; top: -3px; }
-    .bdg { white-space: normal; } .tools { flex-direction: column; align-items: flex-start; gap: 10px; } .tools .ztag { width: auto; }
-    .gatecol { padding: 22px 0; } .gatecol .wall { display: none; } .gatecol .lift::after { transform: rotate(90deg); }
-    .hub, .road { font-size: 24px; } .pv { gap: 14px; }
-    .dgrid { grid-template-columns: 1fr; } .dgrid > .arrow { margin-top: 8px; } .hub.wide { flex-wrap: wrap; } .hub.wide .bdgs { justify-content: flex-start; }
-    .feeds { height: 30px; } .feeds span, .feeds i:last-child { display: none; }
-  }
+  /* phone held upright: caption on top, the picture underneath */
+  #deck.portrait .mark { left: 48px; top: 40px; font-size: 18px; }
+  #deck.portrait nav { right: 48px; top: 30px; transform: scale(1.4); transform-origin: right top; }
+  #deck.portrait .panel.left, #deck.portrait .panel.top { left: 48px; right: 48px; width: auto; top: 120px; bottom: auto; height: 620px; display: block; }
+  #deck.portrait::before { left: 0; right: 0; top: 0; height: 750px; width: auto; bottom: auto; background: linear-gradient(180deg, var(--canvas) 94%, transparent); }
+  #deck.portrait h1, #deck.portrait .s-title h1 { font-size: 54px; }
+  #deck.portrait .lead, #deck.portrait .pts li, #deck.portrait .steps li, #deck.portrait .answer .sum { font-size: 26px; }
+  #deck.portrait .pts { grid-template-columns: 1fr; gap: 14px; }
+  #deck.portrait .brand { margin-bottom: 26px; }
+  #deck.portrait .legend, #deck.portrait .msnote, #deck.portrait .fine { display: none; }
+  #deck.portrait .s-question .q { font-size: 34px; }
+  #deck.portrait .s-question.answered .cause:nth-of-type(n+2), #deck.portrait .checked { display: none; }
+  #deck.portrait .msbtn { flex-direction: row; } #deck.portrait .msbtn button { font-size: 22px; }
+  #deck.portrait .mslist { font-size: 24px; }
+  #deck.portrait .labscene { left: 48px; top: 820px; transform: none; width: 804px; }
+  #deck.portrait .next3 { grid-template-columns: 1fr; }
 
-  /* ---- print: one A4 landscape page per slide, same design ---- */
-  @media print {
-    @page { size: A4 landscape; margin: 0; }
-    :root { --canvas:#fff; --paper:#fff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
-      --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.14); --shadow:none; color-scheme:light; }
-    html, body { height: auto; overflow: visible; background: #fff; }
-    #deck { position: static; width: auto !important; height: auto !important; transform: none !important; }
-    .slide { position: relative; inset: auto; visibility: visible; width: 1600px; height: 1130px; zoom: .7; overflow: hidden; break-after: page; }
-    .slide:last-of-type { break-after: auto; }
-    nav { display: none; }
-    .bx, .bx.gh { border: 1px solid var(--c); color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--c) 10%, #fff); }
-    .bx::after, .bx.gh::after { content: attr(data-first); margin-left: 8px; font-family: var(--mono); font-size: 11px; color: var(--ink2); }
-    .added ul[hidden] { display: block; } .added h4 { display: block; margin: 14px 0 0; font-size: 14px; }
-    .steps, .added > .mono { display: none; }
-    .msgrid { grid-template-columns: 1fr; gap: 20px; }
-    .added { display: grid; grid-template-rows: auto auto; grid-auto-flow: column; grid-auto-columns: 1fr; column-gap: 28px; }
-    .added h4 { margin-top: 0; }
-    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @media (prefers-reduced-motion: reduce) {
+    #world, .L, .n, .d2, .panel, .panel.on, .labscene, .labscene.on, .steps li, .steps li::before { transition: none !important; }
   }
+  @media print { nav { display: none; } }
 </style>
 </head>
 <body>
@@ -318,253 +271,338 @@
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
   <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v7L4.5 19A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.8-3L14 9V2"/><path d="M7 15h10"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4M12 16V8M17 16v-6"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5M9 13h7M9 17h7"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><path d="M7.5 12H20"/><path d="M15 7l5 5-5 5"/></symbol>
-  <symbol id="i-agent" viewBox="0 0 24 24"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/><circle cx="12" cy="12" r="3"/></symbol>
-  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></symbol>
-  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3 18l3 3 6.2-6.2a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
   <symbol id="i-person" viewBox="0 0 32 32"><circle cx="16" cy="9" r="5.6"/><path d="M5 30c0-7 4.9-11.6 11-11.6S27 23 27 30z"/></symbol>
   <symbol id="i-team" viewBox="0 0 44 32"><circle cx="10" cy="11" r="4.2"/><path d="M1.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="34" cy="11" r="4.2"/><path d="M25.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="22" cy="9" r="5.2"/><path d="M11.5 31c0-7 4.6-11.4 10.5-11.4S32.5 24 32.5 31z"/></symbol>
 </svg>
 
-<main id="deck">
+<main id="deck" class="left">
+  <div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>
+  <div id="view"></div>
 
-<section class="slide title on" data-z="all">
-  <div class="inner">
-    <div>
-      <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
-      <p class="kicker">AI future vision</p>
-      <h1>You have a plan&nbsp;—<br> in three layers.</h1>
-      <p class="lead">One architecture, built on what you already own. Each layer does one job and can change without rebuilding the others.</p>
+  <!-- ===== the picture: the whole system, top to bottom ===== -->
+  <div id="world" data-focus="all" aria-hidden="true">
+    <div class="L L3"><span class="ltag">Layer 3 · <b>AI + people</b></span></div>
+    <div class="L L2"><span class="ltag">Layer 2 · <b>AI Hub</b></span></div>
+    <div class="L L1"><span class="ltag">Layer 1 · <b>Data</b></span></div>
+
+    <svg id="wires" width="1240" height="940" viewBox="0 0 1240 940">
+      <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--rule)"/></marker></defs>
+      <g id="wireset"></g><g id="dots"></g>
+    </svg>
+
+    <!-- Layer 3 -->
+    <div class="n y3 exec" id="n-exec"><svg class="fig"><use href="#i-team"/></svg><div><b>Executives</b><small class="d2">ask in plain words</small></div></div>
+    <div class="n y3 cos" id="n-cos" data-ms="2 3"><div><span class="mono"><span class="on">●</span> Always on · for the executives</span><b>Chief of staff agent</b></div>
+      <div class="acts d2"><span><i>Ask</i>Cross-function questions, in context</span><span><i>Watch</i>Every source, flags what matters</span></div></div>
+    <div class="n y3 fn" id="n-retail" data-ms="1 2 3" style="left:120px"><div class="fh"><b>Retail</b><span class="mono">Store ops</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Retail team<small class="d2">area &amp; store managers</small></div></div>
+      <div class="tool" data-ms="1 2 3"><span class="tk">✓</span>Rostering tool<em>live</em></div>
+      <div class="head" data-ms="2 3"><span class="dmd"></span>Head agent</div>
+      <div class="ags" data-ms="2 3"><span class="ag">Rostering agent</span></div></div>
+    <div class="n y3 fn" id="n-merch" data-ms="2 3" style="left:375px"><div class="fh"><b>Merch</b><span class="mono">Merchandising</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Merch team<small class="d2">merchandise planners</small></div></div>
+      <div class="head"><span class="dmd"></span>Head agent</div>
+      <div class="ags"><span class="ag">Merchandising agent</span><span class="ag">Order entry</span></div></div>
+    <div class="n y3 fn" id="n-buying" data-ms="3" style="left:630px"><div class="fh"><b>Buying</b><span class="mono">Range</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Buying team<small class="d2">buyers</small></div></div>
+      <div class="head"><span class="dmd"></span>Head agent</div>
+      <div class="ags"><span class="ag">Its own agents</span></div></div>
+    <div class="n y3 fn later" id="n-more" data-ms="3" style="left:885px"><div class="fh"><b>Every function</b></div>
+      <div class="head"><span class="dmd"></span>A head agent each</div>
+      <p>Marketing, Finance, Logistics, HR and IT, one container at a time.</p></div>
+
+    <!-- Layer 2 -->
+    <div class="n y2 hub" id="n-hub">
+      <div class="check" id="n-check" data-ms="2 3"><svg class="ic"><use href="#i-shield"/></svg>Access check<small class="d2">every request, against who is asking · every exchange logged</small></div>
+      <div class="cell" id="n-road" data-ms="2 3"><b><svg class="ic"><use href="#i-link"/></svg>One standard road in</b><small class="d2">MCP · any AI tool, any agent, any model. Claude today, swappable.</small></div>
+      <div class="cell" id="n-tools"><b><svg class="ic"><use href="#i-tool"/></svg>Tools agents act with</b>
+        <div class="chips d2"><span class="chip" data-ms="2 3">Dayforce</span><span class="chip" data-ms="2 3">Chat</span><span class="chip" data-ms="2 3">Order entry</span><span class="chip" data-ms="3">Mail</span><span class="chip" data-ms="3">Office 365</span><span class="chip" data-ms="3">SharePoint</span><span class="chip" data-ms="3">Contracts search</span></div></div>
     </div>
-    <div class="vstack">
-      <div class="band card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-agent"/></svg><span><span class="num">Layer 3</span>AI + UI</span><small>Agents doing real work, with people steering from the screens they use.</small></div>
-      <div class="vlink" aria-hidden="true"></div>
-      <div class="band card" style="--c:var(--coord)"><svg class="ic lg"><use href="#i-link"/></svg><span><span class="num">Layer 2</span>AI Hub</span><small>One standard road in — any AI tool, any agent, any model. And the tools agents use to act.</small></div>
-      <div class="vlink" aria-hidden="true"></div>
-      <div class="band card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg><span><span class="num">Layer 1</span>Data</span><small>Every source in one governed centre — each agent sees only its slice.</small></div>
+
+    <!-- Layer 1 -->
+    <div class="n y1 gov" id="n-gov" data-ms="2 3">
+      <div class="gt"><svg class="ic"><use href="#i-shield"/></svg><div><b>Governed data layer</b><small>MotherDuck · your definitions · hosted in Sydney</small></div></div>
+      <div class="note d2">Qlik Sense stays beside it.<br>Read-only: an agent cannot write.</div>
+      <span class="slice d2" id="sl-retail" data-ms="2 3" style="left:237px"><i></i>Retail slice</span>
+      <span class="slice d2" id="sl-merch" data-ms="2 3" style="left:492px"><i></i>Merch slice</span>
+      <span class="slice d2" id="sl-buying" data-ms="3" style="left:747px"><i></i>Buying slice</span>
+      <span class="slice d2" id="sl-exec" data-ms="2 3" style="left:1002px"><i></i>Executives: all</span>
     </div>
+    <div class="n y1 src" id="s-dayforce" data-ms="1 2 3" style="left:120px"><svg class="ic"><use href="#i-db"/></svg>Dayforce</div>
+    <div class="n y1 src" id="s-pos" data-ms="1 2 3" style="left:265px"><svg class="ic"><use href="#i-db"/></svg>POS sales</div>
+    <div class="n y1 src" id="s-traffic" data-ms="1 2 3" style="left:410px"><svg class="ic"><use href="#i-db"/></svg>Traffic counters</div>
+    <div class="n y1 src" id="s-qlik" data-ms="2 3" style="left:555px"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</div>
+    <div class="n y1 src" id="s-stock" data-ms="2 3" style="left:700px"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; ops</div>
+    <div class="n y1 src" id="s-finance" data-ms="3" style="left:845px"><svg class="ic"><use href="#i-db"/></svg>Finance</div>
+    <div class="n y1 src fut" style="left:990px">+ future source</div>
+    <div class="srcnote y1 mono d2">Sources connected as each project needs them</div>
   </div>
-</section>
 
-<section class="slide z" data-z="data">
-  <div class="edge top" style="--c:var(--coord)"><span class="en"><em>Layer 2 · above</em>AI Hub</span><span class="cx"><b>MotherDuck MCP Server reads this layer</b><b>Read-only shares · one slice per agent</b></span></div>
-  <div class="inner">
+  <!-- ===== caption panels, one per scene ===== -->
+  <section class="panel left s-title" data-scene="title">
+    <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
+    <p class="kicker">AI future vision</p>
+    <h1>You have a plan.</h1>
+    <p class="lead">One architecture in three layers, built on what you already own. Each layer does one job and can change without rebuilding the others.</p>
+    <div class="legend">
+      <button type="button" data-goto="4" style="--c:var(--l3)"><i></i>AI + people<small>Layer 3</small></button>
+      <button type="button" data-goto="3" style="--c:var(--l2)"><i></i>AI Hub<small>Layer 2</small></button>
+      <button type="button" data-goto="2" style="--c:var(--l1)"><i></i>Data<small>Layer 1</small></button>
+    </div>
+  </section>
+
+  <section class="panel left s-question" data-scene="question">
+    <p class="kicker">One question, end to end</p>
+    <p class="q"><small>An executive asks</small>“Why has our flagship store taken such a conversion hit last month?”</p>
+    <ol class="steps" id="steps">
+      <li>The chief of staff splits it by function</li>
+      <li>Each head agent asks through the access check</li>
+      <li>Each reads only its own slice of the data</li>
+      <li class="back">The answer is checked, then sent back</li>
+    </ol>
+    <div class="answer">
+      <p class="sum">Conversion fell from 14.2% to 11.6%. Two causes inside your control explain most of it. A promotion explains the rest.</p>
+      <div class="cause"><span>01</span><div><b>Staffing on peak days</b><small>Retail · Dayforce, traffic, sales</small></div></div>
+      <div class="cause"><span>02</span><div><b>Size gaps in top footwear</b><small>Merch · Qlik, stock feeds</small></div></div>
+      <div class="cause"><span>03</span><div><b>Promotion brought browsers, not buyers</b><small>Buying · no action needed</small></div></div>
+      <p class="checked"><b>Checked before sending:</b> recomputed from raw sales and traffic, every figure linked to its source.</p>
+      <p class="illus">Illustrative figures</p>
+    </div>
+    <button type="button" class="replay" id="replay"><svg class="ic"><use href="#i-play"/></svg>Play the question</button>
+  </section>
+
+  <section class="panel top" data-scene="l1" style="--c:var(--l1)">
     <p class="kicker">Layer 1 · Data</p>
-    <h1>One governed centre — each agent sees only its slice</h1>
-    <div class="pv">
-      <div style="--c:var(--warn)"><b>The problem</b>Numbers scattered across systems, and no clean way to let AI near them safely.</div>
-      <div style="--c:var(--accent)"><b>The value</b>One governed layer every agent reads from — the same numbers, built on Qlik's logic.</div>
-      <div style="--c:var(--pos)"><b>The flexibility</b>New sources plug in later; new roles get their own slice without touching the rest.</div>
-    </div>
-    <div class="dgrid">
-      <div class="dcol">
-        <div class="hub wide"><svg class="ic lg"><use href="#i-shield"/></svg><div class="hubt">MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small>
-          <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense stays beside it</span></div></div></div>
-        <div class="feeds" aria-hidden="true"><i></i><span>every source feeds the governed layer</span><i></i></div>
-        <div class="layer card"><p class="tag">Sources today</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div>
-        <p class="tag">Later</p><div class="bdgs"><span class="bdg fut">+ future source</span><span class="bdg fut">+ future source</span><span class="bdg fut">+ future source</span></div></div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="layer card"><p class="tag">Who sees what · read-only shares</p><div class="slices">
-        <div class="slice" style="--c:var(--pos)"><svg class="ic"><use href="#i-agent"/></svg><span>Merchandising agent<small>only the tables its share names</small></span><span class="tbl"><i class="y"></i><i class="y"></i><i></i><i></i><i></i></span></div>
-        <div class="slice" style="--c:var(--warn)"><svg class="ic"><use href="#i-agent"/></svg><span>Store Operations agent<small>Secure Views filter its rows</small></span><span class="tbl"><i></i><i class="y"></i><i class="y"></i><i></i><i></i></span></div>
-        <div class="slice" style="--c:var(--accent)"><svg class="ic"><use href="#i-agent"/></svg><span>Finance agent<small>Secure Views mask columns</small></span><span class="tbl"><i></i><i></i><i></i><i class="y"></i><i class="y"></i></span></div>
-        <div class="slice" style="--c:var(--ink)"><svg class="ic"><use href="#i-team"/></svg><span>Executives<small>every query visible and traceable</small></span><span class="tbl"><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i></span></div>
-      </div></div>
-    </div>
-    <ul class="claims">
-      <li><svg class="ic"><use href="#i-shield"/></svg>Shares are read-only by design — an agent on a share cannot write</li>
-      <li><svg class="ic"><use href="#i-shield"/></svg>A share exposes only the tables you name — the agent does not see that other tables exist</li>
-      <li><svg class="ic"><use href="#i-shield"/></svg>Secure Views filter rows and hide or mask columns</li>
-      <li><svg class="ic"><use href="#i-shield"/></svg>Every query the agent writes is visible and traceable</li>
-      <li><svg class="ic"><use href="#i-shield"/></svg>Data resident in Sydney (AWS ap-southeast-2)</li>
-      <li class="q">Replacing Qlik is only a future option. The implications are not known today, and nothing here commits to it.</li>
+    <h1>One governed centre. Each agent sees only its slice.</h1>
+    <ul class="pts" style="--c:var(--l1)">
+      <li><b>Every source lands in one place</b>, on your definitions, so every agent reads the same numbers.</li>
+      <li><b>Each agent gets a read-only slice.</b> It cannot write, and cannot see tables it is not given.</li>
+      <li><b>Every query is visible and traceable.</b> Data stays in Sydney (AWS ap-southeast-2).</li>
     </ul>
-  </div>
-</section>
+  </section>
 
-<section class="slide z" data-z="hub">
-  <div class="edge top" style="--c:var(--teams)"><span class="en"><em>Layer 3 · above</em>AI + UI</span><span class="cx"><b>Agents read through the road</b><b>Agents act through the tools</b></span></div>
-  <div class="inner">
+  <section class="panel top" data-scene="l2" style="--c:var(--l2)">
     <p class="kicker">Layer 2 · AI Hub</p>
-    <h1>One standard road in — never locked in</h1>
-    <div class="pv">
-      <div style="--c:var(--warn)"><b>The problem</b>A separate integration for every tool, and one vendor's choices locked in for years.</div>
-      <div style="--c:var(--accent)"><b>The value</b>Agents never reach into systems directly. Every tool uses the same road, under the same rules.</div>
-      <div style="--c:var(--pos)"><b>The flexibility</b>Change the AI tool, the agent or the model — nothing above or below has to be rebuilt.</div>
-    </div>
-    <p class="ztag">MCP connectors · how agents read the data</p>
-    <div class="zd" style="grid-template-columns:1.3fr auto 1fr auto 1fr">
-      <div class="layer card"><p class="tag">Any MCP client</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Claude</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>ChatGPT</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Cursor</span><span class="bdg fut">+ other MCP clients</span></div>
-        <p class="tag">Any agent</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>In-house agents</span><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>Another provider's agents</span></div></div>
-      <div class="arrow">→</div>
-      <div class="road"><svg class="ic lg"><use href="#i-link"/></svg>MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
-      <div class="arrow">→</div>
-      <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>the governed data layer</small></div>
-    </div>
-    <div class="tools card"><p class="ztag">Tools the agents can use · how they act</p><div class="bdgs">
-      <span class="bdg lt"><svg class="ic"><use href="#i-mail"/></svg>Mail</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Office 365 suite</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>SharePoint</span><span class="bdg lt"><svg class="ic"><use href="#i-search"/></svg>Contracts search</span><span class="bdg lt"><svg class="ic"><use href="#i-chat"/></svg>Chat</span><span class="bdg lt"><svg class="ic"><use href="#i-link"/></svg>Downstream systems<small>e.g. Dayforce ingestion · order entry into downstream systems</small></span>
-    </div></div>
-    <div class="free3">
-      <div style="--c:var(--data)"><b>01</b>Swap the model<small>Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
-      <div style="--c:var(--teams)"><b>02</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
-      <div style="--c:var(--coord)"><b>03</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
-    </div>
-  </div>
-  <div class="edge bot" style="--c:var(--data)"><span class="en"><em>Layer 1 · below</em>Data</span><span class="cx"><b>The road reads MotherDuck</b><b>Read-only shares · one slice per agent</b></span></div>
-</section>
+    <h1>One standard road in. Never locked in.</h1>
+    <ul class="pts" style="--c:var(--l2)">
+      <li><b>Agents never reach into systems directly.</b> Every request passes the access check and is logged.</li>
+      <li><b>Any AI tool, agent or model</b> uses the same road. Claude today; swap it and nothing else changes.</li>
+      <li><b>Agents act through your tools:</b> Dayforce, chat, order entry, mail, Office 365, SharePoint.</li>
+    </ul>
+  </section>
 
-<section class="slide z" data-z="ui">
-  <div class="inner">
-    <p class="kicker">Layer 3 · AI + UI</p>
-    <h1>Agents do the work — people steer</h1>
-    <div class="pv">
-      <div style="--c:var(--warn)"><b>The problem</b>Insight sits in dashboards; turning it into rosters, buys and actions is still manual work.</div>
-      <div style="--c:var(--accent)"><b>The value</b>Agents take on real work in each function, and people approve, direct and act on it.</div>
-      <div style="--c:var(--pos)"><b>The flexibility</b>Start with one function's agents and add the next when it proves out. Today's screens stay.</div>
-    </div>
-    <div class="zd" style="grid-template-columns:1fr auto 1.2fr auto 1fr">
-      <div class="layer card down"><p class="tag">People steer</p>
-        <div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Executives<small>steer and approve</small></span></div>
-        <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Function leads<small>direct their head agent</small></span></div>
-        <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Store managers<small>receive rosters and insights</small></span></div></div>
-      <div class="arrow">→</div>
-      <div class="layer card"><p class="tag">The agents</p><div class="agents">
-        <div class="chip" style="--c:var(--ink)"><svg class="ic"><use href="#i-agent"/></svg><div>Chief-of-staff agent <span>· always on, for the executives</span></div></div>
-        <div class="chip" style="--c:var(--warn)"><svg class="ic"><use href="#i-agent"/></svg><div>Head agent <span>· one per function</span></div></div>
-        <div class="chip" style="--c:var(--pos)"><svg class="ic"><use href="#i-agent"/></svg><div>Worker agents <span>· inside each function's own container</span></div></div></div></div>
-      <div class="arrow">→</div>
-      <div class="layer card"><p class="tag">The screens</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Dashboards, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Reports</span></div>
-        <p class="tag">New, beside them</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-agent"/></svg>Agent surfaces</span><span class="bdg"><svg class="ic"><use href="#i-doc"/></svg>Rosters and insights</span></div></div>
-    </div>
-  </div>
-  <div class="edge bot" style="--c:var(--coord)"><span class="en"><em>Layer 2 · below</em>AI Hub</span><span class="cx"><b>Agents read through the MotherDuck MCP Server</b><b>Agents act through the hub's tools</b></span></div>
-</section>
+  <section class="panel top" data-scene="l3" style="--c:var(--l3)">
+    <p class="kicker">Layer 3 · AI + people</p>
+    <h1>Agents do the work. People steer.</h1>
+    <ul class="pts" style="--c:var(--l3)">
+      <li><b>An always-on chief of staff</b> answers the executives and watches every source.</li>
+      <li><b>Each function gets its own container:</b> a head agent over the agents that do the work.</li>
+      <li><b>People approve and direct.</b> Today's dashboards and Qlik stay; agents sit beside them.</li>
+    </ul>
+  </section>
 
-<section class="slide ms" data-z="all">
-  <div class="inner">
+  <section class="panel left s-ms" data-scene="ms">
     <p class="kicker">Milestones</p>
-    <h1>Build only the boxes one department needs — then the next.</h1>
-    <div class="msctl">
-      <div class="steps" role="group" aria-label="Milestone">
-        <button type="button" data-m="1" aria-pressed="true"><span class="mono">01</span>Merchandising</button>
-        <button type="button" data-m="2" aria-pressed="false"><span class="mono">02</span>Store Operations</button>
-        <button type="button" data-m="3" aria-pressed="false"><span class="mono">03</span>Every function</button>
-      </div>
-      <span class="msnote">Merchandising first — the order after it is illustrative. A sequence, not a schedule.</span>
+    <h1>Build one function at a time. Each step reuses the last.</h1>
+    <div class="msbtn" role="group" aria-label="Milestone">
+      <button type="button" data-m="1" aria-pressed="true"><span>01</span>Retail rostering<em class="dn">Done</em></button>
+      <button type="button" data-m="2" aria-pressed="false"><span>02</span>Retail agent + Merch<em>Next</em></button>
+      <button type="button" data-m="3" aria-pressed="false"><span>03</span>Every function</button>
     </div>
-    <div class="msgrid">
-      <div class="mstack" id="mstack">
-        <div class="mrow card" style="--c:var(--teams)"><span class="ml"><span class="num">Layer 3</span>AI + UI</span><div class="bxs"><span class="bx" data-ms="3">Chief-of-staff agent</span><span class="bx" data-ms="1 3">Merchandising agent</span><span class="bx" data-ms="2 3">Store Operations agent</span><span class="bx" data-ms="3">Finance agent</span><span class="bx" data-ms="1 2 3">Agent surfaces</span><span class="bx" data-ms="2 3">Rosters and insights</span></div></div>
-        <div class="vlink" aria-hidden="true"></div>
-        <div class="mrow card" style="--c:var(--coord)"><span class="ml"><span class="num">Layer 2</span>AI Hub</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck MCP Server</span><span class="bx" data-ms="1 3">Downstream systems · order entry</span><span class="bx" data-ms="2 3">Downstream systems · Dayforce ingestion</span><span class="bx" data-ms="2 3">Chat</span><span class="bx" data-ms="3">Mail</span><span class="bx" data-ms="3">Office 365 suite</span><span class="bx" data-ms="3">SharePoint</span><span class="bx" data-ms="3">Contracts search</span></div></div>
-        <div class="vlink" aria-hidden="true"></div>
-        <div class="mrow card" style="--c:var(--data)"><span class="ml"><span class="num">Layer 1</span>Data</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck · governed layer</span><span class="bx" data-ms="1 3">Qlik Sense</span><span class="bx" data-ms="1 2 3">POS sales</span><span class="bx" data-ms="1 3">Stock &amp; operations feeds</span><span class="bx" data-ms="2 3">Dayforce</span><span class="bx" data-ms="2 3">Store traffic counters</span><span class="bx" data-ms="3">Finance</span></div></div>
-      </div>
-      <div class="card added" aria-live="polite"><div class="mono" id="msStep">In this milestone · 01</div>
-        <h4>01 · Merchandising</h4><ul data-for="1"><li>The Merchandising agent, on its own agent surface</li><li>POS sales, stock &amp; operations feeds and Qlik Sense in the governed layer</li><li>The MCP road in, and order entry into downstream systems</li></ul>
-        <h4>02 · Store Operations</h4><ul data-for="2" hidden><li>The Store Operations agent: rosters and insights</li><li>Dayforce and store traffic counters in the governed layer</li><li>Dayforce ingestion and chat through the AI Hub</li><li>Reuses the governed layer and the road from 01</li></ul>
-        <h4>03 · Every function</h4><ul data-for="3" hidden><li>Each function gets its own agents — Finance shown</li><li>The chief-of-staff agent, always on, for the executives</li><li>Mail, Office 365 suite, SharePoint and contracts search</li><li>Finance data in the governed layer</li></ul>
-      </div>
-    </div>
-  </div>
-</section>
+    <ul class="mslist" data-for="1"><li>Rostering tool live for the Retail team</li><li>Built on Dayforce, sales and traffic data</li><li>Logins and roles: each person sees only their stores</li></ul>
+    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent: a head agent and a rostering agent</li><li>Merch joins with its agent from day one</li><li>The governed data layer, the AI Hub and the access check</li><li>Chief of staff, always on, for the executives</li></ul>
+    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>Mail, Office 365, SharePoint and contracts search</li><li>Finance data in the governed layer</li></ul>
+    <p class="msnote">Each step reuses what the last one built. The order after Merch is illustrative.</p>
+  </section>
 
-<section class="slide lab">
-  <div class="inner">
+  <section class="panel left s-lab" data-scene="lab">
     <p class="kicker">The lab + the path</p>
     <h1>Experiment in the lab. What proves out goes live.</h1>
-    <p class="lead">The lab is the same architecture — same data layer, same road. People build and shape their own agents there, kept apart from the live business.</p>
+    <p class="lead">The lab is the same picture: same data layer, same road. People build and shape their own agents there, kept apart from the live business.</p>
+  </section>
+  <div class="labscene" id="labscene">
     <div class="promo">
-      <div class="labbox"><svg class="ic lg"><use href="#i-flask"/></svg>The lab<small>build and shape your own agents</small></div>
-      <div class="gatecol"><div class="wall" aria-label="separated"></div><span class="lift">Deploy to prod</span><small>only proven agents cross over</small></div>
-      <div class="livebox"><svg class="ic lg"><use href="#i-chart"/></svg>Live business<small>the same three layers, in production</small></div>
+      <div class="box labbox"><svg class="ic"><use href="#i-flask"/></svg>The lab<small>build and shape your own agents</small></div>
+      <div class="gate"><b>Deploy to prod ›</b><small>only proven agents cross over</small></div>
+      <div class="box livebox"><svg class="ic"><use href="#i-chart"/></svg>Live business<small>the same three layers, in production</small></div>
     </div>
-    <p class="kicker nexttag">The sensible next step</p>
-    <div class="flow">
-      <div class="side card" style="--c:var(--steer)"><svg class="ic lg"><use href="#i-target"/></svg>Choose one function<small>Merchandising first</small></div><div class="arrow">→</div>
-      <div class="side card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg>Connect its data</div><div class="arrow">→</div>
-      <div class="side card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-chart"/></svg>Prove it works<small>then decide what's next</small></div>
+    <p class="kicker">The path</p>
+    <div class="next3">
+      <div class="dn"><span>01 · Done</span>Retail rostering<small>live for the Retail team</small></div>
+      <div><span>02 · Next</span>Retail agent + Merch<small>Merch with its agent from day one</small></div>
+      <div><span>03</span>Every function<small>one container at a time</small></div>
     </div>
+    <div class="ask"><span class="mono">The decision today</span>Approve the AI strategy: three layers, built one function at a time.</div>
   </div>
-</section>
 
-<nav aria-label="Slides">
-  <button id="prev" type="button" aria-label="Previous slide">←</button>
-  <span id="count" aria-live="polite"></span>
-  <button id="next" type="button" aria-label="Next slide">→</button>
-</nav>
-
+  <nav aria-label="Slides">
+    <button id="prev" type="button" aria-label="Previous slide">←</button>
+    <span id="count" aria-live="polite"></span>
+    <button id="next" type="button" aria-label="Next slide">→</button>
+  </nav>
 </main>
 
 <script>
-  // No animation anywhere: a slide change swaps the visible slide, nothing moves.
-  const deck = document.getElementById('deck');
-  const slides = [...document.querySelectorAll('.slide')];
-  const count = document.getElementById('count');
-  slides.forEach(s => s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>'));
+  const deck = document.getElementById('deck'), world = document.getElementById('world'), view = document.getElementById('view');
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
 
-  // The deck is drawn on a stage at least 1600 x 900 and scaled to fill the window, so a slide never spills or overlaps
-  // at any screen size. Phones (760px and under) get the plain one-column scrolling layout instead.
-  const W = 1600, H = 900, phone = matchMedia('(max-width: 760px)');
-  function fit() {
-    if (phone.matches) { deck.style.cssText = ''; return; }
+  // Each scene: which caption panel, where the camera looks (a region of the 1240 x 940 picture), which layer is in focus.
+  const SCENES = [
+    { id: 'title',    layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
+    { id: 'question', layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
+    { id: 'l1',       layout: 'top',  cam: [96, 650, 1048, 290],  focus: 'l1' },
+    { id: 'l2',       layout: 'top',  cam: [96, 470, 1048, 186],  focus: 'l2' },
+    { id: 'l3',       layout: 'top',  cam: [96, 0, 1048, 470],    focus: 'l3' },
+    { id: 'ms',       layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all' },
+    { id: 'lab',      layout: 'left', cam: [0, 0, 1240, 940],     focus: 'all', dim: true },
+  ];
+  const panels = [...document.querySelectorAll('.panel')];
+
+  // ---- the drawn connections (also the paths the question travels) ----
+  const X = { retail: 237, merch: 492, buying: 747, more: 1002 }, MID = 620;
+  const SX = { dayforce: 185, pos: 330, traffic: 475, qlik: 620, stock: 765, finance: 910, future: 1055 };
+  const WIRES = [
+    [MID, 74, MID, 98],
+    ...Object.values(X).map(x => [x, 174, x, 208]),
+    ...Object.values(X).map(x => [x, 452, x, 504]),
+    ...[X.retail, X.merch, X.buying, X.more].map(x => [x, 626, x, 676]),
+    ...Object.values(SX).map(x => [x, 818, x, 770, 'up']),
+  ];
+  const NS = 'http://www.w3.org/2000/svg';
+  const wireset = document.getElementById('wireset'), dotsG = document.getElementById('dots');
+  WIRES.forEach(([x1, y1, x2, y2, up]) => {
+    const l = document.createElementNS(NS, 'line');
+    Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => l.setAttribute(k, v));
+    l.setAttribute('class', 'w' + (up ? ' up' : ''));
+    wireset.appendChild(l);
+  });
+
+  // ---- stage + camera ----
+  let portrait = false, scene = 0;
+  function stageFit() {
+    portrait = innerHeight > innerWidth * 1.15;
+    const W = portrait ? 900 : 1600, H = portrait ? 1600 : 900;
     const s = Math.min(innerWidth / W, innerHeight / H);
-    deck.style.width = innerWidth / s + 'px';
-    deck.style.height = innerHeight / s + 'px';
-    deck.style.transform = `scale(${s})`;
+    Object.assign(deck.style, { width: innerWidth / s + 'px', height: innerHeight / s + 'px', transform: `scale(${s})` });
+    deck.classList.toggle('portrait', portrait);
   }
-  addEventListener('resize', fit);
-  phone.addEventListener('change', fit);
-  fit();
+  function camera(instant) {
+    const sc = SCENES[scene], [rx, ry, rw, rh] = sc.cam;
+    const vx = view.offsetLeft, vy = view.offsetTop, vw = view.offsetWidth, vh = view.offsetHeight;
+    const s = Math.min(vw / rw, vh / rh);
+    const tx = vx + (vw - rw * s) / 2 - rx * s, ty = vy + (vh - rh * s) / 2 - ry * s;
+    if (instant) world.style.transition = 'none';
+    world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    if (instant) { world.offsetWidth; world.style.transition = ''; }
+  }
+  addEventListener('resize', () => { stageFit(); camera(true); });
 
-  // milestones: only the boxes one milestone implements are solid
-  const mbx = [...document.querySelectorAll('#mstack .bx')];
-  mbx.forEach(b => b.dataset.first = '0' + b.dataset.ms[0]);
+  // ---- milestones: only the boxes a step builds are solid ----
+  const msEls = [...world.querySelectorAll('[data-ms]')];
+  let msCur = 1;
   function milestone(m) {
-    mbx.forEach(b => {
-      const set = b.dataset.ms.split(' ').map(Number), first = set[0], on = set.includes(m);
-      b.classList.toggle('gh', !on);
-      b.dataset.lbl = on ? '' : first > m ? (first === m + 1 ? 'Next' : 'Later') : 'From 0' + first;
-    });
-    document.querySelectorAll('.steps [data-m]').forEach(x => x.setAttribute('aria-pressed', +x.dataset.m === m));
-    document.querySelectorAll('.added ul').forEach(u => u.hidden = +u.dataset.for !== m);
-    document.getElementById('msStep').textContent = 'In this milestone · 0' + m;
+    if (m) msCur = m;
+    msEls.forEach(e => e.classList.toggle('gh', m > 0 && !e.dataset.ms.split(' ').map(Number).includes(m)));
+    document.querySelectorAll('.msbtn [data-m]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === msCur));
+    document.querySelectorAll('.mslist').forEach(u => u.hidden = +u.dataset.for !== msCur);
   }
-  document.querySelectorAll('.steps [data-m]').forEach(x => x.onclick = () => milestone(+x.dataset.m));
-  milestone(1);
+  document.querySelectorAll('.msbtn [data-m]').forEach(b => b.onclick = () => milestone(+b.dataset.m));
 
-  let i = 0;
-  const pad = n => String(n).padStart(2, '0');
-  function go(n) {
-    i = Math.max(0, Math.min(slides.length - 1, n));
-    slides.forEach((s, k) => s.classList.toggle('on', k === i));
-    count.innerHTML = `<b>${pad(i + 1)}</b> / ${pad(slides.length)}`;
-    document.getElementById('prev').disabled = i === 0;
-    document.getElementById('next').disabled = i === slides.length - 1;
-    window.scrollTo(0, 0);
+  // ---- one question: dots travel down to the data and the answer comes back up ----
+  const Q = document.querySelector('.s-question'), stepsLi = [...document.querySelectorAll('#steps li')];
+  const down = [
+    { step: 0, lit: ['n-exec', 'n-cos'], segs: [[MID, 74, MID, 98]] },
+    { step: 0, lit: ['n-retail', 'n-merch', 'n-buying'], segs: [X.retail, X.merch, X.buying].map(x => [MID, 174, x, 208]) },
+    { step: 1, lit: ['n-check'], segs: [X.retail, X.merch, X.buying].map(x => [x, 452, x, 504]) },
+    { step: 2, lit: ['n-gov'], segs: [X.retail, X.merch, X.buying].map(x => [x, 626, x, 676]) },
+    { step: 2, lit: ['s-dayforce', 's-pos', 's-traffic', 's-qlik', 's-stock'], segs: ['dayforce', 'pos', 'traffic', 'qlik', 'stock'].map(k => [SX[k], 770, SX[k], 818]) },
+  ];
+  const up = down.slice().reverse().map(p => ({ step: 3, segs: p.segs.map(([a, b, c, d]) => [c, d, a, b]) }));
+  let run = 0;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  function travel(segs, back, ms) {
+    return Promise.all(segs.map(([x1, y1, x2, y2]) => new Promise(res => {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('r', 7); c.setAttribute('class', 'dot' + (back ? ' back' : ''));
+      dotsG.appendChild(c);
+      const t0 = performance.now();
+      (function tick(t) {
+        const k = Math.min(1, (t - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        c.setAttribute('cx', x1 + (x2 - x1) * e); c.setAttribute('cy', y1 + (y2 - y1) * e);
+        if (k < 1) requestAnimationFrame(tick); else { c.remove(); res(); }
+      })(t0);
+    })));
   }
-  document.getElementById('prev').onclick = () => go(i - 1);
-  document.getElementById('next').onclick = () => go(i + 1);
+  function resetQuestion() {
+    run++; dotsG.textContent = '';
+    world.querySelectorAll('.lit, .done').forEach(e => e.classList.remove('lit', 'done'));
+    stepsLi.forEach(li => li.classList.remove('now', 'past'));
+    Q.classList.remove('answered');
+  }
+  function markStep(k) { stepsLi.forEach((li, j) => { li.classList.toggle('now', j === k); li.classList.toggle('past', j < k); }); }
+  function finishQuestion() {
+    world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
+    Q.classList.add('answered');
+  }
+  async function playQuestion() {
+    resetQuestion();
+    const me = run;
+    if (still.matches) { down.forEach(p => (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'))); finishQuestion(); return; }
+    await wait(1000);
+    for (const p of down) {
+      if (me !== run) return;
+      markStep(p.step); await travel(p.segs, false, 650);
+      if (me !== run) return;
+      (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'));
+      await wait(150);
+    }
+    await wait(400); markStep(3);
+    for (const p of up) { if (me !== run) return; await travel(p.segs, true, 420); }
+    if (me !== run) return;
+    await wait(200); finishQuestion();
+  }
+  document.getElementById('replay').onclick = playQuestion;
+
+  // ---- moving between scenes ----
+  const count = document.getElementById('count'), pad = n => String(n).padStart(2, '0');
+  function go(n, instant) {
+    scene = Math.max(0, Math.min(SCENES.length - 1, n));
+    const sc = SCENES[scene];
+    deck.dataset.scene = sc.id;
+    deck.classList.toggle('left', sc.layout === 'left'); deck.classList.toggle('top', sc.layout === 'top');
+    panels.forEach(p => p.classList.toggle('on', p.dataset.scene === sc.id));
+    document.getElementById('labscene').classList.toggle('on', sc.id === 'lab');
+    world.dataset.focus = sc.focus;
+    world.classList.toggle('dim', !!sc.dim);
+    milestone(sc.id === 'ms' ? msCur : 0);
+    if (sc.id === 'question') playQuestion(); else resetQuestion();
+    camera(instant || still.matches);
+    count.innerHTML = `<b>${pad(scene + 1)}</b> / ${pad(SCENES.length)}`;
+    document.getElementById('prev').disabled = scene === 0;
+    document.getElementById('next').disabled = scene === SCENES.length - 1;
+  }
+  document.getElementById('prev').onclick = () => go(scene - 1);
+  document.getElementById('next').onclick = () => go(scene + 1);
+  document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(+b.dataset.goto));
   document.addEventListener('keydown', e => {
     if (e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
-    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(i + 1); }
-    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1); }
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(scene + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(scene - 1); }
     if (e.key === 'Home') { e.preventDefault(); go(0); }
-    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+    if (e.key === 'End') { e.preventDefault(); go(SCENES.length - 1); }
   });
   let x0 = null, y0 = null;
   document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
   document.addEventListener('touchend', e => {
     if (x0 === null) return;
     const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(i + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(scene + (dx < 0 ? 1 : -1));
   });
-  go(0);
+  stageFit();
+  go(0, true);
 </script>
 </body>
 </html>
