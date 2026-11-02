@@ -291,6 +291,109 @@
     .gatecol small { background: #fff; }
   }
   @media (prefers-reduced-motion: reduce) { .slide.on .seq > * { animation: none !important; } }
+
+  /* ---- vertical stack: AI + UI on top, AI Hub in the middle, Data at the bottom ---- */
+  .vstack { display: flex; flex-direction: column; max-width: 980px; }
+  .band { display: grid; grid-template-columns: auto minmax(9em, 13em) 1fr; align-items: center; gap: 1.6vw; padding: 2vh 1.8vw;
+    border-left: 6px solid var(--c); font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2.2vw, 32px);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 8%, var(--paper)), var(--paper));
+    box-shadow: 0 1px 2px rgba(21,23,28,.06), 0 14px 32px -16px rgba(21,23,28,.28); }
+  .band .ic.lg { margin: 0; }
+  .band .num { display: block; font-family: var(--mono); font-size: .42em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: .5vh; }
+  .band small { font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; line-height: 1.4; }
+  .vlink { width: 4px; height: 3.4vh; margin-left: calc(1.8vw + 6px + clamp(15px, 1.5vw, 24px) - 2px); border-radius: 2px;
+    background: repeating-linear-gradient(0deg, var(--accent) 0 8px, transparent 8px 14px); background-size: 4px 14px; animation: rise .7s both, climb .9s linear infinite; }
+  @keyframes climb { to { background-position: 0 -14px; } }
+
+  /* ---- zoomed layer: the neighbouring layers stay visible as cropped strips at the edges ---- */
+  .slide.z { padding-top: 10vh; padding-bottom: 13vh; }
+  .z .mark { top: 7.4vh; }
+  .edge { position: absolute; left: 0; right: 0; height: 6vh; display: flex; align-items: center; gap: 1.4vw; padding: 0 7vw;
+    font-family: var(--mono); font-size: clamp(10px, .85vw, 12px); text-transform: uppercase; letter-spacing: .08em; color: var(--ink2); }
+  .edge.top { top: 0; border-bottom: 2px dashed var(--c); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 18%, var(--paper)), color-mix(in srgb, var(--c) 6%, var(--paper))); }
+  .edge.bot { bottom: 0; border-top: 2px dashed var(--c); background: linear-gradient(0deg, color-mix(in srgb, var(--c) 18%, var(--paper)), color-mix(in srgb, var(--c) 6%, var(--paper))); }
+  .edge .en { font-family: var(--sans); text-transform: none; letter-spacing: 0; font-weight: 700; font-size: 1.35em; color: var(--ink); white-space: nowrap; }
+  .edge .en em { font-family: var(--mono); font-style: normal; font-weight: 500; font-size: .7em; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); margin-right: .7em; }
+  .edge .cx { display: flex; flex-wrap: wrap; gap: .5em; align-items: center; }
+  .edge .cx b { position: relative; font-weight: 500; text-transform: none; letter-spacing: 0; font-family: var(--sans); font-size: 1.15em; color: var(--ink);
+    background: var(--paper); border: 1px solid var(--c); border-radius: 3px; padding: .3em .7em; }
+  .edge.top .cx b::after, .edge.bot .cx b::after { content: ""; position: absolute; left: 50%; margin-left: -6px; border: 6px solid transparent; }
+  .edge.top .cx b::after { top: 100%; border-top: 8px solid var(--c); border-bottom: 0; }
+  .edge.bot .cx b::after { bottom: 100%; border-bottom: 8px solid var(--c); border-top: 0; }
+  .ztag { font-family: var(--mono); font-size: clamp(10px, .85vw, 12px); letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin: 0 0 1vh; }
+  .tools { max-width: 1320px; margin-top: 2vh; padding: 1.4vh 1vw; border: 1px solid var(--line); border-left: 4px solid var(--coord); border-radius: 3px; background: var(--paper); }
+  .tools .bdg small { font-weight: 400; opacity: .75; margin-left: .3em; }
+  .z .free3 { margin-top: 1.8vh; } .z .free3 div { padding: 1.2vh 1vw; }
+  /* a slide with a layer below keeps the nav clear of the bottom strip */
+  body:has(.slide.on .edge.bot) nav { bottom: 7.6vh; }
+  .slide.z:has(.edge.bot) { padding-bottom: 15vh; }
+  .z .pv { margin-bottom: 1.8vh; } .z .free3 small { margin-top: .3vh; }
+
+  /* ---- zoom transition between slides: zoom out of one layer, into the next ---- */
+  #zoomfx { position: fixed; inset: 0; z-index: 40; background: var(--canvas); overflow: hidden; pointer-events: none; opacity: 0; visibility: hidden; }
+  #zoomfx.run { visibility: visible; }
+  #zoomfx .zin { position: absolute; inset: 6vh 12vw; display: flex; flex-direction: column; gap: 1.6vh; transform-origin: 50% 50%; }
+  #zoomfx .zb { flex: 1; display: flex; align-items: center; justify-content: center; gap: .6em; border: 1px solid var(--line); border-left: 6px solid var(--c); border-radius: 4px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 10%, var(--paper)), var(--paper)); font-weight: 600; font-size: clamp(18px, 2.4vw, 34px); }
+  #zoomfx .zb span { font-family: var(--mono); font-weight: 500; font-size: .45em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
+
+  /* ---- milestones: only one department's boxes are solid, the rest are ghosted ---- */
+  .ms h1 { font-size: clamp(26px, 3.4vw, 50px); margin-bottom: 2vh; }
+  .msctl { display: flex; flex-wrap: wrap; gap: 1.2vh 2vw; align-items: center; margin: 0 0 2vh; }
+  .steps { display: flex; gap: 4px; flex-wrap: wrap; }
+  .steps button { display: flex; gap: 8px; align-items: baseline; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink2); border-radius: 3px; }
+  .steps button .mono, .added .mono { font-family: var(--mono); color: var(--muted); }
+  .steps button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+  .steps button[aria-pressed="true"] .mono { color: var(--accent); }
+  .steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .msnote { font-size: clamp(12px, 1.1vw, 15px); color: var(--soft); }
+  .msgrid { display: grid; grid-template-columns: 1fr minmax(220px, .36fr); gap: 1.6vw; max-width: 1320px; align-items: start; }
+  .mstack { display: flex; flex-direction: column; gap: 0; }
+  .mrow { display: grid; grid-template-columns: 8.5em 1fr; gap: 1vw; align-items: center; padding: 1.4vh 1vw; border: 1px solid var(--line); border-left: 6px solid var(--c);
+    border-radius: 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 7%, var(--paper)), var(--paper)); }
+  .mrow + .vlink { height: 2vh; }
+  .mrow .ml { font-weight: 700; font-size: clamp(14px, 1.4vw, 19px); }
+  .mrow .ml .num { display: block; font-family: var(--mono); font-weight: 500; font-size: .62em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
+  .bxs { display: flex; flex-wrap: wrap; gap: .7vh .45vw; }
+  .bx { position: relative; padding: .55em .8em; border-radius: 3px; border: 1px solid var(--c); background: var(--paper); color: var(--ink);
+    font-weight: 600; font-size: clamp(11px, 1vw, 14px); line-height: 1.15; transition: opacity .35s, border-color .35s, background .35s, color .35s; }
+  .bx:not(.gh) { background: color-mix(in srgb, var(--c) 14%, var(--paper)); box-shadow: 0 6px 16px -10px rgba(21,23,28,.4); }
+  .bx.gh { border: 1px dashed var(--rule); color: var(--muted); font-weight: 500; background: transparent; }
+  .bx.gh::after { content: attr(data-lbl); margin-left: .6em; font-family: var(--mono); font-size: .78em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .added { padding: 1.8vh 1.2vw; }
+  .added .mono { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .added ul { list-style: none; padding: 0; margin: 1.2vh 0 0; font-size: clamp(12px, 1.1vw, 15px); line-height: 1.4; }
+  .added li { padding: .7vh 0; border-top: 1px solid var(--line); }
+  .added li::before { content: "+ "; color: var(--accent); font-weight: 700; }
+  .added ul[hidden] { display: none; }
+  .added h4 { display: none; }
+
+  @media screen and (max-width: 760px) {
+    .band { grid-template-columns: auto 1fr; } .band small { grid-column: 1 / -1; }
+    .vlink { margin-left: 26px; }
+    .slide.z { padding-top: 0; padding-bottom: 14vh; }
+    .edge { position: static; height: auto; flex-wrap: wrap; padding: 1.4vh 6vw; margin: 0 -6vw; }
+    .edge.top { margin-bottom: 3vh; } .edge.bot { margin-top: 3vh; }
+    .z .mark { position: static; margin-top: 2vh; }
+    .msgrid { grid-template-columns: 1fr; } .mrow { grid-template-columns: 1fr; }
+    .tools .bdg { white-space: normal; } body:has(.slide.on .edge.bot) nav { bottom: 3vh; }
+  }
+  @media print {
+    .slide.z { padding-top: 16mm; padding-bottom: 16mm; } .z .mark { top: 12mm; }
+    .edge { height: 10mm; font-size: 6.5pt; } .edge .en { font-size: 10pt; } .edge .cx b { font-size: 7.5pt; }
+    .band { font-size: 15pt; padding: 3mm 5mm; box-shadow: none; } .band small { font-size: 9pt; }
+    .vlink { animation: none !important; background: var(--accent); height: 5mm; margin-left: 9mm; }
+    .tools .bdg { font-size: 7pt; } .tools { padding: 2mm 3mm; margin-top: 3mm; }
+    #zoomfx { display: none; }
+    .msgrid { grid-template-columns: 1fr 60mm; } .mrow { padding: 2mm 3mm; }
+    .bx, .bx.gh { font-size: 7.5pt; border: 1px solid var(--c); color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--c) 10%, #fff); box-shadow: none; }
+    .bx::after, .bx.gh::after { content: attr(data-first); margin-left: .5em; font-family: var(--mono); font-size: .8em; color: var(--ink2); }
+    .added ul[hidden] { display: block; } .added h4 { display: block; margin: 2mm 0 0; font-size: 8pt; }
+    .added ul { font-size: 7.5pt; margin-top: 1mm; } .added li { padding: .6mm 0; }
+    .steps, .added > .mono { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .vlink { animation: none !important; } .bx { transition: none; } }
 </style>
 </head>
 <body>
@@ -305,25 +408,30 @@
   <symbol id="i-agent" viewBox="0 0 24 24"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></symbol>
   <symbol id="i-person" viewBox="0 0 32 32"><circle cx="16" cy="9" r="5.6"/><path d="M5 30c0-7 4.9-11.6 11-11.6S27 23 27 30z"/></symbol>
   <symbol id="i-team" viewBox="0 0 44 32"><circle cx="10" cy="11" r="4.2"/><path d="M1.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="34" cy="11" r="4.2"/><path d="M25.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="22" cy="9" r="5.2"/><path d="M11.5 31c0-7 4.6-11.4 10.5-11.4S32.5 24 32.5 31z"/></symbol>
 </svg>
 
-<section class="slide on">
+<section class="slide on" data-z="all">
   <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
   <p class="kicker">AI future vision</p>
   <h1>You have a plan — in three layers.</h1>
   <p class="lead">One architecture, built on what you already own. Each layer does one job and can change without rebuilding the others.</p>
-  <div class="layers3 seq">
-    <div class="side card" style="--c:var(--data)"><span class="num">Layer 1</span><svg class="ic lg"><use href="#i-db"/></svg>Data<small>Every source in one governed centre — each agent sees only its slice.</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--coord)"><span class="num">Layer 2</span><svg class="ic lg"><use href="#i-link"/></svg>Connectors<small>One standard road in — any AI tool, any agent, any model.</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--teams)"><span class="num">Layer 3</span><svg class="ic lg"><use href="#i-agent"/></svg>AI + UI<small>Agents doing real work, with people steering from the screens they use.</small></div>
+  <div class="vstack seq">
+    <div class="band card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-agent"/></svg><span><span class="num">Layer 3</span>AI + UI</span><small>Agents doing real work, with people steering from the screens they use.</small></div>
+    <div class="vlink" aria-hidden="true"></div>
+    <div class="band card" style="--c:var(--coord)"><svg class="ic lg"><use href="#i-link"/></svg><span><span class="num">Layer 2</span>AI Hub</span><small>One standard road in — any AI tool, any agent, any model. And the tools agents use to act.</small></div>
+    <div class="vlink" aria-hidden="true"></div>
+    <div class="band card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg><span><span class="num">Layer 1</span>Data</span><small>Every source in one governed centre — each agent sees only its slice.</small></div>
   </div>
 </section>
 
-<section class="slide z">
+<section class="slide z" data-z="data">
+  <div class="edge top" style="--c:var(--coord)"><span class="en"><em>Layer 2 · above</em>AI Hub</span><span class="cx"><b>MotherDuck MCP Server reads this layer</b><b>Read-only shares · one slice per agent</b></span></div>
   <p class="kicker">Layer 1 · Data</p>
-  <div class="loc" aria-label="You are here"><span class="here">1 · Data</span><i>→</i><span>2 · Connectors</span><i>→</i><span>3 · AI + UI</span></div>
   <h1>One governed centre — each agent sees only its slice</h1>
   <div class="pv">
     <div style="--c:var(--warn)"><b>The problem</b>Numbers scattered across systems, and no clean way to let AI near them safely.</div>
@@ -354,15 +462,16 @@
   </ul>
 </section>
 
-<section class="slide z">
-  <p class="kicker">Layer 2 · Connectors</p>
-  <div class="loc" aria-label="You are here"><span>1 · Data</span><i>→</i><span class="here">2 · Connectors</span><i>→</i><span>3 · AI + UI</span></div>
+<section class="slide z" data-z="hub">
+  <div class="edge top" style="--c:var(--teams)"><span class="en"><em>Layer 3 · above</em>AI + UI</span><span class="cx"><b>Agents read through the road</b><b>Agents act through the tools</b></span></div>
+  <p class="kicker">Layer 2 · AI Hub</p>
   <h1>One standard road in — never locked in</h1>
   <div class="pv">
     <div style="--c:var(--warn)"><b>The problem</b>A separate integration for every tool, and one vendor's choices locked in for years.</div>
     <div style="--c:var(--accent)"><b>The value</b>Agents never reach into systems directly. Every tool uses the same road, under the same rules.</div>
     <div style="--c:var(--pos)"><b>The flexibility</b>Change the AI tool, the agent or the model — nothing above or below has to be rebuilt.</div>
   </div>
+  <p class="ztag">MCP connectors · how agents read the data</p>
   <div class="zd seq" style="grid-template-columns:1.2fr auto 1fr auto 1fr">
     <div class="layer card"><p class="tag">Any MCP client</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Claude</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>ChatGPT</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Cursor</span><span class="bdg fut">+ other MCP clients</span></div>
       <p class="tag">Any agent</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>In-house agents</span><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>Another provider's agents</span></div></div>
@@ -371,16 +480,19 @@
     <div class="arrow">→</div>
     <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>the governed data layer</small></div>
   </div>
+  <div class="tools"><p class="ztag">Tools the agents can use · how they act</p><div class="bdgs">
+    <span class="bdg lt"><svg class="ic"><use href="#i-mail"/></svg>Mail</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Office 365 suite</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>SharePoint</span><span class="bdg lt"><svg class="ic"><use href="#i-search"/></svg>Contracts search</span><span class="bdg lt"><svg class="ic"><use href="#i-chat"/></svg>Chat</span><span class="bdg lt"><svg class="ic"><use href="#i-link"/></svg>Downstream systems<small>e.g. Dayforce ingestion · order entry into downstream systems</small></span>
+  </div></div>
   <div class="free3 seq">
     <div style="--c:var(--data)"><b>1</b>Swap the model<small>Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
     <div style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
     <div style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
   </div>
+  <div class="edge bot" style="--c:var(--data)"><span class="en"><em>Layer 1 · below</em>Data</span><span class="cx"><b>The road reads MotherDuck</b><b>Read-only shares · one slice per agent</b></span></div>
 </section>
 
-<section class="slide z">
+<section class="slide z" data-z="ui">
   <p class="kicker">Layer 3 · AI + UI</p>
-  <div class="loc" aria-label="You are here"><span>1 · Data</span><i>→</i><span>2 · Connectors</span><i>→</i><span class="here">3 · AI + UI</span></div>
   <h1>Agents do the work — people steer</h1>
   <div class="pv">
     <div style="--c:var(--warn)"><b>The problem</b>Insight sits in dashboards; turning it into rosters, buys and actions is still manual work.</div>
@@ -401,6 +513,34 @@
     <div class="layer card"><p class="tag">The screens</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Dashboards, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Reports</span></div>
       <p class="tag">New, beside them</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-agent"/></svg>Agent surfaces</span><span class="bdg"><svg class="ic"><use href="#i-doc"/></svg>Rosters and insights</span></div></div>
   </div>
+  <div class="edge bot" style="--c:var(--coord)"><span class="en"><em>Layer 2 · below</em>AI Hub</span><span class="cx"><b>Agents read through the MotherDuck MCP Server</b><b>Agents act through the hub's tools</b></span></div>
+</section>
+
+<section class="slide ms" data-z="all">
+  <p class="kicker">Milestones</p>
+  <h1>Build only the boxes one department needs — then the next.</h1>
+  <div class="msctl">
+    <div class="steps" role="group" aria-label="Milestone">
+      <button type="button" data-m="1" aria-pressed="true"><span class="mono">01</span>Merchandising</button>
+      <button type="button" data-m="2" aria-pressed="false"><span class="mono">02</span>Store Operations</button>
+      <button type="button" data-m="3" aria-pressed="false"><span class="mono">03</span>Every function</button>
+    </div>
+    <span class="msnote">Merchandising first — the order after it is illustrative. A sequence, not a schedule.</span>
+  </div>
+  <div class="msgrid">
+    <div class="mstack" id="mstack">
+      <div class="mrow" style="--c:var(--teams)"><span class="ml"><span class="num">Layer 3</span>AI + UI</span><div class="bxs"><span class="bx" data-ms="3">Chief-of-staff agent</span><span class="bx" data-ms="1 3">Merchandising agent</span><span class="bx" data-ms="2 3">Store Operations agent</span><span class="bx" data-ms="3">Finance agent</span><span class="bx" data-ms="1 2 3">Agent surfaces</span><span class="bx" data-ms="2 3">Rosters and insights</span></div></div>
+      <div class="vlink" aria-hidden="true"></div>
+      <div class="mrow" style="--c:var(--coord)"><span class="ml"><span class="num">Layer 2</span>AI Hub</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck MCP Server</span><span class="bx" data-ms="1 3">Downstream systems · order entry</span><span class="bx" data-ms="2 3">Downstream systems · Dayforce ingestion</span><span class="bx" data-ms="2 3">Chat</span><span class="bx" data-ms="3">Mail</span><span class="bx" data-ms="3">Office 365 suite</span><span class="bx" data-ms="3">SharePoint</span><span class="bx" data-ms="3">Contracts search</span></div></div>
+      <div class="vlink" aria-hidden="true"></div>
+      <div class="mrow" style="--c:var(--data)"><span class="ml"><span class="num">Layer 1</span>Data</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck · governed layer</span><span class="bx" data-ms="1 3">Qlik Sense</span><span class="bx" data-ms="1 2 3">POS sales</span><span class="bx" data-ms="1 3">Stock &amp; operations feeds</span><span class="bx" data-ms="2 3">Dayforce</span><span class="bx" data-ms="2 3">Store traffic counters</span><span class="bx" data-ms="3">Finance</span></div></div>
+    </div>
+    <div class="card added" aria-live="polite"><div class="mono" id="msStep">In this milestone · 01</div>
+      <h4>01 · Merchandising</h4><ul data-for="1"><li>The Merchandising agent, on its own agent surface</li><li>POS sales, stock &amp; operations feeds and Qlik Sense in the governed layer</li><li>The MCP road in, and order entry into downstream systems</li></ul>
+      <h4>02 · Store Operations</h4><ul data-for="2" hidden><li>The Store Operations agent: rosters and insights</li><li>Dayforce and store traffic counters in the governed layer</li><li>Dayforce ingestion and chat through the AI Hub</li><li>Reuses the governed layer and the road from 01</li></ul>
+      <h4>03 · Every function</h4><ul data-for="3" hidden><li>Each function gets its own agents — Finance shown</li><li>The chief-of-staff agent, always on, for the executives</li><li>Mail, Office 365 suite, SharePoint and contracts search</li><li>Finance data in the governed layer</li></ul>
+    </div>
+  </div>
 </section>
 
 <section class="slide z">
@@ -420,6 +560,12 @@
   </div>
 </section>
 
+<div id="zoomfx" aria-hidden="true"><div class="zin">
+  <div class="zb" style="--c:var(--teams)"><span>Layer 3</span>AI + UI</div>
+  <div class="zb" style="--c:var(--coord)"><span>Layer 2</span>AI Hub</div>
+  <div class="zb" style="--c:var(--data)"><span>Layer 1</span>Data</div>
+</div></div>
+
 <nav>
   <button id="prev" aria-label="Previous slide">← Back</button>
   <div class="dots" id="dots"></div>
@@ -433,9 +579,42 @@
     dots.appendChild(document.createElement('i'));
     s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>');
   });
+  // zoom out of the layer you are on, then into the next slide's layer (skipped for reduced motion)
+  const fx = document.getElementById('zoomfx'), zin = fx.firstElementChild;
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const LAYER = { ui: 0, hub: 1, data: 2 };
+  const at = z => z in LAYER ? `scale(2.6) translateY(${(1 - LAYER[z]) * 33.333}%)` : 'none';
+  let runs = [];
+  function zoom(a, b) {
+    if (!a || !b || a === b || still.matches) return;
+    runs.forEach(r => r.cancel());
+    fx.classList.add('run');
+    runs = [
+      fx.animate([{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .78 }, { opacity: 0 }], { duration: 1150, easing: 'ease' }),
+      zin.animate([{ transform: at(a) }, { transform: 'none', offset: .45 }, { transform: at(b), offset: .85 }, { transform: at(b) }], { duration: 1150, easing: 'ease-in-out' })
+    ];
+    runs[0].onfinish = () => fx.classList.remove('run');
+  }
+  // milestones: only the boxes one milestone implements are solid
+  const mbx = [...document.querySelectorAll('#mstack .bx')];
+  mbx.forEach(b => b.dataset.first = '0' + b.dataset.ms[0]);
+  function milestone(m) {
+    mbx.forEach(b => {
+      const set = b.dataset.ms.split(' ').map(Number), first = set[0], on = set.includes(m);
+      b.classList.toggle('gh', !on);
+      b.dataset.lbl = on ? '' : first > m ? (first === m + 1 ? 'Next' : 'Later') : 'From 0' + first;
+    });
+    document.querySelectorAll('.steps [data-m]').forEach(x => x.setAttribute('aria-pressed', +x.dataset.m === m));
+    document.querySelectorAll('.added ul').forEach(u => u.hidden = +u.dataset.for !== m);
+    document.getElementById('msStep').textContent = 'In this milestone · 0' + m;
+  }
+  document.querySelectorAll('.steps [data-m]').forEach(x => x.onclick = () => milestone(+x.dataset.m));
+  milestone(1);
   let i = 0;
   function go(n) {
+    const from = slides[i].dataset.z;
     i = Math.max(0, Math.min(slides.length - 1, n));
+    zoom(from, slides[i].dataset.z);
     slides.forEach((s, k) => s.classList.toggle('on', k === i));
     [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
     window.scrollTo(0, 0);
@@ -454,7 +633,7 @@
     if (Math.abs(dx) > 50) go(i + (dx < 0 ? 1 : -1));
   });
   document.addEventListener('click', e => {
-    if (e.target.closest('nav')) return;
+    if (e.target.closest('nav, .steps')) return;
     go(i + (e.clientX > innerWidth / 2 ? 1 : -1));
   });
   go(0);
