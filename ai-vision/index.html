@@ -19,7 +19,7 @@
      region of the picture into the space that is left. Tokens from the keel ai operating-model piece. */
   :root {
     --canvas:#f6f7f9; --paper:#ffffff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f0f2f5;
-    --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.12);
+    --accent:#2b5fd9; --accent-soft:#eaf0fd; --neg:#c8463d; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.12);
     --l3: var(--pos); --l2: var(--warn); --l1: var(--accent); --ans: var(--pos);
     --shadow: 0 1px 1px rgba(21,23,28,.04), 0 2px 4px rgba(21,23,28,.04), 0 16px 36px -20px rgba(21,23,28,.28);
     --sans: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -27,7 +27,7 @@
     --cam: 1.1s cubic-bezier(.65, 0, .35, 1);
   }
   @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --ink:#eef0f3; --ink2:#c5cad1; --muted:#8b93a0; --rule:#4a505b; --fill:#23262e;
-    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --pos:#3fbf86; --warn:#d9a052; --hair:rgba(238,240,243,.14);
+    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --neg:#ef6b62; --pos:#3fbf86; --warn:#d9a052; --hair:rgba(238,240,243,.14);
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.7); color-scheme:dark; } }
 
   * { box-sizing: border-box; }
@@ -153,6 +153,12 @@
   #wires .dot { fill: var(--accent); }
   #wires .dot.back { fill: var(--ans); }
   #wires .dot.flow, #wires .dot.data { fill: var(--l1); }
+  /* the AI Hub scene: requests drawn on top of the boxes, each checked (tick or cross) on the access check */
+  #fx { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  #fx .rq { fill: var(--accent); } #fx .rq.no { fill: var(--neg); }
+  #fx .mk .ok { fill: var(--pos); } #fx .mk .no { fill: var(--neg); }
+  #fx .mk path { stroke: #fff; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .chip.act { background: var(--l2); border-color: var(--l2); color: #fff; } /* a tool taking action (no transition: it is instant) */
   .lit { border-color: var(--accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow); }
   .cos.lit { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), var(--shadow); }
   .check.lit { background: color-mix(in srgb, var(--l2) 32%, var(--paper)); }
@@ -351,6 +357,7 @@
     <div class="n y1 src" id="s-dolfin" data-ms="3" style="left:1032px"><svg class="ic"><use href="#i-db"/></svg>Dolfin</div>
     <div class="n y1 src fut" style="left:1184px">+ future source</div>
     <div class="srcnote y1 mono d2">Sources connected as each project needs them</div>
+    <svg id="fx" width="1440" height="940" viewBox="0 0 1440 940"></svg>
   </div>
 
   <!-- ===== caption panels, one per scene ===== -->
@@ -434,16 +441,16 @@
     <p class="kicker" id="nclock">02:00 · Overnight</p>
     <p class="q"><small>Nobody asked</small>The engine finds the opportunities overnight.</p>
     <ol class="steps" id="nsteps">
-      <li>Overnight, the engine crunches every number</li>
-      <li>By morning, the opportunities wait for the chief of staff</li>
+      <li>Overnight, the engine runs thousands of queries</li>
+      <li>It collects them into one brief for the chief of staff</li>
       <li>An executive says: “Send the call-in plan to the Head of Merch”</li>
       <li class="back">The plan lands with the Head of Merch, ready to approve</li>
     </ol>
     <div class="brief">
       <p class="mono">07:00 · This morning's opportunities</p>
-      <div class="opp" id="opp1"><span>01</span><div><b>6 stores starved of top footwear sizes, 3 flooded</b><small>Merch · WMS stock, sales, supplier contracts</small></div><em>→ Head of Merch</em></div>
-      <div class="opp"><span>02</span><div><b>Move Saturday hours into the 2 to 5 pm peak</b><small>Retail · Dayforce, traffic</small></div></div>
-      <div class="opp"><span>03</span><div><b>4 stores trading against the trend, markdowns not actioned</b><small>Merch · sales, stock</small></div></div>
+      <div class="opp" id="opp1"><span>01</span><div><b>Win back footwear sales at 6 stores</b><small>Merch · Call in 14 sizes · Track: sell-through</small></div><em>→ Head of Merch</em></div>
+      <div class="opp"><span>02</span><div><b>Catch the Saturday 2 to 5 pm peak</b><small>Retail · Move 12 hours · Track: conversion</small></div></div>
+      <div class="opp"><span>03</span><div><b>Get ahead of Christmas in kids' footwear</b><small>Merch · Call in early · Track: weeks of cover</small></div></div>
       <p class="checked sentline"><b>Sent:</b> the call-in plan is in front of the Head of Merch, ready to approve.</p>
       <p class="illus">Illustrative figures</p>
     </div>
@@ -594,38 +601,102 @@
   }
   document.getElementById('replay').onclick = playQuestion;
 
-  // ---- the night run: the engine reads every number overnight, briefs the chief of staff by morning, and the
-  //      executive sends the plan to the right head. Each beat: [step, dots, dot colour, what lights up, then]. ----
-  const nightRun = [
-    [0, SX.slice(0, -1).map(x => [x, 846, x, 786]), 'data', ['n-gov']],      // every source into the governed layer
-    [0, [[MID, GOV, MID, COS]], 'data', ['n-check']],                         // up the executives' line, through the check
-    [0, [[ENG, 98, ENG, 74]], 'data', ['n-engine'], () => { engst.textContent = 'Crunching every number'; return wait(1800); }],
-    [1, [[ENG, 74, ENG, 98]], 'back', ['n-cos'], () => { morning(); return wait(2400); }],
-    [2, [[MID, 74, MID, 98]], '', ['n-exec'], () => { N.classList.add('picked'); return wait(600); }],
-    [3, [[MID, COS, X.merch, FN]], 'back', ['n-merch']],                      // the plan, in front of the Head of Merch
-  ];
+  // ---- the night run: the engine fires a burst of queries down the executives' line for five seconds, collects the
+  //      answers, builds the brief and passes it to the chief of staff; then the executive sends the plan to the right head ----
   function morning() { nclock.textContent = '07:00 · Morning'; engst.textContent = 'Brief ready'; N.classList.add('morning'); }
   function finishNight() {
     morning();
     world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
     N.classList.add('morning', 'picked', 'sent');
   }
+  const light = (...ids) => ids.forEach(id => document.getElementById(id).classList.add('lit'));
+  // one query: down from the engine into the chief of staff's bar, down the executives' line to the data, and back
+  const QLEGS = [[ENG, 74, ENG, 98, 110, ''], [MID, COS, MID, GOV + 24, 430, ''], [MID, GOV + 24, MID, COS, 430, 'back'], [ENG, 98, ENG, 74, 110, 'back']];
+  function burst(me, ms) {
+    return new Promise(res => {
+      const t0 = performance.now(); let spawned = 0, live = 0;
+      (function spawn(t) {
+        if (me !== run) return res();
+        if (t - t0 < ms && t - t0 >= spawned * 40) {
+          spawned++; live++; engst.textContent = (spawned * 14).toLocaleString('en-AU') + ' queries run';
+          const c = document.createElementNS(NS, 'circle'), s0 = t;
+          c.setAttribute('r', 5); dotsG.appendChild(c);
+          (function tick(now) {
+            let k = now - s0, leg = QLEGS.find(l => (k -= l[4]) < 0);
+            if (!leg || me !== run) { c.remove(); live--; return; }
+            const f = 1 + k / leg[4];
+            c.setAttribute('class', ('dot ' + leg[5]).trim());
+            c.setAttribute('cx', leg[0] + (leg[2] - leg[0]) * f); c.setAttribute('cy', leg[1] + (leg[3] - leg[1]) * f);
+            requestAnimationFrame(tick);
+          })(t);
+        }
+        if (t - t0 < ms || live > 0) requestAnimationFrame(spawn); else res();
+      })(t0);
+    });
+  }
   async function playNight() {
     resetQuestion();
     const me = run;
-    if (still.matches) { nightRun.forEach(b => b[3].forEach(id => document.getElementById(id).classList.add('lit'))); finishNight(); return; }
-    await wait(1000);
-    for (const [step, segs, cls, lit, then] of nightRun) {
-      if (me !== run) return;
-      markStep(step, nstepsLi); await travel(segs, cls, 1950);
-      if (me !== run) return;
-      lit.forEach(id => document.getElementById(id).classList.add('lit'));
-      await (then ? then() : wait(450));
-    }
-    if (me !== run) return;
-    await wait(600); finishNight();
+    if (still.matches) { light('n-engine', 'n-check', 'n-gov', 'n-cos', 'n-exec', 'n-merch'); finishNight(); return; }
+    await wait(1000); if (me !== run) return;
+    markStep(0, nstepsLi); light('n-engine', 'n-check', 'n-gov');
+    await burst(me, 5000); if (me !== run) return;                 // thousands of queries, fast, for five seconds
+    markStep(1, nstepsLi); engst.textContent = 'Building the brief';
+    await wait(1400); if (me !== run) return;                      // collect them all into one brief
+    await travel([[ENG, 74, ENG, 98]], 'back', 1500); if (me !== run) return;
+    light('n-cos'); morning(); await wait(2600); if (me !== run) return;
+    markStep(2, nstepsLi); await travel([[MID, 74, MID, 98]], '', 1500); if (me !== run) return;
+    light('n-exec'); N.classList.add('picked'); await wait(700); if (me !== run) return;
+    markStep(3, nstepsLi); await travel([[MID, COS, X.merch, FN]], 'back', 1950); if (me !== run) return;
+    light('n-merch'); await wait(600); if (me !== run) return;
+    finishNight();
   }
   document.getElementById('nreplay').onclick = playNight;
+
+  // ---- the AI Hub scene: requests come down from the agents; the access check passes most and blocks some (sent back);
+  //      requests for a tool light that tool up for a second while it acts. Loops while the scene is on screen. ----
+  const fx = document.getElementById('fx'), CHECK = 492, FROM = 400; // decided just above the access check, clear of its label
+  const HUBPLAY = [[0, X.retail, 'tool', 't-dayforce'], [900, X.merch, 'pass'], [1800, X.lab, 'block'], [2700, MID, 'pass'],
+    [3600, X.merch, 'tool', 't-callin'], [4500, X.buying, 'block'], [5400, X.retail, 'pass'], [6300, MID, 'tool', 't-mail'], [7200, X.lab, 'pass']];
+  let hubRun = 0;
+  function tween(me, ms, f) {
+    return new Promise(res => { const t0 = performance.now(); (function tick(t) {
+      if (me !== hubRun) return res(false);
+      const k = Math.min(1, (t - t0) / ms); f(k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+      if (k < 1) requestAnimationFrame(tick); else res(true);
+    })(t0); });
+  }
+  function svgEl(tag, attrs, parent = fx) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+  function centre(id) { // a chip's centre, in picture coordinates
+    const w = world.getBoundingClientRect(), s = w.width / 1440, r = document.getElementById(id).getBoundingClientRect();
+    return [(r.left + r.width / 2 - w.left) / s, (r.top + r.height / 2 - w.top) / s];
+  }
+  async function request(me, x, kind, tool) {
+    const c = svgEl('circle', { r: 6, class: 'rq', cx: x, cy: FROM });
+    const move = (x1, y1, x2, y2, ms) => tween(me, ms, e => { c.setAttribute('cx', x1 + (x2 - x1) * e); c.setAttribute('cy', y1 + (y2 - y1) * e); });
+    if (!await move(x, FROM, x, CHECK, 800)) return c.remove();
+    const ok = kind !== 'block', m = svgEl('g', { class: 'mk', transform: `translate(${x + 20} ${CHECK})` });
+    svgEl('circle', { r: 10, class: ok ? 'ok' : 'no' }, m); svgEl('path', { d: ok ? 'M-4.5 0l3 3 6-6.5' : 'M-4-4l8 8m0-8l-8 8' }, m);
+    if (!ok) c.classList.add('no');
+    await wait(400); setTimeout(() => m.remove(), 700);
+    if (kind === 'block') await move(x, CHECK, x, FROM, 800);       // returned to the agent that asked
+    else if (kind === 'pass') await move(x, CHECK, x, 690, 900);    // on through the road to its slice of the data
+    else {
+      const [tx, ty] = centre(tool);
+      if (await move(x, CHECK, tx, ty, 800)) { const ch = document.getElementById(tool); ch.classList.add('act'); setTimeout(() => ch.classList.remove('act'), 1000); }
+    }
+    c.remove();
+  }
+  async function hub(on) {
+    hubRun++; fx.textContent = ''; document.querySelectorAll('.chip.act').forEach(ch => ch.classList.remove('act'));
+    if (!on || still.matches) return;
+    const me = hubRun;
+    await wait(1300); // once the camera has arrived
+    while (me === hubRun) {
+      HUBPLAY.forEach(([t, x, kind, tool]) => setTimeout(() => { if (me === hubRun) request(me, x, kind, tool); }, t));
+      await wait(9000);
+    }
+  }
 
   // ---- the data scene: data keeps flowing up from each source into the governed layer while it is on screen ----
   let flowRun = 0;
@@ -658,7 +729,7 @@
     world.dataset.focus = sc.focus;
     milestone(sc.id === 'ms' ? msCur : 0);
     if (sc.id === 'question') playQuestion(); else if (sc.id === 'night') playNight(); else resetQuestion();
-    flow(sc.id === 'l1');
+    flow(sc.id === 'l1'); hub(sc.id === 'l2');
     camera(instant || still.matches);
     count.innerHTML = `<b>${pad(scene + 1)}</b> / ${pad(SCENES.length)}`;
     document.getElementById('prev').disabled = scene === 0;

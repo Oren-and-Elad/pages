@@ -3,7 +3,8 @@
 // camera fitting each scene's part of the picture, detail shown only when zoomed in, the "play a question" flow
 // down to the governed data layer (never the sources) and back, data flowing into that layer on the data scene,
 // every slice under its own wire, the milestones (Retail done, then the Retail agent + Merch, then every function),
-// the night run (the proactive engine briefs the chief of staff; the plan goes to the right head), the lab beside the
+// the access check passing and blocking requests on the AI Hub, the night run (the proactive engine's burst of queries
+// becomes a brief for the chief of staff; the plan goes to the right head), the lab beside the
 // functions, every caption fitting the screen at common sizes, phone width, self-containment
 // and dark mode.
 // Same harness as tests/ai-blueprint.test.mjs: plain Node, Chrome driven over its DevTools protocol on loopback
@@ -164,6 +165,19 @@ test('the data scene: data keeps flowing from the sources into the governed laye
   assert.ok(b.every(y => y >= 782 && y <= 852), 'they stay between the sources and the layer');
   await goTo(3);
   assert.equal(await evaluate(`document.querySelectorAll('#dots circle').length`), 0, 'leaving the scene stops the flow');
+});
+
+test('the AI Hub scene: the access check passes and blocks requests, and a tool lights up while it acts', { skip }, async () => {
+  await goTo(3);
+  const seen = { ok: false, no: false, act: false };
+  for (let k = 0; k < 80 && !(seen.ok && seen.no && seen.act); k++) {
+    await sleep(100);
+    const now = await evaluate(`({ ok: !!document.querySelector('#fx .mk .ok'), no: !!document.querySelector('#fx .mk .no'), act: !!document.querySelector('#n-tools .chip.act') })`);
+    for (const key in seen) seen[key] ||= now[key];
+  }
+  assert.deepEqual(seen, { ok: true, no: true, act: true }, 'a request passes, one is blocked and returned, and a tool acts');
+  await goTo(4);
+  assert.equal(await evaluate(`document.querySelectorAll('#fx *, .chip.act').length`), 0, 'leaving the scene stops it');
 });
 
 test('milestones: Retail is done, then the Retail agent and Merch, then every function', { skip }, async () => {
