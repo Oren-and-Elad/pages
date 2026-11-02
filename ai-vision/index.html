@@ -81,6 +81,9 @@
 
   .exec { left: 499px; top: 16px; width: 200px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; font-size: 19px; }
   .exec .fig { color: var(--ink); }
+  .engine { left: 120px; top: 16px; width: 280px; height: 58px; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .engine > .ic { width: 30px; height: 30px; padding: 6px; border-radius: 8px; color: var(--paper); background: var(--ink); stroke-width: 1.8; }
+  .engine b { display: block; font-size: 17px; } .engine .mono { color: var(--ink2); }
   .cos { left: 120px; top: 98px; width: 958px; height: 72px; background: var(--ink); color: var(--paper); border-color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
   .cos b { font-size: 22px; display: block; letter-spacing: -.01em; }
   .cos .mono { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
@@ -149,7 +152,7 @@
   #wires .w.up { marker-end: url(#tip); }
   #wires .dot { fill: var(--accent); }
   #wires .dot.back { fill: var(--ans); }
-  #wires .dot.flow { fill: var(--l1); }
+  #wires .dot.flow, #wires .dot.data { fill: var(--l1); }
   .lit { border-color: var(--accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow); }
   .cos.lit { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), var(--shadow); }
   .check.lit { background: color-mix(in srgb, var(--l2) 32%, var(--paper)); }
@@ -212,6 +215,19 @@
   .checked { font-size: 13px; color: var(--ink2); border-top: 1px solid var(--hair); padding-top: 10px; margin: 2px 0 0; }
   .checked b { color: var(--ans); font-weight: 600; }
   .illus { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  /* the night run: steps, then the morning brief, then the plan sent */
+  .s-night .q { margin-bottom: 14px; }
+  .s-night .steps li { padding: 4px 0; font-size: 15px; }
+  .brief { display: none; margin-top: 14px; }
+  .s-night.morning .brief { display: block; }
+  .brief > .mono { color: var(--ink2); margin: 0 0 4px; }
+  .opp { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: start; padding: 8px 0; border-top: 1px solid var(--hair); }
+  .opp > span { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 2px; }
+  .opp b { display: block; font-size: 15px; line-height: 1.3; } .opp small { display: block; font-size: 12px; color: var(--ink2); margin-top: 2px; }
+  .opp em { visibility: hidden; font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; padding: 3px 7px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
+  .s-night.picked #opp1 { background: var(--accent-soft); margin: 0 -8px; padding: 8px; border-radius: 8px; border-top-color: transparent; } .s-night.picked #opp1 em { visibility: visible; }
+  .s-night.sent #opp1 em { background: color-mix(in srgb, var(--ans) 14%, var(--paper)); color: var(--ans); }
+  .sentline { display: none; } .s-night.sent .sentline { display: block; }
   .replay { margin-top: 18px; align-self: flex-start; display: inline-flex; gap: 8px; align-items: center; padding: 9px 14px; border-radius: 9px; border: 1px solid var(--hair); background: var(--paper); cursor: pointer; font-size: 14px; font-weight: 600; }
   .replay:hover { background: var(--fill); }
 
@@ -241,7 +257,7 @@
   #deck.portrait .brand { margin-bottom: 26px; }
   #deck.portrait .legend, #deck.portrait .msnote, #deck.portrait .fine { display: none; }
   #deck.portrait .s-question .q { font-size: 34px; }
-  #deck.portrait .s-question.answered .cause:nth-of-type(n+2), #deck.portrait .checked { display: none; }
+  #deck.portrait .s-question.answered .cause:nth-of-type(n+2), #deck.portrait .checked:not(.sentline), #deck.portrait .opp:not(#opp1) { display: none; }
   #deck.portrait .msbtn { flex-direction: row; } #deck.portrait .msbtn button { font-size: 22px; }
   #deck.portrait .mslist { font-size: 24px; }
 
@@ -259,6 +275,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4M12 16V8M17 16v-6"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><path d="M7.5 12H20"/><path d="M15 7l5 5-5 5"/></symbol>
   <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3 18l3 3 6.2-6.2a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
   <symbol id="i-person" viewBox="0 0 32 32"><circle cx="16" cy="9" r="5.6"/><path d="M5 30c0-7 4.9-11.6 11-11.6S27 23 27 30z"/></symbol>
   <symbol id="i-team" viewBox="0 0 44 32"><circle cx="10" cy="11" r="4.2"/><path d="M1.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="34" cy="11" r="4.2"/><path d="M25.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="22" cy="9" r="5.2"/><path d="M11.5 31c0-7 4.6-11.4 10.5-11.4S32.5 24 32.5 31z"/></symbol>
@@ -280,9 +297,10 @@
     </svg>
 
     <!-- Layer 3: the executives' line runs straight down the middle (x 599); the function containers sit either side; the lab sits apart on the right -->
+    <div class="n y3 engine" id="n-engine" data-ms="3"><svg class="ic"><use href="#i-moon"/></svg><div><b>Proactive engine</b><span class="mono" id="engst">Runs overnight</span></div></div>
     <div class="n y3 exec" id="n-exec"><svg class="fig"><use href="#i-team"/></svg><div><b>Executives</b><small class="d2">ask in plain words</small></div></div>
     <div class="n y3 cos" id="n-cos" data-ms="2 3"><div><span class="mono"><span class="on">●</span> Always on · for the executives</span><b>Chief of staff agent</b></div>
-      <div class="acts d2"><span><i>Ask</i>Cross-function questions, in context</span><span><i>Watch</i>Every source, flags what matters</span></div></div>
+      <div class="acts d2"><span><i>Ask</i>Cross-function questions, in context</span><span><i>Act</i>Sends each plan to the right head</span></div></div>
     <div class="n y3 fn" id="n-retail" data-ms="1 2 3" style="left:120px"><div class="fh"><b>Retail</b><span class="mono">Store ops</span></div>
       <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Retail team<small class="d2">area &amp; store managers</small></div></div>
       <div class="tool" data-ms="1 2 3"><span class="tk">✓</span>Rostering tool<em>live</em></div>
@@ -291,7 +309,7 @@
     <div class="n y3 fn" id="n-merch" data-ms="2 3" style="left:347px"><div class="fh"><b>Merch</b><span class="mono">Merchandising</span></div>
       <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Merch team<small class="d2">merchandise planners</small></div></div>
       <div class="head"><span class="dmd"></span>Head agent</div>
-      <div class="ags"><span class="ag">Merchandising agent</span><span class="ag">Order entry</span></div></div>
+      <div class="ags"><span class="ag">Call-in agent</span><span class="ag">Sales insight agent</span></div></div>
     <div class="n y3 fn" id="n-buying" data-ms="3" style="left:639px"><div class="fh"><b>Buying</b><span class="mono">Range</span></div>
       <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Buying team<small class="d2">buyers</small></div></div>
       <div class="head"><span class="dmd"></span>Head agent</div>
@@ -310,12 +328,12 @@
       <div class="check" id="n-check" data-ms="2 3"><svg class="ic"><use href="#i-shield"/></svg>Access check<small class="d2">every request, against who is asking · every exchange logged</small></div>
       <div class="cell" id="n-road" data-ms="2 3"><b><svg class="ic"><use href="#i-link"/></svg>One standard road in</b><small class="d2">MCP: any AI tool, agent or model. Claude today, swappable.</small></div>
       <div class="cell" id="n-tools"><b><svg class="ic"><use href="#i-tool"/></svg>Tools agents act with</b>
-        <div class="chips d2"><span class="chip" id="t-dayforce" data-ms="2 3">Write to Dayforce · Retail</span><span class="chip" id="t-order" data-ms="2 3">Book an order · Merch</span><span class="chip" data-ms="2 3">Chat</span><span class="chip" data-ms="3">Mail</span><span class="chip" data-ms="3">Office 365</span><span class="chip" data-ms="3">Contracts search</span></div></div>
+        <div class="chips d2"><span class="chip" id="t-contracts" data-ms="1 2 3">Contracts search</span><span class="chip" id="t-dayforce" data-ms="2 3">Write to Dayforce · Retail</span><span class="chip" id="t-callin" data-ms="2 3">Call in · Merch</span><span class="chip" id="t-mail" data-ms="2 3">Mail</span><span class="chip" data-ms="3">Chat</span><span class="chip" data-ms="3">Office 365</span></div></div>
     </div>
 
     <!-- Layer 1: each slice sits under its own wire -->
     <div class="n y1 gov" id="n-gov" data-ms="2 3">
-      <div class="gt"><svg class="ic"><use href="#i-shield"/></svg><div><b>Governed data layer</b><small>MotherDuck · your definitions · hosted in Sydney</small></div></div>
+      <div class="gt"><svg class="ic"><use href="#i-shield"/></svg><div><b>Governed data layer</b><small>MotherDuck · your definitions</small></div></div>
       <div class="note d2">Agents only read here. Any change goes through an approved tool.<br>Your Qlik dashboards keep running as they do today.</div>
       <span class="slice d2" id="sl-retail" data-ms="2 3" style="left:106px"><i></i>Retail slice</span>
       <span class="slice d2" id="sl-merch" data-ms="2 3" style="left:333px"><i></i>Merch slice</span>
@@ -374,7 +392,7 @@
     <ul class="pts" style="--c:var(--l1)">
       <li><b>Every source lands in one place</b>, on your definitions, so every agent reads the same numbers.</li>
       <li><b>Each agent reads only its own slice.</b> It cannot change data here, or see tables it is not given.</li>
-      <li><b>Every query is visible and traceable.</b> Data stays in Sydney (AWS ap-southeast-2).</li>
+      <li><b>Every query is visible and traceable</b>, back to the source it came from.</li>
     </ul>
   </section>
 
@@ -384,7 +402,7 @@
     <ul class="pts" style="--c:var(--l2)">
       <li><b>Agents never reach into systems directly.</b> Every request passes the access check and is logged.</li>
       <li><b>Any AI tool, agent or model</b> uses the same road. Claude today; swap it and nothing else changes.</li>
-      <li><b>Agents act only through approved tools:</b> write to Dayforce, book an order, chat, mail, Office 365.</li>
+      <li><b>Agents act only through approved tools:</b> write to Dayforce, call in stock, mail, contracts search.</li>
     </ul>
   </section>
 
@@ -393,7 +411,7 @@
     <h1>Agents do the work. People steer.</h1>
     <ul class="pts" style="--c:var(--l3)">
       <li><b>An always-on chief of staff</b> answers the executives, with its own straight line to the AI Hub.</li>
-      <li><b>Each function gets its own container:</b> a head agent over the agents that do the work.</li>
+      <li><b>Each function gets its own container:</b> a head agent over the agents that do the work, like Merch's call-in and sales insight agents.</li>
       <li><b>People approve and direct.</b> Today's dashboards and Qlik stay; agents sit beside them.</li>
     </ul>
   </section>
@@ -406,10 +424,30 @@
       <button type="button" data-m="2" aria-pressed="false"><span>02</span>Retail agent + Merch<em>Next</em></button>
       <button type="button" data-m="3" aria-pressed="false"><span>03</span>Every function</button>
     </div>
-    <ul class="mslist" data-for="1"><li>Rostering tool live for the Retail team</li><li>Built on Dayforce, sales and traffic data</li><li>Logins and roles: each person sees only their stores</li></ul>
-    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent, which writes rosters back to Dayforce</li><li>Merch joins with its agent from day one, and books orders</li><li>The governed data layer, the AI Hub and the access check</li><li>Chief of staff, always on, for the executives</li></ul>
-    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>The lab: your people build and test their own agents</li><li>Mail, Office 365, SharePoint and contracts search</li><li>Business Central, SharePoint and Dolfin in the governed layer</li></ul>
+    <ul class="mslist" data-for="1"><li>Rostering tool live for the Retail team</li><li>Built on Dayforce, sales and traffic data</li><li>Logins and roles: each person sees only their stores</li><li>Contracts search tool</li></ul>
+    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent, which writes rosters back to Dayforce</li><li>Merch joins with its agents from day one: call-in and sales insight</li><li>The governed data layer, the AI Hub, the access check and mail</li><li>Chief of staff, always on, for the executives</li></ul>
+    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>The lab: your people build and test their own agents</li><li>Proactive engine: opportunities every morning</li><li>Chat and Office 365</li><li>Business Central, SharePoint and Dolfin in the governed layer</li></ul>
     <p class="msnote">Each step reuses what the last one built. The order after Merch is illustrative.</p>
+  </section>
+
+  <section class="panel left s-night" data-scene="night">
+    <p class="kicker" id="nclock">02:00 · Overnight</p>
+    <p class="q"><small>Nobody asked</small>The engine finds the opportunities overnight.</p>
+    <ol class="steps" id="nsteps">
+      <li>Overnight, the engine crunches every number</li>
+      <li>By morning, the opportunities wait for the chief of staff</li>
+      <li>An executive says: “Send the call-in plan to the Head of Merch”</li>
+      <li class="back">The plan lands with the Head of Merch, ready to approve</li>
+    </ol>
+    <div class="brief">
+      <p class="mono">07:00 · This morning's opportunities</p>
+      <div class="opp" id="opp1"><span>01</span><div><b>6 stores starved of top footwear sizes, 3 flooded</b><small>Merch · WMS stock, sales, supplier contracts</small></div><em>→ Head of Merch</em></div>
+      <div class="opp"><span>02</span><div><b>Move Saturday hours into the 2 to 5 pm peak</b><small>Retail · Dayforce, traffic</small></div></div>
+      <div class="opp"><span>03</span><div><b>4 stores trading against the trend, markdowns not actioned</b><small>Merch · sales, stock</small></div></div>
+      <p class="checked sentline"><b>Sent:</b> the call-in plan is in front of the Head of Merch, ready to approve.</p>
+      <p class="illus">Illustrative figures</p>
+    </div>
+    <button type="button" class="replay" id="nreplay"><svg class="ic"><use href="#i-play"/></svg>Play the night</button>
   </section>
 
   <section class="panel left s-lab" data-scene="lab" style="--c:var(--pos)">
@@ -442,6 +480,7 @@
     { id: 'l2',       layout: 'top',  cam: [120, 470, 1200, 186], focus: 'l2' }, // with the caption's margins
     { id: 'l3',       layout: 'top',  cam: [120, 0, 1200, 470],   focus: 'l3' },
     { id: 'ms',       layout: 'left', cam: [0, 0, 1440, 940],     focus: 'ms' },
+    { id: 'night',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
     { id: 'lab',      layout: 'left', cam: [0, 0, 1440, 940],     focus: 'lab' },
   ];
   const panels = [...document.querySelectorAll('.panel')];
@@ -449,11 +488,11 @@
   // ---- the drawn connections (also the paths the question travels) ----
   // Column centres: every container's wire runs straight down into its own slice. The executives' line (MID)
   // runs from the executives through the chief of staff straight to the AI Hub and the "Executives: all" slice.
-  const X = { retail: 226, merch: 453, buying: 745, more: 972, lab: 1214 }, MID = 599;
+  const X = { retail: 226, merch: 453, buying: 745, more: 972, lab: 1214 }, MID = 599, ENG = 260; // ENG: the proactive engine
   const COS = 170, FN = 200, FNB = 460, HUB = 504, HUBB = 634, GOV = 676; // box edges (top / bottom) the wires join
   const SX = [188, 340, 492, 644, 796, 948, 1100, 1252]; // the eight source tiles (the last is "+ future source")
   const WIRES = [
-    [MID, 74, MID, 98], [MID, COS, MID, HUB], [MID, HUBB, MID, GOV],
+    [MID, 74, MID, 98], [ENG, 74, ENG, 98], [MID, COS, MID, HUB], [MID, HUBB, MID, GOV],
     ...[X.retail, X.merch, X.buying, X.more].map(x => [x, COS, x, FN]),
     ...Object.values(X).map(x => [x, FNB, x, HUB]),
     ...Object.values(X).map(x => [x, HUBB, x, GOV]),
@@ -511,10 +550,10 @@
   const up = down.slice().reverse().map(p => ({ step: 3, segs: p.segs.map(([a, b, c, d]) => [c, d, a, b]) }));
   let run = 0;
   const wait = ms => new Promise(r => setTimeout(r, ms));
-  function travel(segs, back, ms) {
+  function travel(segs, cls, ms) {
     return Promise.all(segs.map(([x1, y1, x2, y2]) => new Promise(res => {
       const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('r', 7); c.setAttribute('class', 'dot' + (back ? ' back' : ''));
+      c.setAttribute('r', 7); c.setAttribute('class', ('dot ' + cls).trim());
       dotsG.appendChild(c);
       const t0 = performance.now();
       (function tick(t) {
@@ -524,13 +563,14 @@
       })(t0);
     })));
   }
-  function resetQuestion() {
+  const N = document.querySelector('.s-night'), nstepsLi = [...document.querySelectorAll('#nsteps li')], nclock = document.getElementById('nclock'), engst = document.getElementById('engst');
+  function resetQuestion() { // resets both played scenes: the question and the night run
     run++; dotsG.textContent = '';
     world.querySelectorAll('.lit, .done').forEach(e => e.classList.remove('lit', 'done'));
-    stepsLi.forEach(li => li.classList.remove('now', 'past'));
-    Q.classList.remove('answered');
+    [...stepsLi, ...nstepsLi].forEach(li => li.classList.remove('now', 'past'));
+    Q.classList.remove('answered'); N.classList.remove('morning', 'picked', 'sent'); nclock.textContent = '02:00 · Overnight'; engst.textContent = 'Runs overnight';
   }
-  function markStep(k) { stepsLi.forEach((li, j) => { li.classList.toggle('now', j === k); li.classList.toggle('past', j < k); }); }
+  function markStep(k, list = stepsLi) { list.forEach((li, j) => { li.classList.toggle('now', j === k); li.classList.toggle('past', j < k); }); }
   function finishQuestion() {
     world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
     Q.classList.add('answered');
@@ -542,17 +582,50 @@
     await wait(1000); // paced for a live room: about 17 seconds end to end
     for (const p of down) {
       if (me !== run) return;
-      markStep(p.step); await travel(p.segs, false, 1950);
+      markStep(p.step); await travel(p.segs, '', 1950);
       if (me !== run) return;
       (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'));
       await wait(450);
     }
     await wait(1200); markStep(3);
-    for (const p of up) { if (me !== run) return; await travel(p.segs, true, 1260); }
+    for (const p of up) { if (me !== run) return; await travel(p.segs, 'back', 1260); }
     if (me !== run) return;
     await wait(600); finishQuestion();
   }
   document.getElementById('replay').onclick = playQuestion;
+
+  // ---- the night run: the engine reads every number overnight, briefs the chief of staff by morning, and the
+  //      executive sends the plan to the right head. Each beat: [step, dots, dot colour, what lights up, then]. ----
+  const nightRun = [
+    [0, SX.slice(0, -1).map(x => [x, 846, x, 786]), 'data', ['n-gov']],      // every source into the governed layer
+    [0, [[MID, GOV, MID, COS]], 'data', ['n-check']],                         // up the executives' line, through the check
+    [0, [[ENG, 98, ENG, 74]], 'data', ['n-engine'], () => { engst.textContent = 'Crunching every number'; return wait(1800); }],
+    [1, [[ENG, 74, ENG, 98]], 'back', ['n-cos'], () => { morning(); return wait(2400); }],
+    [2, [[MID, 74, MID, 98]], '', ['n-exec'], () => { N.classList.add('picked'); return wait(600); }],
+    [3, [[MID, COS, X.merch, FN]], 'back', ['n-merch']],                      // the plan, in front of the Head of Merch
+  ];
+  function morning() { nclock.textContent = '07:00 · Morning'; engst.textContent = 'Brief ready'; N.classList.add('morning'); }
+  function finishNight() {
+    morning();
+    world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
+    N.classList.add('morning', 'picked', 'sent');
+  }
+  async function playNight() {
+    resetQuestion();
+    const me = run;
+    if (still.matches) { nightRun.forEach(b => b[3].forEach(id => document.getElementById(id).classList.add('lit'))); finishNight(); return; }
+    await wait(1000);
+    for (const [step, segs, cls, lit, then] of nightRun) {
+      if (me !== run) return;
+      markStep(step, nstepsLi); await travel(segs, cls, 1950);
+      if (me !== run) return;
+      lit.forEach(id => document.getElementById(id).classList.add('lit'));
+      await (then ? then() : wait(450));
+    }
+    if (me !== run) return;
+    await wait(600); finishNight();
+  }
+  document.getElementById('nreplay').onclick = playNight;
 
   // ---- the data scene: data keeps flowing up from each source into the governed layer while it is on screen ----
   let flowRun = 0;
@@ -584,7 +657,7 @@
     panels.forEach(p => p.classList.toggle('on', p.dataset.scene === sc.id));
     world.dataset.focus = sc.focus;
     milestone(sc.id === 'ms' ? msCur : 0);
-    if (sc.id === 'question') playQuestion(); else resetQuestion();
+    if (sc.id === 'question') playQuestion(); else if (sc.id === 'night') playNight(); else resetQuestion();
     flow(sc.id === 'l1');
     camera(instant || still.matches);
     count.innerHTML = `<b>${pad(scene + 1)}</b> / ${pad(SCENES.length)}`;

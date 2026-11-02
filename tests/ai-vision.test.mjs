@@ -1,9 +1,10 @@
 // tests/ai-vision.test.mjs — renders ai-vision/ (from disk, file://, no server of any kind) in a real headless
-// Chrome and checks the one-picture deck (Sir, 2 Nov 2026): seven scenes over one picture of the whole system, the
+// Chrome and checks the one-picture deck (Sir, 2 Nov 2026): eight scenes over one picture of the whole system, the
 // camera fitting each scene's part of the picture, detail shown only when zoomed in, the "play a question" flow
 // down to the governed data layer (never the sources) and back, data flowing into that layer on the data scene,
 // every slice under its own wire, the milestones (Retail done, then the Retail agent + Merch, then every function),
-// the lab beside the functions, every caption fitting the screen at common sizes, phone width, self-containment
+// the night run (the proactive engine briefs the chief of staff; the plan goes to the right head), the lab beside the
+// functions, every caption fitting the screen at common sizes, phone width, self-containment
 // and dark mode.
 // Same harness as tests/ai-blueprint.test.mjs: plain Node, Chrome driven over its DevTools protocol on loopback
 // (127.0.0.1 only, closed at the end of the run) — no tunnel, no web server.
@@ -88,9 +89,9 @@ async function screenshot(name) {
 }
 const solidIds = () => evaluate(`[...document.querySelectorAll('#world [data-ms][id]')].filter(e => !e.classList.contains('gh')).map(e => e.id).sort()`);
 
-test('seven scenes over one picture, one caption at a time', { skip }, async () => {
-  assert.deepEqual(await evaluate(`SCENES.map(s => s.id)`), ['title', 'question', 'l1', 'l2', 'l3', 'ms', 'lab']);
-  for (let n = 0; n < 7; n++) {
+test('eight scenes over one picture, one caption at a time', { skip }, async () => {
+  assert.deepEqual(await evaluate(`SCENES.map(s => s.id)`), ['title', 'question', 'l1', 'l2', 'l3', 'ms', 'night', 'lab']);
+  for (let n = 0; n < 8; n++) {
     await goTo(n);
     assert.equal(await current(), n);
     assert.equal(await evaluate(`document.querySelectorAll('.panel.on').length`), 1, `scene ${n + 1}: exactly one caption`);
@@ -168,12 +169,12 @@ test('the data scene: data keeps flowing from the sources into the governed laye
 test('milestones: Retail is done, then the Retail agent and Merch, then every function', { skip }, async () => {
   await goTo(5); await settle();
   const want = {
-    1: ['n-retail', 's-dayforce', 's-statelake'],
-    2: ['n-check', 'n-cos', 'n-gov', 'n-merch', 'n-retail', 'n-road', 's-dayforce', 's-qlik', 's-statelake', 's-wms', 'sl-exec', 'sl-merch', 'sl-retail', 't-dayforce', 't-order'],
+    1: ['n-retail', 's-dayforce', 's-statelake', 't-contracts'],
+    2: ['n-check', 'n-cos', 'n-gov', 'n-merch', 'n-retail', 'n-road', 's-dayforce', 's-qlik', 's-statelake', 's-wms', 'sl-exec', 'sl-merch', 'sl-retail', 't-contracts', 't-dayforce', 't-callin', 't-mail'],
   };
   const shown = sel => evaluate(`getComputedStyle(document.querySelector('${sel}')).visibility === 'visible'`);
   assert.equal(await shown('#t-dayforce'), true, 'the tools show on the milestones scene');
-  assert.match(await evaluate(`document.getElementById('t-dayforce').textContent + ' / ' + document.getElementById('t-order').textContent`), /Write to Dayforce.*Retail \/ Book an order.*Merch/);
+  assert.match(await evaluate(`document.getElementById('t-dayforce').textContent + ' / ' + document.getElementById('t-callin').textContent`), /Write to Dayforce.*Retail \/ Call in.*Merch/);
   for (const m of [1, 2, 3]) {
     await evaluate(`document.querySelector('.msbtn [data-m="${m}"]').click()`);
     assert.equal(await current(), 5, 'a step does not change the scene');
@@ -188,8 +189,36 @@ test('milestones: Retail is done, then the Retail agent and Merch, then every fu
   assert.equal(await evaluate(`document.querySelectorAll('#world .gh').length`), 0, 'outside the milestones scene the whole picture is solid');
 });
 
+test('the night run: the engine briefs the chief of staff by morning, and the plan goes to the Head of Merch', { skip }, async () => {
+  await goTo(6);
+  const N = cls => evaluate(`document.querySelector('.s-night').classList.contains('${cls}')`);
+  let seen = 0;
+  for (let k = 0; k < 30 && !seen; k++) { await sleep(100); seen = await evaluate(`document.querySelectorAll('#dots circle').length`); }
+  assert.ok(seen > 0, 'the night run is moving');
+  assert.equal(await N('morning'), false, 'the brief waits for the morning');
+  for (let k = 0; k < 120 && !(await N('sent')); k++) await sleep(250);
+  assert.equal(await N('sent'), true, 'the plan is sent');
+  assert.match(await evaluate(`document.getElementById('nclock').textContent`), /07:00/);
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#world .done')].map(e => e.id).sort()`),
+    ['n-check', 'n-cos', 'n-engine', 'n-exec', 'n-gov', 'n-merch']);
+  await screenshot('night-sent');
+  await goTo(5);
+  assert.equal(await evaluate(`document.querySelectorAll('#world .done, #world .lit, #dots circle').length`), 0, 'leaving the scene clears the run');
+  assert.equal(await N('morning'), false);
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await evaluate(`dispatchEvent(new Event('resize'))`);
+  await goTo(6);
+  assert.equal(await N('sent'), true, 'reduced motion: the end state shows at once');
+  const [b, h] = await evaluate(`(() => { let b = 0; document.querySelectorAll('.s-night *').forEach(e => { const q = e.getBoundingClientRect(); if (q.width) b = Math.max(b, q.bottom); }); return [b, innerHeight]; })()`);
+  assert.ok(b <= h - 8, `the morning brief fits at 1280x720 (${Math.round(b)} of ${h})`);
+  await send('Emulation.setEmulatedMedia', { features: [] });
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+  await evaluate(`dispatchEvent(new Event('resize'))`);
+});
+
 test('the lab: the full picture, with the lab as one more container beside the functions', { skip }, async () => {
-  await goTo(6); await settle();
+  await goTo(7); await settle();
   assert.equal(await evaluate(`+getComputedStyle(world).opacity`), 1, 'the whole picture stays on screen');
   assert.equal(await evaluate(`document.querySelectorAll('.ask, .next3, #labscene').length`), 0, 'no path or decision boxes');
   assert.equal(await evaluate(`+getComputedStyle(document.getElementById('n-lab')).opacity`), 1);
@@ -202,7 +231,7 @@ test('every caption fits the screen at common sizes, and no transition is left r
   for (const [width, height] of [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1080]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
     await evaluate(`dispatchEvent(new Event('resize'))`);
-    for (const n of [0, 2, 3, 4, 5, 6]) {
+    for (const n of [0, 2, 3, 4, 5, 7]) {
       await goTo(n); await settle();
       const [ok, why] = await evaluate(`(() => {
         const p = document.querySelector('.panel.on'), r = p.getBoundingClientRect();
@@ -221,7 +250,7 @@ test('phone width: no scene spills sideways', { skip }, async () => {
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await evaluate(`dispatchEvent(new Event('resize'))`);
   assert.equal(await evaluate(`deck.classList.contains('portrait')`), true);
-  for (let n = 0; n < 7; n++) { await goTo(n); assert.equal(await evaluate(`document.documentElement.scrollWidth`), 390, `scene ${n + 1} overflows sideways`); }
+  for (let n = 0; n < 8; n++) { await goTo(n); assert.equal(await evaluate(`document.documentElement.scrollWidth`), 390, `scene ${n + 1} overflows sideways`); }
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
   await evaluate(`dispatchEvent(new Event('resize'))`);
 });
@@ -235,6 +264,7 @@ test('self-contained: nothing loads from outside the page folder', { skip }, asy
 test('public page carries no client or people names (the named exec version lives on a private link)', { skip }, async () => {
   const text = await evaluate(`document.documentElement.outerHTML`);
   for (const w of [/Broadway/, /\bMark\b/, /Hilton/, /\bJD\b/]) assert.doesNotMatch(text, w);
+  assert.doesNotMatch(text, /Sydney|ap-southeast/, 'no hosting-location claim (Sir, 2 Nov)');
 });
 
 test('dark mode: the theme switches', { skip }, async () => {
