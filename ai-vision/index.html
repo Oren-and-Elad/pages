@@ -184,11 +184,11 @@
   .lock .ic { width: 42%; height: 42%; color: var(--accent); }
   /* each diagram builds in, in order, when its slide arrives */
   .slide.on .seq > * { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .slide.on .seq > .arrow { animation: rise .7s both, stream .9s linear infinite; }
   .slide.on .seq > *:nth-child(2) { animation-delay: .1s; } .slide.on .seq > *:nth-child(3) { animation-delay: .2s; }
   .slide.on .seq > *:nth-child(4) { animation-delay: .3s; } .slide.on .seq > *:nth-child(5) { animation-delay: .4s; }
   .slide.on .seq > *:nth-child(6) { animation-delay: .5s; } .slide.on .seq > *:nth-child(7) { animation-delay: .6s; }
   .slide.on .seq > *:nth-child(8) { animation-delay: .7s; } .slide.on .seq > *:nth-child(9) { animation-delay: .8s; }
-  .slide.on .seq > .arrow { animation: rise .7s both, stream .9s linear infinite; }
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
 
   @media screen and (max-width: 760px) {
@@ -274,11 +274,11 @@
   <h1>Every part, end to end</h1>
   <p class="lead">From the systems you run today to the agents that work for each function.</p>
   <div class="arch seq">
-    <div class="layer card up"><p class="tag">Upstream · people and systems</p>
+    <div class="layer card up"><p class="tag">Upstream · the people</p>
       <div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Store teams<small>at the POS</small></span></div>
       <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Workforce team<small>rosters in Dayforce</small></span></div>
       <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Finance team</span></div>
-      <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div></div>
+      <p class="tag">Your systems</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div></div>
     <div class="arrow">→</div>
     <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>one governed central layer</small>
       <ul><li>Hosted in Sydney (AWS ap-southeast-2)</li><li>Secure Views</li><li>Read-only shares</li></ul></div>
