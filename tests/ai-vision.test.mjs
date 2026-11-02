@@ -90,14 +90,17 @@ async function screenshot(name) {
 }
 const solidIds = () => evaluate(`[...document.querySelectorAll('#world [data-ms][id]')].filter(e => !e.classList.contains('gh')).map(e => e.id).sort()`);
 
-test('eight scenes over one picture, one caption at a time', { skip }, async () => {
-  assert.deepEqual(await evaluate(`SCENES.map(s => s.id)`), ['title', 'question', 'l1', 'l2', 'l3', 'ms', 'night', 'lab']);
-  for (let n = 0; n < 8; n++) {
+test('nine scenes over one picture, one caption at a time', { skip }, async () => {
+  assert.deepEqual(await evaluate(`SCENES.map(s => s.id)`), ['title', 'question', 'l1', 'l2', 'l3', 'ms', 'night', 'lab', 'close']);
+  for (let n = 0; n < 9; n++) {
     await goTo(n);
     assert.equal(await current(), n);
     assert.equal(await evaluate(`document.querySelectorAll('.panel.on').length`), 1, `scene ${n + 1}: exactly one caption`);
   }
   assert.equal(await evaluate(`document.querySelectorAll('#world').length`), 1, 'one picture, shared by every scene');
+  await goTo(8);
+  assert.match(await evaluate(`document.querySelector('.panel.on h1').textContent`), /^AI in your business, for every function/, 'the close carries the slogan');
+  assert.deepEqual(await evaluate(`SCENES[8].cam`), await evaluate(`SCENES[0].cam`), 'over the same full picture as the title');
 });
 
 test('the camera fits each layer scene to its layer, and the focused layer is the bright one', { skip }, async () => {
@@ -210,11 +213,11 @@ test('the night run: the engine briefs the chief of staff by morning, and the pl
   for (let k = 0; k < 30 && !seen; k++) { await sleep(100); seen = await evaluate(`document.querySelectorAll('#dots circle').length`); }
   assert.ok(seen > 0, 'the night run is moving');
   assert.equal(await N('morning'), false, 'the brief waits for the morning');
-  for (let k = 0; k < 120 && !(await N('sent')); k++) await sleep(250);
+  for (let k = 0; k < 160 && !(await N('sent')); k++) await sleep(250);
   assert.equal(await N('sent'), true, 'the plan is sent');
   assert.match(await evaluate(`document.getElementById('nclock').textContent`), /07:00/);
   assert.deepEqual(await evaluate(`[...document.querySelectorAll('#world .done')].map(e => e.id).sort()`),
-    ['n-check', 'n-cos', 'n-engine', 'n-exec', 'n-gov', 'n-merch']);
+    ['n-cos', 'n-engine', 'n-exec', 'n-merch']);
   await screenshot('night-sent');
   await goTo(5);
   assert.equal(await evaluate(`document.querySelectorAll('#world .done, #world .lit, #dots circle').length`), 0, 'leaving the scene clears the run');
@@ -245,7 +248,7 @@ test('every caption fits the screen at common sizes, and no transition is left r
   for (const [width, height] of [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1080]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
     await evaluate(`dispatchEvent(new Event('resize'))`);
-    for (const n of [0, 2, 3, 4, 5, 7]) {
+    for (const n of [0, 2, 3, 4, 5, 7, 8]) {
       await goTo(n); await settle();
       const [ok, why] = await evaluate(`(() => {
         const p = document.querySelector('.panel.on'), r = p.getBoundingClientRect();
@@ -264,7 +267,7 @@ test('phone width: no scene spills sideways', { skip }, async () => {
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await evaluate(`dispatchEvent(new Event('resize'))`);
   assert.equal(await evaluate(`deck.classList.contains('portrait')`), true);
-  for (let n = 0; n < 8; n++) { await goTo(n); assert.equal(await evaluate(`document.documentElement.scrollWidth`), 390, `scene ${n + 1} overflows sideways`); }
+  for (let n = 0; n < 9; n++) { await goTo(n); assert.equal(await evaluate(`document.documentElement.scrollWidth`), 390, `scene ${n + 1} overflows sideways`); }
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
   await evaluate(`dispatchEvent(new Event('resize'))`);
 });

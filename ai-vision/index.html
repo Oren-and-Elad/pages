@@ -41,7 +41,7 @@
   .mark { position: absolute; top: 38px; left: 96px; z-index: 6; display: flex; align-items: center; gap: 10px; font-family: var(--mono); text-transform: uppercase;
     letter-spacing: .1em; font-size: 13px; font-weight: 500; }
   .mark .by { color: var(--muted); text-transform: none; letter-spacing: .02em; font-weight: 400; }
-  #deck[data-scene="title"] .mark { visibility: hidden; } /* the title has the big lockup */
+  #deck:is([data-scene="title"], [data-scene="close"]) .mark { visibility: hidden; } /* these have the big lockup */
   .mark img { width: 20px; height: 20px; object-fit: cover; clip-path: inset(2.5% round 21%); }
   .dia { width: 9px; height: 9px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; display: inline-block; }
   nav { position: absolute; top: 28px; right: 96px; z-index: 6; display: flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: var(--ink2); }
@@ -441,10 +441,10 @@
     <p class="kicker" id="nclock">02:00 · Overnight</p>
     <p class="q"><small>Nobody asked</small>The engine finds the opportunities overnight.</p>
     <ol class="steps" id="nsteps">
-      <li>Overnight, the engine runs thousands of queries</li>
+      <li>Overnight, the engine runs queries through every head agent</li>
       <li>It collects them into one brief for the chief of staff</li>
       <li>An executive says: “Send the call-in plan to the Head of Merch”</li>
-      <li class="back">The plan lands with the Head of Merch, ready to approve</li>
+      <li class="back">Merch's head agent puts it in front of the Head of Merch</li>
     </ol>
     <div class="brief">
       <p class="mono">07:00 · This morning's opportunities</p>
@@ -468,6 +468,11 @@
     </ul>
   </section>
 
+  <section class="panel left s-title s-close" data-scene="close">
+    <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="">Cleopatra</span></div>
+    <h1>AI in your business, for every function.</h1>
+  </section>
+
   <nav aria-label="Slides">
     <button id="prev" type="button" aria-label="Previous slide">←</button>
     <span id="count" aria-live="polite"></span>
@@ -489,6 +494,7 @@
     { id: 'ms',       layout: 'left', cam: [0, 0, 1440, 940],     focus: 'ms' },
     { id: 'night',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
     { id: 'lab',      layout: 'left', cam: [0, 0, 1440, 940],     focus: 'lab' },
+    { id: 'close',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
   ];
   const panels = [...document.querySelectorAll('.panel')];
 
@@ -610,23 +616,28 @@
     N.classList.add('morning', 'picked', 'sent');
   }
   const light = (...ids) => ids.forEach(id => document.getElementById(id).classList.add('lit'));
-  // one query: down from the engine into the chief of staff's bar, down the executives' line to the data, and back
-  const QLEGS = [[ENG, 74, ENG, 98, 110, ''], [MID, COS, MID, GOV + 24, 430, ''], [MID, GOV + 24, MID, COS, 430, 'back'], [ENG, 98, ENG, 74, 110, 'back']];
+  // one query: from the engine into the chief of staff's bar, then down one head agent's column (or the executives' own
+  // line) through the access check into the data, and back. Boxes hide the parts inside them, so a query shows in each gap.
+  const QCOLS = [X.retail, X.merch, X.buying, MID], QSPEED = .55; // px per ms: readable in a room
   function burst(me, ms) {
     return new Promise(res => {
       const t0 = performance.now(); let spawned = 0, live = 0;
       (function spawn(t) {
         if (me !== run) return res();
-        if (t - t0 < ms && t - t0 >= spawned * 40) {
-          spawned++; live++; engst.textContent = (spawned * 14).toLocaleString('en-AU') + ' queries run';
-          const c = document.createElementNS(NS, 'circle'), s0 = t;
+        if (t - t0 < ms && t - t0 >= spawned * 90) {
+          const x = QCOLS[spawned % QCOLS.length], pts = [[ENG, 74], [ENG, 110], [x, 150], [x, GOV + 14]];
+          const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+          const D = cum[cum.length - 1] / QSPEED, c = document.createElementNS(NS, 'circle'), s0 = t;
+          spawned++; live++; engst.textContent = (spawned * 20).toLocaleString('en-AU') + ' queries run';
           c.setAttribute('r', 5); dotsG.appendChild(c);
           (function tick(now) {
-            let k = now - s0, leg = QLEGS.find(l => (k -= l[4]) < 0);
-            if (!leg || me !== run) { c.remove(); live--; return; }
-            const f = 1 + k / leg[4];
-            c.setAttribute('class', ('dot ' + leg[5]).trim());
-            c.setAttribute('cx', leg[0] + (leg[2] - leg[0]) * f); c.setAttribute('cy', leg[1] + (leg[3] - leg[1]) * f);
+            const k = now - s0;
+            if (k >= 2 * D || me !== run) { c.remove(); live--; return; }
+            const back = k >= D, d = (back ? 2 * D - k : k) * QSPEED;
+            let i = 1; while (i < cum.length - 1 && cum[i] < d) i++;
+            const f = (d - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+            c.setAttribute('class', back ? 'dot back' : 'dot');
+            c.setAttribute('cx', pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f); c.setAttribute('cy', pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f);
             requestAnimationFrame(tick);
           })(t);
         }
@@ -637,18 +648,20 @@
   async function playNight() {
     resetQuestion();
     const me = run;
-    if (still.matches) { light('n-engine', 'n-check', 'n-gov', 'n-cos', 'n-exec', 'n-merch'); finishNight(); return; }
+    if (still.matches) { light('n-engine', 'n-cos', 'n-exec', 'n-merch'); finishNight(); return; }
     await wait(1000); if (me !== run) return;
-    markStep(0, nstepsLi); light('n-engine', 'n-check', 'n-gov');
-    await burst(me, 5000); if (me !== run) return;                 // thousands of queries, fast, for five seconds
+    const busy = ['n-retail', 'n-merch', 'n-buying', 'n-check', 'n-gov'];
+    markStep(0, nstepsLi); light('n-engine', ...busy);
+    await burst(me, 5000); if (me !== run) return;                 // queries through every head agent, for five seconds
+    busy.forEach(id => document.getElementById(id).classList.remove('lit'));
     markStep(1, nstepsLi); engst.textContent = 'Building the brief';
-    await wait(1400); if (me !== run) return;                      // collect them all into one brief
-    await travel([[ENG, 74, ENG, 98]], 'back', 1500); if (me !== run) return;
-    light('n-cos'); morning(); await wait(2600); if (me !== run) return;
-    markStep(2, nstepsLi); await travel([[MID, 74, MID, 98]], '', 1500); if (me !== run) return;
-    light('n-exec'); N.classList.add('picked'); await wait(700); if (me !== run) return;
-    markStep(3, nstepsLi); await travel([[MID, COS, X.merch, FN]], 'back', 1950); if (me !== run) return;
-    light('n-merch'); await wait(600); if (me !== run) return;
+    await wait(1800); if (me !== run) return;                      // collect them all into one brief
+    await travel([[ENG, 74, ENG, 98]], 'back', 2200); if (me !== run) return;
+    light('n-cos'); morning(); await wait(3200); if (me !== run) return;
+    markStep(2, nstepsLi); await travel([[MID, 74, MID, 98]], '', 2200); if (me !== run) return;
+    light('n-exec'); N.classList.add('picked'); await wait(1000); if (me !== run) return;
+    markStep(3, nstepsLi); await travel([[MID, COS, X.merch, FN]], 'back', 2600); if (me !== run) return;
+    light('n-merch'); await wait(800); if (me !== run) return;     // Merch's head agent puts it in front of the Head of Merch
     finishNight();
   }
   document.getElementById('nreplay').onclick = playNight;
