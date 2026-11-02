@@ -7,15 +7,25 @@
 <meta name="robots" content="noindex">
 <style>
   :root {
-    --bg: #0b1020; --bg2: #121a33; --card: rgba(255,255,255,.045); --line: rgba(255,255,255,.12);
-    --ink: #f3f5fa; --soft: #9aa3b8; --dim: #5d6680;
-    --steer: #8fa3ff; --coord: #f5b84a; --teams: #3ddc97; --data: #c48bff;
-    --display: "SF Pro Display", "Segoe UI Variable Display", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    /* theme tokens taken from the keel ai operating-model piece: paper on canvas, one blue accent, hairlines, square corners */
+    --canvas:#f6f7f9; --paper:#ffffff; --deep:#e7eaee;
+    --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
+    --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e;
+    --hair:rgba(21,23,28,.12);
+    --card: var(--paper); --line: var(--hair); --soft: var(--ink2); --dim: var(--muted);
+    --steer: var(--ink); --coord: var(--warn); --teams: var(--pos); --data: var(--accent);
+    --sans: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --display: var(--sans);
   }
+  @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --deep:#15171c;
+    --ink:#eef0f3; --ink2:#c5cad1; --muted:#9aa1ad; --rule:#565d68; --fill:#15171c;
+    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --pos:#3fbf86; --warn:#d9a052;
+    --hair:rgba(238,240,243,.14); color-scheme:dark; } }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; color: var(--ink);
-    background: radial-gradient(120% 90% at 85% 0%, #1b2550 0%, var(--bg) 55%) fixed, var(--bg);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    background: var(--canvas);
+    font-family: var(--sans); }
   body { overflow: hidden; }
   /* a sideways swipe changes slide: the browser must not take it as back/forward */
   html, body { overscroll-behavior-x: none; touch-action: pan-y; }
@@ -23,37 +33,37 @@
     padding: 6vh 7vw 12vh; opacity: 0; visibility: hidden; transform: translateY(18px);
     transition: opacity .5s ease, transform .5s ease, visibility 0s linear .5s; }
   .slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s ease, transform .5s ease; }
-  .kicker { font-size: clamp(12px, 1.2vw, 16px); letter-spacing: .2em; text-transform: uppercase; color: var(--coord);
-    margin: 0 0 1.6vh; font-weight: 600; }
+  .kicker { font-family: var(--mono); font-size: clamp(11px, 1.05vw, 14px); letter-spacing: .08em; text-transform: uppercase; color: var(--ink2);
+    margin: 0 0 1.6vh; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+  .kicker::before, .mark .dia, .brand .dia { content: ""; width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; display: inline-block; }
   h1 { font-family: var(--display); font-size: clamp(30px, 4.6vw, 66px); line-height: 1.04; margin: 0 0 2vh;
-    font-weight: 700; letter-spacing: -.02em; }
-  .big { font-size: clamp(44px, 8vw, 116px); background: linear-gradient(90deg, #fff 30%, var(--steer)); -webkit-background-clip: text;
-    background-clip: text; color: transparent; }
+    font-weight: 600; letter-spacing: -.01em; }
+  .big { font-size: clamp(44px, 8vw, 116px); color: var(--ink); }
   .lead { font-size: clamp(16px, 1.8vw, 24px); color: var(--soft); margin: 0 0 5vh; max-width: 52ch; line-height: 1.45; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; backdrop-filter: blur(6px); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 4px; }
 
   /* flow of cards with drawn connectors */
   .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; max-width: 1200px; }
   .side { flex: 1; min-width: 150px; padding: 3.2vh 1.6vw; font-family: var(--display); font-weight: 600;
     font-size: clamp(16px, 1.9vw, 26px); position: relative; overflow: hidden; }
   .side::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 4px; background: var(--c); }
-  .side small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .62em; margin-top: 1vh; line-height: 1.4; }
+  .side small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .62em; margin-top: 1vh; line-height: 1.4; }
   .arrow { align-self: center; width: clamp(28px, 3.5vw, 56px); height: 2px; margin: 0 .6vw; position: relative;
-    background: linear-gradient(90deg, var(--dim), var(--soft)); font-size: 0; }
-  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--soft); border-right: 0; }
+    background: var(--rule); font-size: 0; }
+  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--rule); border-right: 0; }
 
   .col { display: flex; flex-direction: column; gap: 1vh; flex: 1; min-width: 150px; justify-content: center; }
-  .chip { border-radius: 12px; padding: 1.3vh 1vw; font-size: clamp(13px, 1.3vw, 17px); background: var(--card);
+  .chip { border-radius: 3px; padding: 1.3vh 1vw; font-size: clamp(13px, 1.3vw, 17px); background: var(--card);
     border: 1px solid var(--line); color: var(--dim); }
   .col .chip { color: var(--ink); }
-  .chip.live { border-color: var(--teams); background: rgba(61,220,151,.1); color: var(--ink); font-weight: 600; }
+  .chip.live { border-color: var(--teams); background: color-mix(in srgb, var(--pos) 10%, var(--paper)); color: var(--ink); font-weight: 600; }
   .chip.src { border-left: 3px solid var(--data); }
-  .hub { flex: 1.2; min-width: 180px; align-self: center; text-align: center; padding: 3.4vh 1.4vw; border-radius: 20px;
-    background: radial-gradient(circle at 50% 0%, rgba(196,139,255,.28), rgba(196,139,255,.06)); border: 1px solid var(--data);
-    font-family: var(--display); font-weight: 700; font-size: clamp(16px, 1.9vw, 26px); box-shadow: 0 0 60px rgba(196,139,255,.18); }
-  .hub small, .road small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; line-height: 1.4; }
-  .road { flex: .9; min-width: 140px; align-self: center; text-align: center; border-radius: 999px; padding: 2.2vh 1.2vw;
-    background: linear-gradient(90deg, rgba(245,184,74,.25), rgba(245,184,74,.08)); border: 1px solid var(--coord);
+  .hub { flex: 1.2; min-width: 180px; align-self: center; text-align: center; padding: 3.4vh 1.4vw; border-radius: 4px;
+    background: var(--accent-soft); border: 1px solid var(--data);
+    font-family: var(--display); font-weight: 700; font-size: clamp(16px, 1.9vw, 26px);  }
+  .hub small, .road small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; line-height: 1.4; }
+  .road { flex: .9; min-width: 140px; align-self: center; text-align: center; border-radius: 3px; padding: 2.2vh 1.2vw;
+    background: var(--paper); border: 1px solid var(--coord);
     font-family: var(--display); font-weight: 700; font-size: clamp(14px, 1.5vw, 20px); }
 
   /* rollout */
@@ -77,13 +87,13 @@
   .arch .chip { padding: .9vh .8vw; font-size: clamp(11px, 1.1vw, 15px); }
   .arch .col { gap: .7vh; min-width: 0; }
   .arch .hub, .arch .road { align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-  .arch .hub ul { list-style: none; padding: 0; margin: 1.4vh 0 0; font-family: "Inter", sans-serif; font-weight: 500; font-size: .58em; color: var(--ink); }
+  .arch .hub ul { list-style: none; padding: 0; margin: 1.4vh 0 0; font-family: var(--sans); font-weight: 500; font-size: .58em; color: var(--ink); }
   .arch .hub li { padding: .5vh 0; border-top: 1px solid var(--line); }
   .agents { display: flex; flex-direction: column; gap: .8vh; }
   .agents .chip { color: var(--ink); }
-  .agents .cos { border-color: var(--steer); background: rgba(143,163,255,.12); font-weight: 600; }
-  .agents .head { border-color: var(--coord); background: rgba(245,184,74,.1); font-weight: 600; }
-  .agents .work { border-color: var(--teams); background: rgba(61,220,151,.08); }
+  .agents .cos { border-color: var(--steer); background: var(--fill); font-weight: 600; }
+  .agents .head { border-color: var(--coord); background: color-mix(in srgb, var(--warn) 10%, var(--paper)); font-weight: 600; }
+  .agents .work { border-color: var(--teams); background: color-mix(in srgb, var(--pos) 8%, var(--paper)); }
   .agents .labchip { border-style: dashed; border-color: var(--teams); color: var(--soft); margin-top: .6vh; }
 
   /* freedoms / gate / lab */
@@ -91,30 +101,40 @@
   .free .side b { display: block; font-size: 2.2em; color: var(--c); line-height: 1; margin-bottom: 1.2vh; }
   .gate { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3vw; max-width: 900px; }
   .gate .side { text-align: center; }
-  .lock { width: clamp(80px, 10vw, 136px); height: clamp(80px, 10vw, 136px); border-radius: 50%; border: 2px solid var(--coord);
-    background: radial-gradient(circle, rgba(245,184,74,.35), rgba(245,184,74,.05)); color: var(--ink); display: flex; align-items: center;
+  .lock { width: clamp(80px, 10vw, 136px); height: clamp(80px, 10vw, 136px); border-radius: 4px; border: 1px solid var(--accent);
+    background: var(--accent-soft); color: var(--ink); display: flex; align-items: center;
     justify-content: center; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(12px, 1.3vw, 17px); line-height: 1.2;
-    box-shadow: 0 0 50px rgba(245,184,74,.25); }
+     }
   .points { list-style: none; padding: 0; margin: 5vh 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4vh 2.4vw;
     font-size: clamp(14px, 1.45vw, 19px); max-width: 1150px; line-height: 1.4; }
   .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
   .lab { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3vw; align-items: center; max-width: 950px; }
-  .labbox, .livebox { border-radius: 20px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
-  .labbox { border: 2px dashed var(--teams); background: rgba(61,220,151,.07); }
+  .labbox, .livebox { border-radius: 4px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
+  .labbox { border: 2px dashed var(--teams); background: color-mix(in srgb, var(--pos) 6%, var(--paper)); }
   .livebox { border: 1px solid var(--line); background: var(--card); }
-  .labbox small, .livebox small { display: block; font-family: "Inter", sans-serif; font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
-  .wall { width: 6px; height: 22vh; background: linear-gradient(var(--steer), var(--data)); border-radius: 4px; justify-self: center; }
+  .labbox small, .livebox small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
+  .wall { width: 6px; height: 22vh; background: var(--ink); border-radius: 4px; justify-self: center; }
   .note { margin-top: 4vh; font-size: clamp(13px, 1.4vw, 17px); color: var(--soft); max-width: 70ch; line-height: 1.5;
     border-left: 3px solid var(--coord); padding-left: 1em; }
 
+  /* keel ai mark on every slide; the Cleopatra credit stays quieter */
+  .mark { position: absolute; top: 3.2vh; right: 3.4vw; display: flex; align-items: center; gap: 10px; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .08em; font-size: clamp(10px, .9vw, 12px); color: var(--ink); }
+  .mark .by { color: var(--muted); text-transform: none; letter-spacing: .02em; font-size: .92em; }
+  .brand { display: flex; flex-direction: column; gap: .8vh; margin: 0 0 4vh; }
+  .brand .wm { font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; font-size: clamp(16px, 1.9vw, 26px); font-weight: 500;
+    color: var(--ink); display: flex; align-items: center; gap: 14px; }
+  .brand .wm .dia { width: 12px; height: 12px; }
+  .brand .by { font-size: clamp(11px, 1vw, 14px); color: var(--muted); padding-left: 26px; }
+  .slide:first-of-type .mark { display: none; }
   nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
-  nav button { border: 1px solid var(--line); background: rgba(255,255,255,.06); border-radius: 999px; padding: .6em 1.2em; font-size: 14px;
+  nav button { border: 1px solid var(--line); background: var(--paper); border-radius: 3px; padding: .6em 1.2em; font-size: 14px;
     cursor: pointer; color: var(--ink); font-family: inherit; }
   nav .dots { display: flex; gap: 8px; }
   nav .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all .3s; }
-  nav .dots i.on { background: var(--coord); width: 22px; border-radius: 4px; }
+  nav .dots i.on { background: var(--accent); width: 22px; border-radius: 4px; }
 
-  @media (max-width: 760px) {
+  @media screen and (max-width: 760px) {
     body { overflow: auto; }
     .slide { padding: 8vh 6vw 14vh; justify-content: flex-start; display: none; transform: none; }
     .slide.on { display: flex; }
@@ -127,8 +147,8 @@
   }
   @media print {
     @page { size: A4 landscape; margin: 0; }
-    :root { --ink: #1f2328; --soft: #5b606a; --dim: #9a9ea6; --line: #dcd9d3; --card: #fff;
-      --steer: #3d4a8f; --coord: #b7791f; --teams: #2f855a; --data: #8a4b9e; }
+    :root { --canvas:#fff; --paper:#fff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
+      --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.14); color-scheme:light; }
     html, body { height: auto; overflow: visible; background: #fff; }
     .slide { opacity: 1; visibility: visible; transform: none; transition: none; display: flex !important; position: relative; inset: auto;
       width: 297mm; height: 210mm; overflow: hidden; padding: 14mm 18mm; justify-content: center; page-break-after: always; break-after: page; }
@@ -149,6 +169,7 @@
 <body>
 
 <section class="slide on">
+  <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="by">powered by Cleopatra</span></div>
   <p class="kicker">AI future vision</p>
   <h1 class="big">You have a plan.</h1>
   <p class="lead">A clear, safe path to AI across the business — one function at a time, on what you already own.</p>
@@ -301,7 +322,10 @@
 <script>
   const slides = [...document.querySelectorAll('.slide')];
   const dots = document.getElementById('dots');
-  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  slides.forEach(s => {
+    dots.appendChild(document.createElement('i'));
+    s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by Cleopatra</span></div>');
+  });
   let i = 0;
   function go(n) {
     i = Math.max(0, Math.min(slides.length - 1, n));
