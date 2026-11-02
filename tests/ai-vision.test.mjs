@@ -1,7 +1,7 @@
 // tests/ai-vision.test.mjs — renders ai-vision/ (from disk, file://, no server of any kind) in a real headless
 // Chrome and checks the vertical layer stack: the milestone steps (only that milestone's boxes solid, with a
-// screenshot per step, plus a reduced-motion run stepping through every milestone with no animation), the zoom
-// transition and its own reduced-motion fallback, the neighbour-layer strips, the AI Hub rename, phone width,
+// screenshot per step, plus a reduced-motion run stepping through every milestone), no animation anywhere, every
+// slide fitting the screen at common sizes, MotherDuck above its sources, the neighbour-layer strips, the AI Hub rename, phone width,
 // print, and self-containment. Same harness as tests/ai-blueprint.test.mjs: plain Node, Chrome driven over its
 // DevTools protocol on loopback (127.0.0.1 only, closed at the end of the run) — no tunnel, no web server.
 // Run: `node --test tests/ai-vision.test.mjs` (skipped, not failed, where no Chrome exists;
@@ -142,25 +142,44 @@ test('reduced motion: milestone steps still change, with no animation', { skip }
   await evaluate(`document.querySelector('.steps [data-m="1"]').click()`);
 });
 
-test('zoom: moving between layer slides plays the zoom; reduced motion skips it', { skip }, async () => {
-  await goTo(0);
-  await sleep(1300);
-  await goTo(1);
-  assert.equal(await evaluate(`document.getElementById('zoomfx').classList.contains('run')`), true, 'zoom runs between stack and a layer');
-  assert.ok(await evaluate(`document.getElementById('zoomfx').getAnimations().length`) > 0);
-  await sleep(1400);
-  assert.equal(await evaluate(`document.getElementById('zoomfx').classList.contains('run')`), false, 'the overlay clears once the zoom ends');
-  await goTo(5); await sleep(100);
-  await goTo(4);
-  assert.equal(await evaluate(`document.getElementById('zoomfx').getAnimations().length`), 0, 'no zoom to or from the lab slide');
-  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-  for (const n of [3, 2, 1, 0]) {
+test('no animation anywhere: changing slide or milestone runs nothing (Sir, 2 Nov 2026: rip the animations out)', { skip }, async () => {
+  assert.equal(await evaluate(`document.getElementById('zoomfx')`), null, 'the zoom overlay is gone');
+  for (const n of [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0]) {
     await goTo(n);
     assert.equal(await current(), n);
-    assert.equal(await evaluate(`document.getElementById('zoomfx').classList.contains('run')`), false, 'reduced motion: no zoom');
-    assert.equal(await evaluate(`document.getElementById('zoomfx').getAnimations().length`), 0);
+    assert.equal(await evaluate(`document.getAnimations().length`), 0, `animation running on slide ${n + 1}`);
   }
-  await send('Emulation.setEmulatedMedia', { features: [] });
+  await goTo(4);
+  for (const m of [2, 3, 1]) {
+    await evaluate(`document.querySelector('.steps [data-m="${m}"]').click()`);
+    assert.equal(await evaluate(`document.getAnimations().length`), 0, `animation running at milestone ${m}`);
+  }
+  const css = await evaluate(`[...document.styleSheets].flatMap(s => [...s.cssRules]).map(r => r.cssText).join('\\n')`);
+  assert.doesNotMatch(css, /@keyframes|animation:|transition:/, 'no keyframes, animations or transitions left in the page');
+});
+
+test('every slide fits the screen: content sits between the header and the bottom strip at common sizes', { skip }, async () => {
+  for (const [width, height] of [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1080]]) {
+    await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+    for (let n = 0; n < 6; n++) {
+      await goTo(n);
+      const [above, below, right] = await evaluate(`(() => {
+        const s = document.querySelector('.slide.on'), inner = s.querySelector('.inner').getBoundingClientRect(), mk = s.querySelector('.mark');
+        const head = Math.max(getComputedStyle(mk).display === 'none' ? 0 : mk.getBoundingClientRect().bottom, document.querySelector('nav').getBoundingClientRect().bottom);
+        const eb = s.querySelector('.edge.bot'), lim = eb ? eb.getBoundingClientRect().top : innerHeight;
+        let b = 0, r = 0; s.querySelectorAll('.inner *').forEach(e => { const q = e.getBoundingClientRect(); if (q.width) { b = Math.max(b, q.bottom); r = Math.max(r, q.right); } });
+        return [inner.top - head, lim - b, innerWidth - r]; })()`);
+      assert.ok(above >= 8 && below >= 8 && right >= 0, `${width}x${height} slide ${n + 1}: ${above} px above, ${below} px below, ${right} px right`);
+    }
+  }
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+});
+
+test('layer 1: the MotherDuck governed layer sits above the sources that feed it (Sir, 2 Nov 2026)', { skip }, async () => {
+  await goTo(1);
+  const [hub, src] = await evaluate(`(() => { const s = document.querySelector('.slide.on');
+    return [s.querySelector('.hub').getBoundingClientRect().bottom, [...s.querySelectorAll('.tag')].find(t => t.textContent === 'Sources today').getBoundingClientRect().top]; })()`);
+  assert.ok(hub < src, 'MotherDuck is drawn above the sources');
 });
 
 test('a zoomed layer always shows its neighbours at the edges, with labelled connections', { skip }, async () => {
