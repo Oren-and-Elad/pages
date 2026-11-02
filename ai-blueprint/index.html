@@ -61,6 +61,17 @@
   .fn[data-status="build"] .badge { background:#fdf1e3; color:var(--coord); }
   .fn[data-status="planned"] { border-top-color:var(--line); border-top-style:dashed; }
   .fn[data-status="planned"] .badge { background:#f4f3f1; color:var(--soft); }
+  .unit .src { display:block; margin-top:1.2vh; font-size:.7em; font-weight:700; letter-spacing:.05em; color:var(--teams); }
+  .unit.ext { border-top-style:dashed; border-top-color:var(--data); }
+  .unit.ext .src { color:var(--data); }
+  .plug { margin-top:3vh; font-size:clamp(14px, 1.5vw, 19px); color:var(--soft); max-width:60ch; line-height:1.4; }
+  .plug b { color:var(--ink); }
+  .levels { display:grid; grid-template-columns:1fr 1fr; gap:2.4vw; max-width:1000px; }
+  .levels h3 { margin:0 0 1.4vh; font-size:clamp(15px, 1.7vw, 22px); }
+  .levels h3 span { color:var(--soft); font-weight:400; }
+  .levels .models { gap:1vw; }
+  .levels .model { padding:1.8vh 1.4vw; }
+  .levels .model.sol { border-color:var(--teams); color:var(--teams); }
   .legend { display:flex; gap:2em; flex-wrap:wrap; margin-top:3vh; font-size:clamp(13px, 1.4vw, 16px); color:var(--soft); }
   .legend .badge { padding:.3em .8em; border-radius:999px; font-weight:700; font-size:.85em; margin-right:.5em; }
   nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
@@ -73,7 +84,7 @@
     .slide { padding: 5vh 6vw 14vh; justify-content: flex-start; padding-top: 8vh; }
     .row { grid-template-columns: 1fr 1fr; } .stages { grid-template-columns: 1fr; }
     .gate { grid-template-columns: 1fr; justify-items: center; } .side { width: 100%; }
-    .steps { grid-template-columns: 1fr 1fr; } .master-row { grid-template-columns: 1fr 1fr; } .layer { flex-direction: column; }
+    .steps { grid-template-columns: 1fr 1fr; } .levels { grid-template-columns: 1fr; } .master-row { grid-template-columns: 1fr 1fr; } .layer { flex-direction: column; }
   }
   @media print {
     @page { size: A4 landscape; margin: 0; }
@@ -111,19 +122,20 @@
 <section class="slide">
   <p class="kicker">The business functions</p>
   <h1>Each function gets its own AI team</h1>
-  <p class="lead">Teams are kept apart, so one function's work and data never spill into another's.</p>
+  <p class="lead">Teams are kept apart, so one function's work and data never spill into another's. Each team can be built in-house or plugged in from another provider.</p>
   <div class="row">
     <div class="unit">Merchandising
-      <ul><li>Range planner</li><li>Pricing helper</li></ul></div>
+      <ul><li>Range planner</li><li>Pricing helper</li></ul><span class="src">In-house</span></div>
     <div class="unit">Supply &amp; Warehousing
-      <ul><li>Stock forecaster</li><li>Reorder helper</li></ul></div>
-    <div class="unit">Store Operations &amp; Rostering
-      <ul><li>Roster builder</li><li>Store checklist</li></ul></div>
+      <ul><li>Stock forecaster</li><li>Reorder helper</li></ul><span class="src">In-house</span></div>
+    <div class="unit ext">Store Operations &amp; Rostering
+      <ul><li>Roster builder</li><li>Store checklist</li></ul><span class="src">Plugged in · another provider</span></div>
     <div class="unit">Finance
-      <ul><li>Month-end helper</li><li>Spend checker</li></ul></div>
+      <ul><li>Month-end helper</li><li>Spend checker</li></ul><span class="src">In-house</span></div>
     <div class="unit">Marketing
-      <ul><li>Campaign writer</li><li>Results reader</li></ul></div>
+      <ul><li>Campaign writer</li><li>Results reader</li></ul><span class="src">In-house</span></div>
   </div>
+  <p class="plug"><b>Same rules for both.</b> A plugged-in team takes work from the same coordinator and passes the same access check — and can be swapped later.</p>
 </section>
 
 <section class="slide">
@@ -157,11 +169,15 @@
 
 <section class="slide">
   <p class="kicker">The foundation</p>
-  <h1>The AI models underneath can be swapped</h1>
-  <p class="lead">We're never locked in. As better models arrive, we change the engine — the business keeps running.</p>
-  <div class="models">
-    <div class="model">Model A</div><div class="model">Model B</div><div class="model">Model C</div><div class="model">Next model</div>
+  <h1>Open by design — never locked to one provider</h1>
+  <p class="lead">Two levels of freedom. As better options arrive, we change the part — the business keeps running.</p>
+  <div class="levels">
+    <div><h3>1 · The models <span>· underneath</span></h3><div class="models">
+      <div class="model">Model A</div><div class="model">Model B</div><div class="model">Next model</div></div></div>
+    <div><h3>2 · Whole solutions <span>· on top</span></h3><div class="models">
+      <div class="model sol">In-house team</div><div class="model sol">Provider's agent</div><div class="model sol">Next solution</div></div></div>
   </div>
+  <ul class="points"><li>Interchangeable models</li><li>Connectable, replaceable agents</li><li>One set of rules for all</li></ul>
 </section>
 
 <section class="slide">
@@ -171,7 +187,7 @@
   <div class="layers">
     <div class="layer"><b>Steering</b> Leaders set goals and see results</div>
     <div class="layer gatehl"><b>Coordination</b> One AI agent plans the work and routes it to the right team</div>
-    <div class="layer"><b>Function agents</b> Five teams, each working only inside its own function</div>
+    <div class="layer"><b>Function agents</b> Five teams, each working only inside its own function — built in-house or plugged in</div>
     <div class="layer"><b>Shared context</b> Common facts every team can read — policies, calendars, the store list</div>
     <div class="layer gatehl"><b>Access gate</b> Checks every request against what that team is allowed to see</div>
     <div class="layer"><b>Company data</b> Existing systems — sales, stock, rosters, finance, campaigns</div>
@@ -207,6 +223,7 @@
     <div class="fn" data-status="planned">Supply &amp; Warehousing<span class="badge">Planned</span></div>
     <div class="fn" data-status="planned">Marketing<span class="badge">Planned</span></div>
   </div>
+  <p class="plug"><b>Open bays.</b> Any function can take a third-party agent under the same coordination and access check.</p>
   <div class="legend">
     <span><span class="badge" style="background:#eef7f1;color:var(--teams)">Live</span>in daily use</span>
     <span><span class="badge" style="background:#fdf1e3;color:var(--coord)">In build</span>being built now</span>
