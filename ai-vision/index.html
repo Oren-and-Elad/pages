@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Future Vision — You Have a Plan</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --ink: #1f2328; --soft: #6b6f76; --line: #e4e1dc; --bg: #faf9f7;
+    --steer: #3d3a36; --coord: #b7791f; --teams: #2f855a; --data: #8a4b9e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
+  body { overflow: hidden; }
+  /* a sideways swipe changes slide: the browser must not take it as back/forward */
+  html, body { overscroll-behavior-x: none; touch-action: pan-y; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center;
+    padding: 6vh 8vw 12vh; }
+  .slide.on { display: flex; }
+  .kicker { font-size: clamp(13px, 1.4vw, 18px); letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin: 0 0 1.2vh; }
+  h1 { font-size: clamp(28px, 4.4vw, 60px); line-height: 1.1; margin: 0 0 1.5vh; font-weight: 700; }
+  .lead { font-size: clamp(17px, 2vw, 26px); color: var(--soft); margin: 0 0 5vh; max-width: 46ch; line-height: 1.4; }
+  .stack { display: flex; flex-direction: column; gap: 1.6vh; max-width: 760px; }
+  .box { border-radius: 14px; padding: 2.2vh 2vw; font-size: clamp(16px, 1.9vw, 24px); font-weight: 600;
+    background: #fff; border: 1px solid var(--line); border-left: 8px solid var(--c); display: flex; justify-content: space-between; gap: 1em; align-items: baseline; }
+  .box small { font-weight: 400; color: var(--soft); font-size: .75em; text-align: right; }
+  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.4vw; }
+  .unit { background: #fff; border: 1px solid var(--line); border-top: 6px solid var(--teams); border-radius: 14px;
+    padding: 2.4vh 1.2vw; font-size: clamp(14px, 1.5vw, 20px); font-weight: 600; min-height: 16vh; }
+  .unit ul { margin: 1.4vh 0 0; padding-left: 1.1em; font-weight: 400; color: var(--soft); font-size: .85em; line-height: 1.5; }
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; }
+  .stage h3 { margin: 0 0 1.4vh; font-size: clamp(15px, 1.7vw, 22px); }
+  .stage h3 span { color: var(--soft); font-weight: 400; }
+  .chips { display: flex; flex-direction: column; gap: 1vh; }
+  .chip { border-radius: 10px; padding: 1.4vh 1vw; font-size: clamp(13px, 1.4vw, 18px); background: #fff; border: 1px solid var(--line); color: #b5b2ad; }
+  .chip.live { border-color: var(--teams); background: #eef7f1; color: var(--ink); font-weight: 600; }
+  .gate { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3vw; max-width: 900px; }
+  .side { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4vh 2vw; text-align: center;
+    font-size: clamp(16px, 2vw, 26px); font-weight: 600; border-top: 6px solid var(--c); }
+  .lock { width: clamp(70px, 9vw, 120px); height: clamp(70px, 9vw, 120px); border-radius: 50%; background: var(--coord); color: #fff;
+    display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: clamp(12px, 1.3vw, 16px); line-height: 1.2; }
+  .points { list-style: none; padding: 0; margin: 5vh 0 0; display: flex; gap: 3vw; flex-wrap: wrap; font-size: clamp(15px, 1.7vw, 22px); }
+  .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
+  .models { display: flex; gap: 1.4vw; flex-wrap: wrap; }
+  .model { border: 2px dashed var(--data); border-radius: 12px; padding: 2.4vh 2vw; font-size: clamp(15px, 1.7vw, 22px); color: var(--data); font-weight: 600; }
+  .layers { display:flex; flex-direction:column; gap:1vh; max-width:900px; }
+  .layer { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1.6vh 1.4vw; display:flex; gap:1.2em; align-items:baseline; font-size:clamp(14px, 1.5vw, 19px); }
+  .layer b { min-width:13ch; color:var(--soft); font-weight:600; }
+  .layer.gatehl { border-color:var(--coord); background:#fdf6ec; }
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1.6vw; }
+  .step { background:#fff; border:1px solid var(--line); border-radius:14px; padding:2.2vh 1.2vw; font-size:clamp(13px, 1.4vw, 18px); }
+  .step b { display:block; color:var(--coord); font-size:.85em; margin-bottom:.6vh; }
+  .master-row { display:grid; grid-template-columns:repeat(5,1fr); gap:1vw; }
+  .fn { background:#fff; border:1px solid var(--line); border-top:6px solid var(--line); border-radius:14px; padding:2vh 1vw; text-align:center; font-size:clamp(13px, 1.4vw, 17px); font-weight:600; }
+  .fn .badge { display:block; margin-top:1vh; font-size:.7em; font-weight:700; letter-spacing:.05em; padding:.3em .8em; border-radius:999px; }
+  .fn[data-status="live"] { border-top-color:var(--teams); }
+  .fn[data-status="live"] .badge { background:#eef7f1; color:var(--teams); }
+  .fn[data-status="build"] { border-top-color:var(--coord); }
+  .fn[data-status="build"] .badge { background:#fdf1e3; color:var(--coord); }
+  .fn[data-status="planned"] { border-top-color:var(--line); border-top-style:dashed; }
+  .fn[data-status="planned"] .badge { background:#f4f3f1; color:var(--soft); }
+  .unit .src { display:block; margin-top:1.2vh; font-size:.7em; font-weight:700; letter-spacing:.05em; color:var(--teams); }
+  .unit.ext { border-top-style:dashed; border-top-color:var(--data); }
+  .unit.ext .src { color:var(--data); }
+  .plug { margin-top:3vh; font-size:clamp(14px, 1.5vw, 19px); color:var(--soft); max-width:60ch; line-height:1.4; }
+  .plug b { color:var(--ink); }
+  .levels { display:grid; grid-template-columns:1fr 1fr; gap:2.4vw; max-width:1000px; }
+  .levels h3 { margin:0 0 1.4vh; font-size:clamp(15px, 1.7vw, 22px); }
+  .levels h3 span { color:var(--soft); font-weight:400; }
+  .levels .models { gap:1vw; }
+  .levels .model { padding:1.8vh 1.4vw; }
+  .levels .model.sol { border-color:var(--teams); color:var(--teams); }
+  .legend { display:flex; gap:2em; flex-wrap:wrap; margin-top:3vh; font-size:clamp(13px, 1.4vw, 16px); color:var(--soft); }
+  .legend .badge { padding:.3em .8em; border-radius:999px; font-weight:700; font-size:.85em; margin-right:.5em; }
+  nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
+  nav button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: .6em 1.2em; font-size: 15px; cursor: pointer; color: var(--ink); }
+  nav .dots { display: flex; gap: 8px; }
+  nav .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  nav .dots i.on { background: var(--ink); }
+  @media (max-width: 760px) {
+    body { overflow: auto; }
+    .slide { padding: 5vh 6vw 14vh; justify-content: flex-start; padding-top: 8vh; }
+    .row { grid-template-columns: 1fr 1fr; } .stages { grid-template-columns: 1fr; }
+    .gate { grid-template-columns: 1fr; justify-items: center; } .side { width: 100%; }
+    .steps { grid-template-columns: 1fr 1fr; } .levels { grid-template-columns: 1fr; } .master-row { grid-template-columns: 1fr 1fr; } .layer { flex-direction: column; }
+  }
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+    html, body { height: auto; overflow: visible; }
+    .slide { display: flex !important; position: relative; inset: auto; width: 297mm; height: 210mm; overflow: hidden;
+      padding: 14mm 20mm; justify-content: center; page-break-after: always; break-after: page; }
+    .slide:last-of-type { page-break-after: auto; break-after: auto; }
+    .row { grid-template-columns: repeat(5, 1fr); }
+    .stages { grid-template-columns: repeat(3, 1fr); }
+    .steps { grid-template-columns: repeat(4, 1fr); }
+    .master-row { grid-template-columns: repeat(5, 1fr); }
+    .gate { grid-template-columns: 1fr auto 1fr; }
+    .chip { padding: 2mm 3mm; font-size: 11pt; }
+    .chips { gap: 2mm; }
+    .lead { margin-bottom: 8mm; }
+    nav { display: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  .flow { display:flex; align-items:stretch; gap:1.2vw; flex-wrap:wrap; max-width:1100px; }
+  .flow .side { flex:1; min-width:150px; padding:3vh 1.4vw; }
+  .flow .side small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
+  .arrow { align-self:center; font-size:clamp(22px,3vw,40px); color:var(--soft); }
+  .col { display:flex; flex-direction:column; gap:1vh; flex:1; min-width:140px; }
+  .col .chip { color:var(--ink); }
+  .hub { flex:1.2; min-width:170px; background:#f6effa; border:2px solid var(--data); border-radius:16px; padding:3vh 1.4vw;
+    text-align:center; font-weight:700; font-size:clamp(15px,1.8vw,24px); align-self:center; }
+  .hub small, .road small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
+  .road { flex:.8; min-width:120px; align-self:center; text-align:center; background:var(--coord); color:#fff; border-radius:999px;
+    padding:2vh 1vw; font-weight:700; font-size:clamp(14px,1.6vw,20px); }
+  .road small { color:#fdf1e3; }
+  .free { display:grid; grid-template-columns:repeat(3,1fr); gap:2vw; max-width:1100px; }
+  .free .side { text-align:left; }
+  .free .side b { display:block; font-size:2em; color:var(--c); line-height:1; margin-bottom:1vh; }
+  .free .side small { display:block; font-weight:400; color:var(--soft); font-size:.7em; margin-top:1vh; line-height:1.4; }
+  .lab { display:grid; grid-template-columns:1fr auto 1fr; gap:3vw; align-items:center; max-width:950px; }
+  .sandbox { border:3px dashed var(--teams); border-radius:18px; padding:4vh 2vw; text-align:center; background:#f3faf5;
+    font-weight:700; font-size:clamp(16px,2vw,26px); }
+  .sandbox small, .live small { display:block; font-weight:400; color:var(--soft); font-size:.65em; margin-top:1vh; }
+  .wall { width:8px; height:22vh; background:var(--steer); border-radius:4px; justify-self:center; }
+  .live { border:1px solid var(--line); border-top:6px solid var(--steer); border-radius:18px; padding:4vh 2vw; text-align:center;
+    background:#fff; font-weight:700; font-size:clamp(16px,2vw,26px); }
+  .note { margin-top:4vh; font-size:clamp(13px,1.4vw,17px); color:var(--soft); max-width:70ch; line-height:1.45;
+    border-left:4px solid var(--coord); padding-left:1em; }
+  .big { font-size:clamp(40px,7vw,96px); line-height:1.02; }
+  @media (max-width: 760px) { .free, .lab { grid-template-columns:1fr; } .wall { width:60%; height:8px; } .arrow { transform:rotate(90deg); } }
+  @media print { .free { grid-template-columns:repeat(3,1fr); } .lab { grid-template-columns:1fr auto 1fr; } }
+</style>
+</head>
+<body>
+
+<section class="slide on">
+  <p class="kicker">AI future vision</p>
+  <h1 class="big">You have a plan.</h1>
+  <p class="lead">A clear, safe path to AI across the business — one step at a time, on what you already own.</p>
+  <div class="flow">
+    <div class="side" style="--c:var(--data)">Your data</div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--coord)">One governed road</div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--teams)">AI that does real work</div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">The operating model</p>
+  <h1>Three steps</h1>
+  <p class="lead">Leaders steer. One coordinator routes. Function teams do the work.</p>
+  <div class="flow">
+    <div class="side" style="--c:var(--steer)">1 · Steer<small>Leaders set goals and see results</small></div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--coord)">2 · Coordinate<small>One AI turns goals into routed work</small></div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--teams)">3 · Do<small>An AI team per function, kept apart</small></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">The data spine</p>
+  <h1>Many sources, one governed centre, one road in</h1>
+  <p class="lead">Agents never reach into systems directly. They use one standard connection to one governed layer.</p>
+  <div class="flow">
+    <div class="col"><div class="chip">Sales</div><div class="chip">Stock</div><div class="chip">Rosters</div><div class="chip">Finance</div></div>
+    <div class="arrow">→</div>
+    <div class="hub">One governed central layer<small>cleaned, controlled, in one place</small></div>
+    <div class="arrow">→</div>
+    <div class="road">One MCP road<small>a single standard connection</small></div>
+    <div class="arrow">→</div>
+    <div class="col"><div class="chip live">Agent</div><div class="chip live">Agent</div><div class="chip live">Agent</div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">How we roll it out</p>
+  <h1>Vertical by vertical — no big bang</h1>
+  <p class="lead">Each function goes live on its own slice of data. No large infrastructure project up front.</p>
+  <div class="stages">
+    <div class="stage"><h3>First <span>· one function</span></h3><div class="chips">
+      <div class="chip live">Function 1</div><div class="chip">Function 2</div><div class="chip">Function 3</div><div class="chip">Function 4</div></div></div>
+    <div class="stage"><h3>Next <span>· add one</span></h3><div class="chips">
+      <div class="chip live">Function 1</div><div class="chip live">Function 2</div><div class="chip">Function 3</div><div class="chip">Function 4</div></div></div>
+    <div class="stage"><h3>Then <span>· keep going</span></h3><div class="chips">
+      <div class="chip live">Function 1</div><div class="chip live">Function 2</div><div class="chip live">Function 3</div><div class="chip">Function 4</div></div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">Open architecture</p>
+  <h1>Three freedoms — never locked in</h1>
+  <p class="lead">Every part can change without rebuilding the rest.</p>
+  <div class="free">
+    <div class="side" style="--c:var(--data)"><b>1</b>Swap the model<small>Change the AI model underneath as better ones arrive.</small></div>
+    <div class="side" style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
+    <div class="side" style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">Governance by architecture</p>
+  <h1>Safe because of how it's built</h1>
+  <p class="lead">Not a policy document — the design itself limits what each agent can see.</p>
+  <div class="gate">
+    <div class="side" style="--c:var(--teams)">Each agent</div>
+    <div class="lock">Its own<br>slice</div>
+    <div class="side" style="--c:var(--data)">Governed data</div>
+  </div>
+  <ul class="points"><li>Read-only, per-agent slices</li><li>Rows and columns masked</li><li>Every query traceable</li><li>Data stays in Sydney</li></ul>
+</section>
+
+<section class="slide">
+  <p class="kicker">The lab</p>
+  <h1>Try ideas in a sandbox first</h1>
+  <p class="lead">New agents are tested on a safe copy, walled off from the live business.</p>
+  <div class="lab">
+    <div class="sandbox">Lab sandbox<small>experiment freely</small></div>
+    <div class="wall" aria-label="separated"></div>
+    <div class="live">Live business<small>only proven agents cross over</small></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kicker">What stays</p>
+  <h1>Your existing reporting stays</h1>
+  <p class="lead">Today's dashboards keep running. AI is added alongside them, on the same governed data.</p>
+  <div class="flow">
+    <div class="hub">Governed central layer</div><div class="arrow">→</div>
+    <div class="col"><div class="chip live">Existing reports &amp; dashboards</div><div class="chip live">New AI agents</div></div>
+  </div>
+  <p class="note">This is a direction, not a replacement plan. Nothing here commits to retiring or changing any current reporting tool; that is your decision, case by case.</p>
+</section>
+
+<section class="slide">
+  <p class="kicker">The sensible next step</p>
+  <h1>Start with one function</h1>
+  <p class="lead">Pick one area, connect its slice of data, prove the value — then decide what's next.</p>
+  <div class="flow">
+    <div class="side" style="--c:var(--steer)">Choose one function</div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--data)">Connect its data</div><div class="arrow">→</div>
+    <div class="side" style="--c:var(--teams)">Prove it works</div>
+  </div>
+</section>
+
+<nav>
+  <button id="prev" aria-label="Previous slide">← Back</button>
+  <div class="dots" id="dots"></div>
+  <button id="next" aria-label="Next slide">Next →</button>
+</nav>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  let i = 0;
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('prev').onclick = () => go(i - 1);
+  document.getElementById('next').onclick = () => go(i + 1);
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(i + 1); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1); }
+  });
+  let x0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) go(i + (dx < 0 ? 1 : -1));
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('nav')) return;
+    go(i + (e.clientX > innerWidth / 2 ? 1 : -1));
+  });
+  go(0);
+</script>
+</body>
+</html>
