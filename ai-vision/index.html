@@ -127,8 +127,9 @@
   .brand .wm .dia { width: 12px; height: 12px; }
   .brand .co { display: flex; align-items: center; gap: 14px; font-family: var(--sans); font-size: clamp(16px, 1.9vw, 26px); font-weight: 600; color: var(--ink); }
   .brand .co small { font-family: var(--mono); font-size: .5em; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); }
-  .brand .co img { width: 1.6em; height: 1.6em; border-radius: 22%; }
-  .mark img { width: 16px; height: 16px; border-radius: 22%; }
+  .brand .co img, .mark img { object-fit: cover; clip-path: inset(2.5% round 21%); filter: drop-shadow(0 0 1px var(--hair)); }
+  .brand .co img { width: 1.9em; height: 1.9em; }
+  .mark img { width: 20px; height: 20px; }
   .slide:first-of-type .mark { display: none; }
   nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
   nav button { border: 1px solid var(--line); background: var(--paper); border-radius: 3px; padding: .6em 1.2em; font-size: 14px;
@@ -247,7 +248,7 @@
 </svg>
 
 <section class="slide on">
-  <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="../logo.svg" alt="Cleopatra logo">Cleopatra</span></div>
+  <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
   <p class="kicker">AI future vision</p>
   <h1 class="big">You have a plan.</h1>
   <p class="lead">A clear, safe path to AI across the business — one function at a time, on what you already own.</p>
@@ -416,7 +417,7 @@
   const dots = document.getElementById('dots');
   slides.forEach(s => {
     dots.appendChild(document.createElement('i'));
-    s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="../logo.svg" alt=""><span class="by">Cleopatra</span></div>');
+    s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>');
   });
   let i = 0;
   function go(n) {
