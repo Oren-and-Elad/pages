@@ -18,6 +18,9 @@ const INSTRUCTIONS = `את קליאו, ראש המטה של חברת Shultz and 
 
 const prefs = Object.assign({ voice: 'marin', speed: 1.1, room: 'Cleo', color: COLORS[0] }, JSON.parse(localStorage.getItem(PREFS) || '{}'));
 const savePrefs = () => localStorage.setItem(PREFS, JSON.stringify(prefs));
+// opened from the console (+ → קול חדש), the room comes in the address: ?room=<the room's name>
+const fromConsole = new URLSearchParams(location.search).get('room');
+if (fromConsole) prefs.room = fromConsole.slice(0, 40);
 
 let pc = null, dc = null, mic = null, raf = 0, wake = null, audioCtx = null;
 const orb = $('orb');
@@ -38,6 +41,7 @@ $('speed').oninput = (e) => {
   prefs.speed = Number(e.target.value); $('speedV').textContent = prefs.speed; savePrefs();
   send({ type: 'session.update', session: { type: 'realtime', audio: { output: { speed: prefs.speed } } } });
 };
+if (![...$('roomSel').options].some((o) => o.value === prefs.room)) $('roomSel').append(new Option(prefs.room));
 $('roomSel').value = prefs.room; $('room').textContent = prefs.room;
 $('roomSel').onchange = (e) => { prefs.room = e.target.value; $('room').textContent = prefs.room; savePrefs(); };
 for (const c of COLORS) {
