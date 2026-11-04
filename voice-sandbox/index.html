@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f14">
+<title>Cleo · Voice sandbox</title>
+<style>
+  :root { --bg:#0d0f14; --fg:#e9ecf2; --dim:#8a92a6; --accent:#c9a46a; --line:#232838; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  body { display:flex; flex-direction:column; align-items:center; padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom); }
+  header { width:100%; max-width:520px; display:flex; justify-content:space-between; align-items:center; padding:14px 0 6px; }
+  #room { font-weight:600; letter-spacing:.02em; }
+  #status { color:var(--dim); font-size:13px; }
+  main { flex:1; width:100%; max-width:520px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; }
+  #orb { width:190px; height:190px; border-radius:50%; position:relative; cursor:pointer; border:0; padding:0;
+         background:radial-gradient(circle at 38% 34%, #f4dcae 0%, var(--accent) 38%, #6b4f2a 100%);
+         box-shadow:0 0 0 0 rgba(201,164,106,.0); transition:transform .08s linear, box-shadow .08s linear; }
+  #orb.idle { filter:saturate(.35) brightness(.7); }
+  #orb.listening { animation:breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform:scale(1.04); } }
+  #hint { color:var(--dim); font-size:14px; min-height:20px; text-align:center; }
+  #said { width:100%; min-height:48px; max-height:30vh; overflow:auto; color:var(--dim); font-size:15px; text-align:center; }
+  .row { display:flex; gap:10px; align-items:center; width:100%; }
+  .row label { color:var(--dim); font-size:13px; min-width:72px; }
+  select,input[type=range],input[type=password],button.small { flex:1; }
+  select,input[type=password] { background:#151925; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font:inherit; }
+  button.small { background:#151925; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font:inherit; }
+  details { width:100%; max-width:520px; margin:0 0 14px; border-top:1px solid var(--line); padding-top:10px; }
+  summary { color:var(--dim); font-size:13px; cursor:pointer; }
+  .panel { display:flex; flex-direction:column; gap:10px; padding-top:10px; }
+  #avatars { display:flex; gap:8px; flex-wrap:wrap; }
+  #avatars button { width:38px; height:38px; border-radius:50%; border:2px solid transparent; cursor:pointer; }
+  #avatars button.on { border-color:var(--fg); }
+</style>
+</head>
+<body>
+<header><span id="room">Cleo</span><span id="status">לא מחובר</span></header>
+<main>
+  <button id="orb" class="idle" aria-label="התחל או עצור שיחה"></button>
+  <div id="hint">לחיצה על העיגול מתחילה שיחה</div>
+  <div id="said"></div>
+</main>
+<details id="settings">
+  <summary>הגדרות</summary>
+  <div class="panel">
+    <div class="row"><label>מפתח</label><input id="key" type="password" placeholder="נשמר רק בטלפון הזה" autocomplete="off"><button class="small" id="saveKey" style="flex:0 0 auto">שמור</button></div>
+    <div class="row"><label>קול</label><select id="voice"><option>marin</option><option>cedar</option><option>alloy</option><option>ash</option><option>ballad</option><option>coral</option><option>echo</option><option>sage</option><option>shimmer</option><option>verse</option></select></div>
+    <div class="row"><label>מהירות</label><input id="speed" type="range" min="0.7" max="1.5" step="0.05" value="1.1"><span id="speedV" style="min-width:36px">1.1</span></div>
+    <div class="row"><label>חדר</label><select id="roomSel"><option>Cleo</option><option>Boss</option><option>Brickwise</option><option>GSA</option><option>Feldman</option></select></div>
+    <div class="row"><label>צבע</label><div id="avatars"></div></div>
+  </div>
+</details>
+<script type="module" src="sandbox.js"></script>
+</body>
+</html>
