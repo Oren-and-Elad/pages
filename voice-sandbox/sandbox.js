@@ -116,7 +116,7 @@ function onEvent(ev) {
   if (ev.type === 'input_audio_buffer.speech_stopped') hint('חושבת');
   if (ev.type === 'response.output_audio_transcript.delta') { line += ev.delta; $('said').textContent = line; hint(''); }
   if (ev.type === 'response.created') line = '';
-  if (ev.type === 'response.done') hint('מקשיבה · לחיצה מסיימת');
+  if (ev.type === 'response.done') { hint('מקשיבה · לחיצה מסיימת'); addUsage(ev.response?.usage); }
   if (ev.type === 'error') hint(ev.error?.message || 'שגיאה');
 }
 
@@ -142,3 +142,35 @@ async function holdScreen() { try { wake = await navigator.wakeLock?.request('sc
 document.addEventListener('visibilitychange', () => { if (pc && document.visibilityState === 'visible') holdScreen(); });
 
 orb.onclick = () => { if (pc) stop(); else start(); };
+
+// ── what this call costs, in AUD ─────────────────────────────────────────────────────────────────────────────────
+// Every reply's usage (response.done) priced at gpt-realtime's list rates in US$ per 1M tokens (an estimate: the
+// transcription of what you say is billed separately and is not counted), converted at a live USD→AUD rate.
+const PRICE = { audioIn: 32, textIn: 4, cachedIn: 0.4, audioOut: 64, textOut: 16 };
+let usd = 0, aud = 1.53, audLive = false;
+fetch('https://open.er-api.com/v6/latest/USD').then((r) => r.json()).then((j) => { if (j?.rates?.AUD) { aud = j.rates.AUD; audLive = true; paintCost(); } }).catch(() => {});
+function addUsage(u) {
+  if (!u) return;
+  const i = u.input_token_details || {}, o = u.output_token_details || {};
+  const cached = i.cached_tokens || 0;
+  usd += ((i.audio_tokens || 0) * PRICE.audioIn + (i.text_tokens || 0) * PRICE.textIn - cached * (PRICE.textIn - PRICE.cachedIn)
+        + (o.audio_tokens || 0) * PRICE.audioOut + (o.text_tokens || 0) * PRICE.textOut) / 1e6;
+  paintCost();
+}
+function paintCost() {
+  const el = $('cost'); if (!el) return;
+  el.textContent = usd ? `A$${(usd * aud).toFixed(2)} (US$${usd.toFixed(2)})${audLive ? '' : ' ~'}` : '';
+}
+
+// ── the room's running work, as small floating bubbles (sent by the console when the sandbox is opened inside it) ──
+const CONSOLE_ORIGIN = 'https://cleo2.pages.dev';
+window.addEventListener('message', (e) => {
+  if (e.origin !== CONSOLE_ORIGIN || e.data?.type !== 'cleo-tasks' || !Array.isArray(e.data.titles)) return;
+  const box = $('bubbles'); box.textContent = '';
+  e.data.titles.slice(0, 6).forEach((t, n) => {
+    const b = document.createElement('span'); b.className = 'bubble';
+    b.textContent = String(t).replace(/^\[[^\]]*\]\s*/, '').split(/\s+/).slice(0, 2).join(' ');
+    b.title = String(t); b.style.animationDelay = `${n * 0.7}s`;
+    box.append(b);
+  });
+});
