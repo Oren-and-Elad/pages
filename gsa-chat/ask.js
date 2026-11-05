@@ -1,0 +1,402 @@
+// GSA's own chat page (Oren, 5 Nov 2026, #hq2): moved out of Cleo's console (cleo2 app/console/public/elad-and-oren/ask.*)
+// into GSA's pages folder, owned end to end by #gsa and its builder; https://oren-and-elad.github.io/pages/gsa-chat/ —
+// the old link cleo2.pages.dev/elad-and-oren/ask.html#gsa-chat forwards here. Same Firebase project, sign-in and access
+// code; answers still come from GSA's own server on 21160 through the relay. See README.md in this folder.
+// ask.js — an answerer room's own page, `ask.html#<room>` (ADR-2610281312jh). Signed in as a director (the console's
+// sign-in, same origin), it shows that ONE room's questions and answers in its client's look and posts a typed question
+// there as a director message; the relay answers from the room's loopback answerer (kernel2/answerer-logic.mjs). Nothing
+// else of the console is on screen. A room ask-logic.mjs ASK_ROOMS does not name is refused. A room with `prepared` shows
+// its prepared answers as tabs first (fetched from the static page, decrypted here with its access code — no sign-in and
+// no Mac needed) and "Ask a question" as the last tab.
+// A chat room (`chat: true`, ADR-2611030930gc — the GSA chat) is a conversation instead: oldest at the top, the box at
+// the bottom, a follow-up sent in the same thread, "New conversation" for a fresh one. It signs in on the page itself
+// (a guest: the email and password they were given; a director: Google), and a guest — `elad-oren-guests/{email}`
+// listing the room, not off, before its end, the room not `guestsOff` — may ask there too (ask-logic.mjs guestAccess);
+// firestore.rules is what actually lets them, and lets a guest read only their own side: what they asked (fromUid) and
+// what answers them (askerUid), through two listeners. A guest rates each answer and sends general feedback; the relay
+// posts it to #gsa naming the login and the question (ADR-2611030930gc).
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+import { initializeFirestore, doc, getDoc, onSnapshot, addDoc, collection, query, where, limit, orderBy, limitToLast, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
+import { ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn } from './ask-logic.mjs';
+
+const fb = initializeApp({
+  apiKey: 'AIzaSyBHs-CAjmEtccqlzAaQ0zpgEKv32RX76Ko', authDomain: 'cleo2-1812b.firebaseapp.com', projectId: 'cleo2-1812b',
+  storageBucket: 'cleo2-1812b.firebasestorage.app', messagingSenderId: '333138022489', appId: '1:333138022489:web:754cafbfba335a0f856148',
+});
+const db = initializeFirestore(fb, { experimentalForceLongPolling: true }); // same transport as index.html
+const $ = (id) => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
+
+const roomId = roomOfLocation(location.hash, location.search);
+const room = roomId ? ASK_ROOMS[roomId] : null;
+if (!room) {
+  $('msg').textContent = 'This page is not available.';
+} else {
+  for (const [k, v] of Object.entries(cssVars(room))) document.documentElement.style.setProperty(k, v);
+  document.title = room.title; $('title').textContent = room.title;
+  $('logo').src = room.logo; $('logo').alt = room.by;
+  $('q').placeholder = room.placeholder;
+  if (room.chat) { document.body.classList.add('chat'); $('topbar').insertBefore($('fbgo'), $('signout')); } // Feedback beside Sign out, never over Send
+}
+const auth = getAuth(fb);
+
+let me = null; let directors = []; let rows = [];
+// the live answers (ask-view.js): the newest question and its answer first; a new one scrolls the page back to the top
+const ui = newUi(); let newest = '';
+function render() {
+  if (room?.chat) { renderChatRoom(); return; }
+  const items = conversation(rows, directors);
+  renderLive($('list'), items, ui, { redraw: render, examples: room?.examples || [], ask: (x) => { $('q').value = x; $('ask').requestSubmit(); }, scope: inv });
+  const top = items.filter((x) => x.kind === 'a').pop()?.id || items.filter((x) => x.kind === 'q').pop()?.id || '';
+  if (top !== newest) { newest = top; if (tab === 'live' && !pres.on) scrollTo(0, 0); }
+  if (pres.on && cur()?.kind === 'ask') renderLive($('pans'), presenterTurn(items, pres.qid), ui, { redraw: render, scope: inv });
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!room) return;
+  $('signin').hidden = true; $('signout').hidden = !(user && room.chat);
+  if (!user && room.chat) { $('msg').textContent = ''; $('signin').hidden = false; return; }
+  if (!user) { $('msg').innerHTML = 'Not signed in. <a href="./index.html">Sign in</a>, then open this page again.'; return; }
+  try {
+    const named = { 'oren001@gmail.com': 'Oren', ...((await getDoc(doc(db, 'elad-oren-config', 'app'))).data()?.directors || {}) };
+    directors = [...new Set(Object.values(named))];
+    if (named[user.email]) me = { user, name: named[user.email], guest: false };
+  } catch { /* a guest cannot read the directors' list; asking needs a name */ }
+  // the room doc (its job list for the trust line, and its `guestsOff` switch); a guest the rules refuse it to is closed
+  let roomDoc = null;
+  try { roomDoc = (await getDoc(doc(db, 'elad-oren-rooms', roomId))).data() || {}; } catch { roomDoc = null; }
+  if (!me && room.chat) {
+    // a guest of this chat: their own doc, by their verified email (a read that fails is no access)
+    let g = null;
+    try { g = user.emailVerified && user.email ? (await getDoc(doc(db, 'elad-oren-guests', user.email.toLowerCase()))).data() || null : null; } catch { g = null; }
+    const access = guestAccess(g, roomId, Date.now(), roomDoc || { guestsOff: true });
+    if (access === 'ask') me = { user, name: g.name.trim(), guest: true };
+    else { $('msg').textContent = access === 'closed' ? CLOSED_LINE : DENIED_LINE; return; }
+  }
+  if (!me) { $('msg').textContent = room.chat ? DENIED_LINE : 'This account cannot ask here.'; return; }
+  showInventory(inventoryOf(roomDoc || {}));
+  $('ask').hidden = false; $('q').focus(); $('fbgo').hidden = !room.feedback || me.guest;
+  if (room.chat) { $('newchat').hidden = false; $('gfbgo').hidden = !me.guest; }
+  if (room.chat && room.tabs) { drawChatTabs(); chatTab('chat'); roomCode = typeof roomDoc?.preparedCode === 'string' ? roomDoc.preparedCode.trim() : ''; tryRoomCode(); }
+  const msgs = collection(db, 'elad-oren-rooms', roomId, 'messages');
+  const failed = (e) => { $('msg').textContent = me.guest ? CLOSED_LINE : `Cannot read this room: ${e.message}`; };
+  if (me.guest) {
+    // a guest's own side only (firestore.rules guestOwnsMsg): equality queries, no orderBy, so no composite index
+    const part = { asked: [], answered: [] };
+    const take = (k) => (s) => { part[k] = s.docs.map((d) => ({ id: d.id, ...d.data() })); rows = mergeRows(part.asked, part.answered); $('msg').textContent = ''; render(); };
+    onSnapshot(query(msgs, where('fromUid', '==', me.user.uid), limit(500)), take('asked'), failed);
+    onSnapshot(query(msgs, where('askerUid', '==', me.user.uid), limit(500)), take('answered'), failed);
+  } else {
+    onSnapshot(query(msgs, orderBy('createdAt'), limitToLast(200)), (s) => { rows = s.docs.map((d) => ({ id: d.id, ...d.data() })); $('msg').textContent = ''; render(); }, failed);
+  }
+});
+
+// the console's own message shape (index.html sendMsg), with the verified identity firestore.rules binds (ask-logic.mjs
+// askMessage); a chat follow-up carries its conversation's threadId. The new id.
+const send = async (text, threadId) => (await addDoc(collection(db, 'elad-oren-rooms', roomId, 'messages'), { ...askMessage({ name: me.name,
+  uid: me.user.uid, email: me.user.email, text, threadId, guest: me.guest }), createdAt: serverTimestamp() })).id;
+$('ask').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const text = $('q').value.trim();
+  if (!text || !me) return;
+  $('go').disabled = true;
+  try {
+    if (room.chat) { const id = await send(text, chat.thread || undefined); if (!chat.thread) { chat.thread = id; chat.fresh = false; } chat.follow = true; render(); }
+    else await send(text);
+    $('q').value = '';
+  } catch (e) { $('msg').textContent = `Not sent: ${e.message}`; } finally { $('go').disabled = false; $('q').focus(); }
+});
+
+// ── prepared answers (Oren, 2 Nov 2026): tabs, one locked frame each; the live question is the last tab ──
+let prep = null; let tab = 'live';
+function show(k) {
+  tab = k;
+  $('live').hidden = k !== 'live'; $('ask').style.display = k === 'live' ? '' : 'none';
+  $('prepared').hidden = k === 'live';
+  for (const b of $('tabs').querySelectorAll('button')) b.classList.toggle('on', b.dataset.k === k);
+  const i = steps.indexOf(k);
+  $('cur').textContent = `${i + 1}. ${names[k]?.label ?? ''}`; $('curg').textContent = names[k]?.group ? `· ${names[k].group}` : '';
+  $('next').hidden = i < 0 || i === steps.length - 1;
+  if (k !== 'live' && prep) {
+    $('prepared').replaceChildren(el('iframe', { sandbox: PREPARED_SANDBOX, srcdoc: preparedDoc(prep, k), title: k })); // locked: see preparedDoc
+  }
+  scrollTo(0, 0);
+}
+// Design A (Oren's card, 2 Nov 2026): a side menu, one section per group (its title first, the lead group framed);
+// "Ask a question" is its own section right under the lead group, outside it, so it never looks like one of Halina's.
+let names = {}; let steps = [];
+function tabs(list) {
+  names = Object.fromEntries(list.map((x) => [x.k, x])); steps = stepOrder(list);
+  const numbered = (k, text) => [el('span', { className: 'n', textContent: String(steps.indexOf(k) + 1) }), text];
+  const rows = [];
+  for (const { k, label, group, lead } of list) {
+    if (k === 'live') continue;
+    const key = group ?? '';
+    if (!rows.length || rows[rows.length - 1].key !== key) {
+      rows.push({ key, row: el('div', { className: lead ? 'g lead' : 'g' }, ...(key ? [el('span', { className: 'gt', textContent: key })] : [])) });
+    }
+    const b = el('button', { type: 'button', onclick: () => show(k) }, ...numbered(k, label));
+    b.dataset.k = k; rows[rows.length - 1].row.append(b);
+  }
+  const els = rows.map((r) => r.row);
+  const live = list.find((x) => x.k === 'live');
+  if (live) {
+    const b = el('button', { type: 'button', className: 'live', onclick: () => show('live') }, ...numbered('live', live.label));
+    b.dataset.k = 'live';
+    els.splice(list.some((x) => x.lead) ? Math.min(1, els.length) : 0, 0, el('div', { className: 'g ask' }, el('span', { className: 'gt', textContent: 'Ask' }), b));
+  }
+  $('tabs').replaceChildren(...els);
+  $('tabs').hidden = false; document.body.classList.add('side');
+}
+// The menu folds away like any SaaS side bar (Oren, 2 Nov 2026), and stays folded on this browser; Next walks the steps.
+const fold = (on) => { document.body.classList.toggle('folded', on); $('fold').setAttribute('aria-expanded', String(!on)); try { localStorage.setItem('ask:folded', on ? '1' : ''); } catch { /* storage blocked: it folds, just not remembered */ } };
+$('fold').onclick = () => fold(!document.body.classList.contains('folded'));
+try { fold(localStorage.getItem('ask:folded') === '1'); } catch { /* storage blocked: the menu starts open */ }
+$('next').onclick = () => { const i = steps.indexOf(tab); if (i >= 0 && i < steps.length - 1) show(steps[i + 1]); };
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+// decryptPrepared — the prepared page's answers, opened in the browser with its access code (both pages use it)
+async function decryptPrepared(blob, code) {
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(blob.salt), iterations: blob.iter, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(blob.iv) }, key, b64(blob.ct))));
+}
+async function openPrepared(blob, code) {
+  const d = await decryptPrepared(blob, code);
+  const list = preparedTabs(d);
+  if (!list.length) throw new Error('no answers');
+  prep = d; sessionStorage.setItem(`prep:${roomId}`, code);
+  if (!inv) { const scope = preparedScope(d); $('scope').textContent = scope; $('scope').hidden = !scope; }
+  tabs([...list, { k: 'live', label: 'Ask a question' }]);
+  show(steps[0]);
+  pres.steps = presenterSteps(room, Object.fromEntries(list.map((x) => [x.k, x.label])));
+  $('present').hidden = !pres.steps.length;
+  if (pres.steps.length && sessionStorage.getItem(`present:${roomId}`)) present(Number(sessionStorage.getItem(`present:${roomId}`)) || 0);
+}
+if (room?.prepared && !room.chat) {
+  fetch(room.prepared, { cache: 'no-cache' }).then((r) => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`)))).then((html) => {
+    const blob = preparedBlobOf(html);
+    if (!blob) throw new Error('not a prepared page');
+    tabs([{ k: 'prep', label: 'Prepared answers' }, { k: 'live', label: 'Ask a question' }]); show(steps[0]);
+    $('gate').onsubmit = (e) => { e.preventDefault(); $('gerr').textContent = 'Opening…';
+      openPrepared(blob, $('code').value.trim()).catch(() => { $('gerr').textContent = 'Wrong code.'; }); };
+    const c0 = sessionStorage.getItem(`prep:${roomId}`);
+    if (c0) openPrepared(blob, c0).catch(() => sessionStorage.removeItem(`prep:${roomId}`)); else $('code').focus();
+  }).catch(() => { /* no prepared answers reachable: the page is the live question alone, as before */ });
+}
+
+// ── what's in this demo (Oren, 3 Nov 2026, #gsa): the trust line names every job and document the search covers and
+// opens them as a table (the room's record `inventory`, read like its answers, by a signed-in director only) ──
+let inv = null; const invSt = { sort: 'job', dir: 1, q: '' };
+function drawJobs() { const n = renderJobs($('invt'), inv, invSt, drawJobs); $('invn').textContent = `Showing ${n} of ${inv.jobs.length}`; }
+function showInventory(x) {
+  if (!x) return;
+  inv = x;
+  $('scope').textContent = `${trustLine(inv)} · What's in this demo ›`; $('scope').classList.add('inv'); $('scope').hidden = false;
+  $('invsub').textContent = `${inv.jobs.length} GSA jobs from 2025 and their ${inv.documents} documents. Every question searches all of them.`;
+  if (pres.on && cur()?.kind === 'inv') present(pres.i);
+}
+$('scope').onclick = () => { if (!inv) return; invSt.q = $('invq').value = ''; drawJobs(); $('inv').showModal(); $('invq').focus(); };
+$('invq').oninput = () => { invSt.q = $('invq').value; drawJobs(); };
+$('invclose').onclick = () => $('inv').close();
+
+// ── feedback (Oren, 3 Nov 2026, #gsa): right-click any part of the page, or tap Feedback and then the part (a phone has
+// no right-click); a short note goes to the room's feedback room as the director's own message, with what it is about ──
+let fbOn = null;
+const fbMark = (t) => { document.querySelector('.fb-on')?.classList.remove('fb-on'); fbOn = t; t?.classList.add('fb-on'); };
+function fbOpen(t) {
+  fbMark(t); document.body.classList.remove('picking');
+  // a prepared answer is a locked frame (no script): a tap on it lands on #prepared and the note is about that step
+  $('fbon').textContent = ((t.id === 'prepared' && $('cur').textContent) || (t.dataset.k && names[t.dataset.k]?.label) || t.innerText || t.title || t.tagName).replace(/\s+/g, ' ').trim().slice(0, 140);
+  $('fbnote').value = ''; $('fberr').textContent = ''; $('fb').showModal(); $('fbnote').focus();
+}
+const fbPart = (t) => t.closest('.card, .echo, .ans h2, .cov, .lead, .strip, .bar, .tools, .earlier, .ans, nav#tabs button, #topbar, #scope, #prepared, header, form#ask, #list') || t;
+if (room?.feedback) {
+  $('fbgo').onclick = (e) => { e.stopPropagation(); document.body.classList.toggle('picking'); };
+  document.addEventListener('contextmenu', (e) => { if (me && !me.guest && !e.target.closest('dialog')) { e.preventDefault(); fbOpen(fbPart(e.target)); } });
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('picking') || !me || me.guest || e.target.closest('dialog, #fbgo')) return;
+    e.preventDefault(); e.stopPropagation(); fbOpen(fbPart(e.target));
+  }, true);
+  $('fbcancel').onclick = () => $('fb').close();
+  $('fb').addEventListener('close', () => fbMark(null)); // Esc too
+  $('fbform').onsubmit = async (e) => {
+    e.preventDefault();
+    if (me?.guest) { guestSend(); return; }
+    const q = fbOn?.closest('.ans')?.dataset.q;
+    const text = feedbackText({ note: $('fbnote').value, page: `ask.html#${roomId}`, step: $('cur').textContent || names[tab]?.label,
+      on: $('fbon').textContent, question: q });
+    if (!text || !me || me.guest) { $('fberr').textContent = me ? 'Write a note first.' : 'Sign in first.'; return; }
+    $('fbsend').disabled = true;
+    try {
+      await addDoc(collection(db, 'elad-oren-rooms', room.feedback, 'messages'), { type: 'text', from: me.name, text, images: [], relayed: false,
+        createdAt: serverTimestamp(), fromUid: me.user.uid, fromEmail: me.user.email });
+      $('fb').close(); $('fbgo').textContent = `✓ Sent to #${room.feedback}`; setTimeout(() => { $('fbgo').textContent = '✎ Feedback'; }, 4000);
+    } catch (err) { $('fberr').textContent = `Not sent: ${err.message}`; } finally { $('fbsend').disabled = false; }
+  };
+}
+
+// ── the presenter mode (Oren, 3 Nov 2026, #gsa: "like slide clicks", desktop only): one screen at a time — what's in the
+// demo, Halina's two questions prefilled word for word, George's own question in an empty box, the office views, the
+// pricing (ask-logic.mjs presenterSteps). Next → or the → key moves on; Enter asks; an earlier answer is never on screen.
+// The screen it is on is kept for this tab, so a reload comes back to it. Exit returns to the normal page as it was.
+const pres = { on: false, i: 0, steps: [], qid: '' };
+const cur = () => (pres.on ? pres.steps[pres.i] : null);
+const invPres = { sort: 'job', dir: 1, q: '' };
+function present(i) {
+  const s = pres.steps[i];
+  if (!s) return;
+  pres.on = true; pres.i = i; pres.qid = '';
+  try { sessionStorage.setItem(`present:${roomId}`, String(i)); } catch { /* storage blocked: a reload opens the normal page */ }
+  document.body.classList.add('presenting');
+  $('plogo').src = room.logo; $('plogo').alt = room.by;
+  $('pcount').textContent = `${s.n}/${s.of}`; $('ptitle').textContent = s.title;
+  $('pnext').hidden = i >= pres.steps.length - 1;
+  $('pask').hidden = s.kind !== 'ask'; $('pans').replaceChildren(); ui.open.clear();
+  const body = $('pbody');
+  if (s.kind === 'inv') {
+    if (!inv) body.replaceChildren(el('p', { className: 'sub', textContent: 'Loading the list of jobs…' }));
+    else {
+      const box = el('div');
+      const draw = () => renderJobs(box, inv, invPres, draw);
+      draw();
+      body.replaceChildren(el('p', { className: 'sub', textContent: $('invsub').textContent }), box);
+    }
+  } else if (s.kind === 'prep') {
+    body.replaceChildren(el('iframe', { id: 'pframe', sandbox: PREPARED_SANDBOX, srcdoc: preparedDoc(prep, s.k), title: s.title }));
+  } else {
+    body.replaceChildren();
+    $('pq').value = s.q; $('pq').focus(); $('pq').setSelectionRange(s.q.length, s.q.length);
+  }
+  if (s.kind !== 'ask') $('pnext').focus();
+  scrollTo(0, 0);
+}
+function unpresent() {
+  pres.on = false; document.body.classList.remove('presenting');
+  try { sessionStorage.removeItem(`present:${roomId}`); } catch { /* nothing kept */ }
+  show(tab);
+}
+$('present').onclick = () => present(0);
+$('pexit').onclick = unpresent;
+$('pnext').onclick = () => present(pres.i + 1);
+$('pask').onsubmit = async (e) => {
+  e.preventDefault();
+  const text = $('pq').value.trim();
+  if (!text || !me) return;
+  $('pgo').disabled = true;
+  try { pres.qid = await send(text); render(); } catch (err) { $('pans').replaceChildren(el('p', { className: 'wait', textContent: `Not sent: ${err.message}` })); } finally { $('pgo').disabled = false; }
+};
+document.addEventListener('keydown', (e) => {
+  if (!pres.on || e.altKey || e.ctrlKey || e.metaKey || document.querySelector('dialog[open]')) return;
+  const inBox = e.target === $('pq');
+  if (e.key === 'ArrowRight' && (!inBox || $('pq').selectionStart === $('pq').value.length)) { e.preventDefault(); if (pres.i < pres.steps.length - 1) present(pres.i + 1); }
+  else if (e.key === 'Enter' && !e.shiftKey && cur()?.kind === 'ask' && (inBox || e.target === document.body)) { e.preventDefault(); $('pask').requestSubmit(); }
+});
+
+// ── a guest's feedback (ADR-2611030930gc) ──
+let gfb = { rating: 'note', about: '' };
+function guestOpen(rating, a) {
+  gfb = { rating, about: a?.id || '' };
+  $('fbon').textContent = rating === 'note' ? 'Your feedback on this trial chat' : `${rating === 'up' ? '👍 Useful' : '👎 Not useful'}${a?.answer ? `: “${String(a.answer).split('\n')[0].slice(0, 120)}”` : ''}`;
+  $('fbnote').placeholder = rating === 'note' ? 'What worked, what did not, what you would like it to do' : 'Anything to add? (optional)';
+  $('fbnote').value = ''; $('fberr').textContent = ''; $('fb').showModal(); $('fbnote').focus();
+}
+async function guestSend() {
+  const msg = me?.guest ? feedbackMessage({ name: me.name, uid: me.user.uid, email: me.user.email, rating: gfb.rating, note: $('fbnote').value, about: gfb.about }) : null;
+  if (!msg) { $('fberr').textContent = 'Write a note first.'; return; }
+  $('fbsend').disabled = true;
+  try {
+    await addDoc(collection(db, 'elad-oren-rooms', roomId, 'messages'), { ...msg, createdAt: serverTimestamp() });
+    $('fb').close();
+    if (gfb.about) { ui.rated.add(gfb.about); render(); } else { $('gfbgo').textContent = '✓ Thank you'; setTimeout(() => { $('gfbgo').textContent = '✎ Send feedback'; }, 4000); }
+  } catch (err) { $('fberr').textContent = `Not sent: ${err.message}`; } finally { $('fbsend').disabled = false; }
+}
+
+// ── the chat (ADR-2611030930gc): one conversation on screen, oldest at the top; the box under it sends a follow-up in the
+// same thread (threadId = the conversation's first question); "New conversation" starts a fresh one; "Earlier
+// conversations" lists this account's others (a director sees everyone's) ──
+const chat = { thread: '', fresh: false, follow: true, list: false };
+function renderChatRoom() {
+  const items = conversation(rows, directors, { chat: true });
+  const threads = chatThreads(items, { mine: me && me.guest ? me.user.email : '' });
+  if (!chat.thread && !chat.fresh && threads.length) chat.thread = [...threads].sort((a, b) => b.at - a.at)[0].id; // resume the latest
+  const t = threads.find((x) => x.id === chat.thread);
+  const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 80;
+  renderChat($('list'), t ? t.items : [], ui, { redraw: render, examples: room.examples || [], ask: (x) => { $('q').value = x; $('ask').requestSubmit(); }, scope: inv, flat: room.flat === true,
+    rate: me?.guest ? (a, rating) => guestOpen(rating, a) : null });
+  const others = threads.filter((x) => x.id !== chat.thread).sort((a, b) => b.at - a.at);
+  $('chats').hidden = !others.length;
+  $('chats').textContent = chat.list ? 'Hide earlier conversations' : `Earlier conversations (${others.length})`;
+  $('chatlist').hidden = !chat.list || !others.length;
+  $('chatlist').replaceChildren(...others.map((x) => el('button', { type: 'button', textContent: x.title, dir: 'auto',
+    onclick: () => { chat.thread = x.id; chat.list = false; chat.follow = true; render(); } })));
+  // never while another tab is showing: it would scroll that tab, not the chat (quick review of #1191)
+  if ((chat.follow || atEnd) && !$('live').hidden) { chat.follow = false; requestAnimationFrame(() => scrollTo(0, document.documentElement.scrollHeight)); }
+}
+if (room?.chat) {
+  $('live').append($('ask')); // the box under the conversation, like a chat app
+  $('q').placeholder = room.placeholder;
+  $('newchat').onclick = () => { chat.thread = ''; chat.fresh = true; chat.list = false; render(); $('q').focus(); };
+  $('chats').onclick = () => { chat.list = !chat.list; render(); };
+  $('signout').onclick = () => signOut(auth).then(() => location.reload());
+  // sign-in on the page itself: a guest with the email and password they were given (Firebase email/password; the
+  // accounts are made by tools/guests.mjs login, already verified); a director with Google
+  const say = (t) => { $('signmsg').textContent = t; };
+  $('google').onclick = () => { say(''); signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => say(e?.code === 'auth/popup-blocked'
+    ? 'The sign-in window was blocked. Please allow pop-ups for this page.' : (e?.code === 'auth/popup-closed-by-user' ? '' : 'Signing in did not work. Please try again.'))); };
+  $('pwform').onsubmit = (e) => {
+    e.preventDefault();
+    const email = $('email').value.trim().toLowerCase(); const pw = $('pw').value;
+    if (!email || !pw) return;
+    $('pwgo').disabled = true; say('Signing in…');
+    signInWithEmailAndPassword(auth, email, pw)
+      .then(() => { say(''); $('pw').value = ''; })
+      .catch((err) => say(err?.code === 'auth/too-many-requests' ? 'Too many tries. Please wait a few minutes and try again.' : 'That email and password did not match. Please check them and try again.'))
+      .finally(() => { $('pwgo').disabled = false; });
+  };
+  // a guest's feedback (ADR-2611030930gc): 👍 / 👎 under an answer, or "Send feedback" for the chat in general; both
+  // open the note box (optional for a thumb) and go into this room as one feedback message, which the relay posts to
+  // #gsa naming this login and the question. Never shown back in the chat.
+  $('gfbgo').onclick = () => guestOpen('note', null);
+}
+
+// ── the three tabs (Oren + Elad, 5 Nov 2026, #gsa: "chat first, then the job board, then pricing"): the page opens on
+// the chat; the job board (J1) and pricing (PR) are the demo's own prepared answers, the same encrypted page and the same
+// access code gate as gsa-demo, drawn in the same locked frame (preparedDoc). The code is remembered for this browser tab
+// like the demo's; a room doc carrying `preparedCode` opens them with no typing. ask-logic.mjs chatTabs ──
+let ctab = 'chat'; let cblob = null; let roomCode = ''; const gate = $('gate');
+const tryRoomCode = () => { if (cblob && roomCode && !prep) openChatPrepared(roomCode).catch(() => { roomCode = ''; }); };
+function drawChatTabs() {
+  $('ctabs').replaceChildren(...chatTabs(room, prep).map(({ k, label }) => {
+    const b = el('button', { type: 'button', textContent: label, onclick: () => chatTab(k) }); b.dataset.k = k; return b;
+  }));
+  $('ctabs').hidden = false;
+}
+function chatTab(k) {
+  ctab = k;
+  $('prepared').hidden = k === 'chat'; $('live').hidden = k !== 'chat';
+  for (const b of $('ctabs').querySelectorAll('button')) b.classList.toggle('on', b.dataset.k === k);
+  if (k === 'chat') { chat.follow = true; render(); $('q').focus(); return; }
+  if (prep) $('prepared').replaceChildren(el('iframe', { sandbox: PREPARED_SANDBOX, srcdoc: preparedDoc(prep, k), title: k })); // locked: see preparedDoc
+  else { $('prepared').replaceChildren(gate); $('gerr').textContent = cblob ? '' : 'Loading…'; $('code').focus(); }
+  scrollTo(0, 0);
+}
+async function openChatPrepared(code) {
+  const d = await decryptPrepared(cblob, code);
+  if (!chatTabs(room, d).some((t) => t.k !== 'chat')) throw new Error('no answers');
+  prep = d; try { sessionStorage.setItem(`prep:${roomId}`, code); } catch { /* storage blocked: asked again next load */ }
+  drawChatTabs(); chatTab(chatTabs(room, d).some((t) => t.k === ctab) ? ctab : 'chat');
+}
+if (room?.chat && room.prepared) {
+  fetch(room.prepared, { cache: 'no-cache' }).then((r) => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`)))).then((html) => {
+    cblob = preparedBlobOf(html);
+    if (!cblob) throw new Error('not a prepared page');
+    if (ctab !== 'chat') $('gerr').textContent = '';
+    gate.onsubmit = (e) => { e.preventDefault(); $('gerr').textContent = 'Opening…';
+      openChatPrepared($('code').value.trim()).catch(() => { $('gerr').textContent = 'Wrong code.'; }); };
+    let c0 = ''; try { c0 = sessionStorage.getItem(`prep:${roomId}`) || ''; } catch { /* none kept */ }
+    if (c0) openChatPrepared(c0).catch(() => { try { sessionStorage.removeItem(`prep:${roomId}`); } catch { /* none kept */ } tryRoomCode(); });
+    else tryRoomCode();
+  }).catch(() => { $('gerr').textContent = 'The job board and pricing cannot be opened right now.'; });
+}
