@@ -10,3 +10,7 @@ Since 5 Nov (pages clean-up, director-approved): the slideshow is gone; the fold
 Since 2 Nov (Oren, #gsa, for the 4 Nov demo at GSA): `answers/` holds the demo's 13 prepared answers (Halina 1–3,
 checks 1–6, job board, fee proposal to job, prospects by area), same encryption, its own access code (given to the
 directors in the console). Built by ~/god-work/gsa-demo-link/build.mjs from the Mac's demo. No free-text box.
+
+Since 5 Nov (Oren, for the 6 Nov demo; browser test: tests/gsa-trial-jobboard.test.mjs): the Job board tab lets the visitor give a job a planner and move its stage. The
+change lives only in that browser (localStorage), "Reset demo" restores the board; no server, nothing sent. The editor
+is plain script in the page wrapper (no content in it); the locked content is unchanged.

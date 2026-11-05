@@ -77,3 +77,10 @@ test('the trial root only forwards to the answers page', () => {
 test('the old illustrative demos are gone', () => {
   for (const d of ['gsa-demo', 'gsa-demo-v2', 'gsa-demo-v3', 'gsa-demo-v4']) assert.ok(!existsSync(d), `${d}/ removed`);
 });
+
+test('the job board can be edited in the browser only: planner and stage pickers, saved locally, a reset', () => {
+  const clear = readFileSync(PAGE, 'utf8').replace(/const B=\{[^\n]*?\};/, '');
+  assert.match(clear, /if\(k==='J1'\)jb\(\)/, 'the job board tab runs the editor');
+  for (const s of ["aria-label','Planner'", "aria-label','Stage'", 'localStorage', 'Reset demo']) assert.ok(clear.includes(s), `has ${s}`);
+  assert.ok(!/fetch\(|XMLHttpRequest|sendBeacon/.test(clear), 'nothing is sent anywhere');
+});
