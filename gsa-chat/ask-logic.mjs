@@ -6,6 +6,8 @@
 // browser with its access code, so they open with the Mac off. PURE: no DOM, no Firestore.
 // a prepared answer's locked frame: no scripts, no requests, inline styles and data: images only (was Cleo's
 // dashboard-logic.mjs CARD_CSP; GSA's own copy since 5 Nov 2026)
+import { LINK } from './link.mjs';
+
 const CARD_CSP = "default-src 'none'; style-src 'unsafe-inline'; img-src data:";
 
 // GSA Planning's look: Arial, their logo (one copy for both of their rooms). The warm look (Oren, 3 Nov 2026, #gsa: "too
@@ -51,18 +53,24 @@ export const ASK_ROOMS = Object.freeze({
     title: 'Chat with your project files',
     placeholder: 'Ask anything about your 2025 jobs, then ask a follow-up',
     chat: true,
-    // three tabs (Oren + Elad, 5 Nov 2026, #gsa: chat first, then the job board, then pricing): the chat the page opens
-    // on, then two of the demo's own prepared answers — J1 (the job board as a kanban by stage, pages #49) and PR — from
-    // the same encrypted page, opened with the same access code (chatTabs). No example questions (5 Nov 2026).
-    prepared: 'https://oren-and-elad.github.io/pages/gsa-trial/answers/',
-    tabs: Object.freeze([
-      Object.freeze({ k: 'chat', label: 'Chat' }),
-      Object.freeze({ k: 'J1', label: 'Job board' }),
-      Object.freeze({ k: 'PR', label: 'Pricing' }),
-    ]),
+    // the tabs and the prepared answers page come from the link this copy was built for (link.mjs, web/build.mjs): the
+    // decision makers' link has Chat, Job board and Pricing; the team's has Chat and Job board, from its own page and code
+    prepared: LINK.prepared,
+    tabs: Object.freeze(LINK.tabs.map((t) => Object.freeze({ ...t }))),
     // each result one title line, up to three quoted lines and the source link; no table, filter or details (flatCard)
     flat: true,
     feedback: 'gsa',
+  }),
+  // The team's own chat room (Oren, 6 Nov 2026, #gsa): GSA's senior staff, their own guest list (a guest doc listing
+  // 'gsa-team' only) and their own prepared-answers code on the room doc. Chat and Job board, never Pricing, no presenter.
+  'gsa-team': Object.freeze({
+    ...GSA_LOOK,
+    title: 'Chat with your project files',
+    placeholder: 'Ask anything about your 2025 jobs, then ask a follow-up',
+    chat: true,
+    prepared: LINK.name === 'team' ? LINK.prepared : null,
+    tabs: Object.freeze(LINK.tabs.filter((t) => t.k !== 'PR').map((t) => Object.freeze({ ...t }))),
+    flat: true,
   }),
 });
 
@@ -75,6 +83,7 @@ export function askRoomOf(hash) {
 // roomOfLocation — the room a page address names: its hash (`ask.html#gsa-chat`), or `?room=` (the email sign-in link
 // comes back with Firebase's own query on it, so it carries the room as a query, never a hash). Else null.
 export function roomOfLocation(hash, search) {
+  if (LINK.only) return LINK.only;        // a link built for one room opens only that room, whatever the address says
   return askRoomOf(hash) || askRoomOf(new URLSearchParams(String(search || '')).get('room') || '') || 'gsa-chat'; // GSA's own page opens on the chat
 }
 
@@ -185,6 +194,17 @@ export function guestAccess(doc, roomId, nowMs, room = null) {
   return 'ask';
 }
 // The relay says the same line to a question asked after the end (kernel2/answerer-logic.mjs CLOSED_LINE).
+// linkOpen — is this private link still open at `now` (ms)? Each link ends on its own date (LINK.until, an ISO date-time
+// with its offset; 14 days from 6 Nov 2026, Halina: "a couple of weeks"). Fails closed: a date without its offset or one
+// that does not parse closes the link; no date at all (the source copy) leaves it open.
+export function linkOpen(link, now) {
+  const u = link?.until;
+  if (u == null) return true;
+  if (typeof u !== 'string' || !/(?:Z|[+-]\d\d:\d\d)$/.test(u)) return false;
+  const t = Date.parse(u);
+  return Number.isFinite(t) && now < t;
+}
+export const LINK_CLOSED_LINE = 'This link has closed. Thank you for trying it.';
 export const CLOSED_LINE = 'This trial chat has closed. Thank you for trying it.';
 export const DENIED_LINE = 'This account cannot use this chat.';
 

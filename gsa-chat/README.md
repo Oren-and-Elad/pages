@@ -1,5 +1,10 @@
 # gsa-chat — GSA's own chat page
 
+**Source of truth since 6 Nov 2026: this folder in the gsa-planning repo.** `node web/build.mjs` writes the two private
+links into `dist/`: `gsa-chat/` (decision makers: Chat, Job board, Pricing; `gsa-trial/answers/` and its code) and
+`gsa-team/` (senior staff: its own room `gsa-team`, own guest list, Chat and Job board only; `gsa-trial/team-answers/` and its own code; opens only its room
+room). Both take a 2,000-character question. Publishing = copying those folders to the pages repo (the ship lane).
+
 Live: https://oren-and-elad.github.io/pages/gsa-chat/ (the old link `https://cleo2.pages.dev/elad-and-oren/ask.html#gsa-chat`
 forwards here). Owned by room #gsa and its builder since 5 Nov 2026 (Oren, #hq2): its look, tabs, sign-in screen and
 feedback are changed here, and nowhere in Cleo's console.
