@@ -222,12 +222,14 @@ export function askMessage({ name, uid, email, text, threadId, guest = false }) 
 // the room's feedback room naming the login and the question. null when there is nothing to send (a note with no words).
 export const FEEDBACK_MAX = 1000;
 const THUMB = Object.freeze({ up: '👍', down: '👎' });
-export function feedbackMessage({ name, uid, email, rating, note = '', about = '' }) {
+export function feedbackMessage({ name, uid, email, rating, note = '', about = '', realName = '' }) {
   if (!['up', 'down', 'note'].includes(rating)) return null;
   const n = String(note ?? '').trim().slice(0, FEEDBACK_MAX);
   if (!n && rating === 'note') return null;
   const id = typeof about === 'string' && /^[A-Za-z0-9]{1,64}$/.test(about) ? about : '';
-  return { type: 'text', from: name, text: n || THUMB[rating], images: [], relayed: false, fromUid: uid, fromEmail: email,
+  const who = cleanName(realName);
+  const body = n || THUMB[rating];
+  return { type: 'text', from: name, text: who ? `${body.slice(0, FEEDBACK_MAX - who.length - 3)} — ${who}` : body, images: [], relayed: false, fromUid: uid, fromEmail: email,
     guest: true, feedback: rating, ...(id && rating !== 'note' ? { about: id } : {}) };
 }
 
@@ -468,4 +470,20 @@ export function presenterTurn(items = [], qid = '') {
   if (i < 0) return [];
   const j = items.findIndex((x, n) => n > i && x.kind === 'q');
   return items.slice(i, j < 0 ? undefined : j);
+}
+
+// A guest's own name (Oren, 6 Nov 2026, #gsa): on their FIRST sign-in, in either link, one required field "Your name",
+// asked once per username. Kept on their own guest doc as `displayName` (the relay names it on their feedback and
+// usage), and on this device as a fallback. No IP address is ever read or kept.
+export const NAME_LABEL = 'Your name';
+export const NAME_HINT = 'So we know whose questions and feedback these are.';
+export const NAME_MAX = 60;
+export function cleanName(s) {
+  const n = String(s ?? '').replace(/\s+/g, ' ').trim();
+  return n.length >= 2 && n.length <= NAME_MAX ? n : '';
+}
+export const nameKey = (email) => `gsa-name:${String(email ?? '').toLowerCase()}`;
+// the name already given for this username ('' = ask for it): the guest doc's first, then this device's
+export function savedName(guestDoc, stored = '') {
+  return cleanName(guestDoc?.displayName) || cleanName(stored);
 }

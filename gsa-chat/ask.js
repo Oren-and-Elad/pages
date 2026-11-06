@@ -17,11 +17,11 @@
 // posts it to #gsa naming the login and the question (ADR-2611030930gc).
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
-import { initializeFirestore, doc, getDoc, onSnapshot, addDoc, collection, query, where, limit, orderBy, limitToLast, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+import { initializeFirestore, doc, getDoc, updateDoc, onSnapshot, addDoc, collection, query, where, limit, orderBy, limitToLast, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
 import { LINK } from './link.mjs';
 import { FIREBASE } from './firebase-config.mjs';
-import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn } from './ask-logic.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
 const fb = initializeApp(FIREBASE);
@@ -73,7 +73,7 @@ onAuthStateChanged(auth, async (user) => {
     let g = null;
     try { g = user.emailVerified && user.email ? (await getDoc(doc(db, 'elad-oren-guests', user.email.toLowerCase()))).data() || null : null; } catch { g = null; }
     const access = guestAccess(g, roomId, Date.now(), roomDoc || { guestsOff: true });
-    if (access === 'ask') me = { user, name: g.name.trim(), guest: true };
+    if (access === 'ask') { me = { user, name: g.name.trim(), guest: true }; me.realName = await askName(user, g); }
     else { $('msg').textContent = access === 'closed' ? CLOSED_LINE : DENIED_LINE; return; }
   }
   if (!me) { $('msg').textContent = room.chat ? DENIED_LINE : 'This account cannot ask here.'; return; }
@@ -93,6 +93,24 @@ onAuthStateChanged(auth, async (user) => {
     onSnapshot(query(msgs, orderBy('createdAt'), limitToLast(200)), (s) => { rows = s.docs.map((d) => ({ id: d.id, ...d.data() })); $('msg').textContent = ''; render(); }, failed);
   }
 });
+
+// askName — a guest's first sign-in asks "Your name" once per username (ask-logic.mjs savedName); later sign-ins skip it
+async function askName(user, g) {
+  const key = nameKey(user.email);
+  let stored = ''; try { stored = localStorage.getItem(key) || ''; } catch { /* private mode */ }
+  const have = savedName(g, stored);
+  if (have) return have;
+  $('nameform').hidden = false; $('yourname').focus();
+  const name = await new Promise((done) => $('nameform').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const n = cleanName($('yourname').value);
+    if (n) done(n); else $('nameerr').textContent = 'Please type your name.';
+  }));
+  $('nameform').hidden = true;
+  try { localStorage.setItem(key, name); } catch { /* private mode */ }
+  try { await updateDoc(doc(db, 'elad-oren-guests', user.email.toLowerCase()), { displayName: name }); } catch { /* kept on this device */ }
+  return name;
+}
 
 // the console's own message shape (index.html sendMsg), with the verified identity firestore.rules binds (ask-logic.mjs
 // askMessage); a chat follow-up carries its conversation's threadId. The new id.
@@ -304,7 +322,7 @@ function guestOpen(rating, a) {
   $('fbnote').value = ''; $('fberr').textContent = ''; $('fb').showModal(); $('fbnote').focus();
 }
 async function guestSend() {
-  const msg = me?.guest ? feedbackMessage({ name: me.name, uid: me.user.uid, email: me.user.email, rating: gfb.rating, note: $('fbnote').value, about: gfb.about }) : null;
+  const msg = me?.guest ? feedbackMessage({ name: me.name, uid: me.user.uid, email: me.user.email, rating: gfb.rating, note: $('fbnote').value, about: gfb.about, realName: me.realName }) : null;
   if (!msg) { $('fberr').textContent = 'Write a note first.'; return; }
   $('fbsend').disabled = true;
   try {
