@@ -21,7 +21,7 @@ import { initializeFirestore, doc, getDoc, updateDoc, onSnapshot, addDoc, collec
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
 import { LINK } from './link.mjs';
 import { FIREBASE } from './firebase-config.mjs';
-import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName } from './ask-logic.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
 const fb = initializeApp(FIREBASE);
@@ -397,9 +397,47 @@ function chatTab(k) {
   $('prepared').hidden = k === 'chat'; $('live').hidden = k !== 'chat';
   for (const b of $('ctabs').querySelectorAll('button')) b.classList.toggle('on', b.dataset.k === k);
   if (k === 'chat') { chat.follow = true; render(); $('q').focus(); return; }
-  if (prep) $('prepared').replaceChildren(el('iframe', { sandbox: PREPARED_SANDBOX, srcdoc: preparedDoc(prep, k), title: k })); // locked: see preparedDoc
+  if (prep && k === 'J1' && boardOf(prep.bodies?.J1)) drawBoard();
+  else if (prep) $('prepared').replaceChildren(el('iframe', { sandbox: PREPARED_SANDBOX, srcdoc: preparedDoc(prep, k), title: k })); // locked: see preparedDoc
   else { $('prepared').replaceChildren(gate); $('gerr').textContent = cblob ? '' : 'Loading…'; $('code').focus(); }
   scrollTo(0, 0);
+}
+// the job board, drawn here from the J1 answer's own data (6 Nov 2026; ask-logic.mjs boardOf/boardView): tap a planner
+// to see only their jobs, drag a job onto a planner to assign it (this browser only, like the menu fold), Reset to undo
+let bplanner = '';
+const loadAssign = () => { try { return readAssign(localStorage.getItem(BOARD_KEY)); } catch { return {}; } };
+const saveAssign = (m) => { try { localStorage.setItem(BOARD_KEY, JSON.stringify(m)); } catch { /* storage blocked: kept until reload */ } };
+function drawBoard() {
+  const cards = boardOf(prep.bodies.J1); const assign = loadAssign();
+  const v = boardView(cards, { planner: bplanner, assign });
+  const orig = Object.fromEntries(cards.map((c) => [c.job, c.planner]));
+  const chip = (p) => {
+    const b = el('button', { type: 'button', className: `pl${p.on ? ' on' : ''}`, title: `Show only ${p.planner}'s jobs; drop a job here to assign it`,
+      onclick: () => { bplanner = p.on ? '' : p.planner; drawBoard(); } }, el('i', { style: `background:${p.colour || '#888'}` }), `${p.planner} · ${p.n}`);
+    b.dataset.planner = p.planner;
+    b.ondragover = (e) => { e.preventDefault(); b.classList.add('drop'); };
+    b.ondragleave = () => b.classList.remove('drop');
+    b.ondrop = (e) => { e.preventDefault(); const job = e.dataTransfer.getData('text/plain');
+      if (job) { saveAssign(assignJob(loadAssign(), job, p.planner, orig[job])); drawBoard(); } };
+    return b;
+  };
+  const card = (c) => {
+    const d = el('div', { className: `bc${c.moved ? ' moved' : ''}`, draggable: true },
+      el('span', { className: 'pb', style: `background:${c.colour || '#888'}`, title: c.hint || '' }, c.planner || '?'),
+      el('b', {}, `Job ${c.job}`), el('div', {}, c.where), ...(c.reviewer ? [el('div', { className: 'muted' }, `Reviewed by ${c.reviewer}`)] : []),
+      ...(c.moved ? [el('div', { className: 'muted' }, 'Assigned here, in this browser')] : []));
+    d.ondragstart = (e) => { e.dataTransfer.setData('text/plain', c.job); e.dataTransfer.effectAllowed = 'move'; };
+    return d;
+  };
+  const col = (c) => el('div', { className: 'bcol' }, el('h3', {}, `${c.stage} · ${c.n}`),
+    ...(c.years ? c.years.map((y) => el('div', { className: 'yr' }, el('h4', {}, `${y.year} · ${y.cards.length}`), ...y.cards.map(card))) : c.cards.map(card)));
+  const moved = Object.keys(assign).length;
+  $('prepared').replaceChildren(el('div', { id: 'jboard' },
+    el('div', { className: 'pls' }, el('span', { className: 'muted' }, 'Planners:'), ...v.planners.map(chip),
+      ...(bplanner ? [el('button', { type: 'button', className: 'clr', onclick: () => { bplanner = ''; drawBoard(); } }, `✕ Show everyone`)] : []),
+      ...(moved ? [el('button', { type: 'button', className: 'clr', onclick: () => { saveAssign({}); drawBoard(); } }, `Reset ${moved} assignment${moved > 1 ? 's' : ''}`)] : [])),
+    el('p', { className: 'muted' }, `${v.total} jobs${bplanner ? ` for ${bplanner}` : ''}. Drag a job onto a planner to assign it; this is kept in this browser only.`),
+    el('div', { className: 'bcols' }, ...v.columns.map(col))));
 }
 async function openChatPrepared(code) {
   const d = await decryptPrepared(cblob, code);
