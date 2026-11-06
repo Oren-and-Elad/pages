@@ -487,3 +487,63 @@ export const nameKey = (email) => `gsa-name:${String(email ?? '').toLowerCase()}
 export function savedName(guestDoc, stored = '') {
   return cleanName(guestDoc?.displayName) || cleanName(stored);
 }
+
+// ── the job board, drawn by this page (6 Nov 2026): the data is the J1 answer's own `board-data` (gsa-planning
+// demo.board_data), inside the encrypted prepared page; the page shows it as columns by stage, a planner chip row to
+// filter by, drag a card onto a planner to assign it (kept in this browser only), and the completed jobs by year.
+export const BOARD_STAGES = Object.freeze(['Pre-DA', 'DA', 'Court', 'Completed', 'not in the files']);
+export const BOARD_KEY = 'gsa:board-assign';
+const BOARD_FIELDS = ['job', 'where', 'stage', 'year', 'reviewer', 'planner', 'colour', 'hint'];
+// a fee or an amount never reaches the board (the team link carries no pricing anywhere): every field is cut to the
+// known list, and any text that looks like money is blanked
+export const MONEY = /\$|A\$|\baud\b|\bfees?\b|\bpric|\b\d{1,3}(,\d{3})+(\.\d+)?\b/i;
+export function boardOf(body) {
+  const m = String(body || '').match(/<script type="application\/json" class="board-data">([\s\S]*?)<\/script>/);
+  if (!m) return null;
+  let d; try { d = JSON.parse(m[1]); } catch { return null; }
+  if (!Array.isArray(d?.cards)) return null;
+  return d.cards.filter((c) => c && typeof c.job === 'string' && c.job).map((c) => Object.fromEntries(BOARD_FIELDS.map((k) => {
+    const v = String(c[k] ?? '').slice(0, 200);
+    return [k, k === 'colour' ? (/^#[0-9a-f]{3,8}$/i.test(v) ? v : '') : (MONEY.test(v) ? '' : v)];
+  })));
+}
+
+// assignments kept in this browser: { job: planner }; anything else in storage is ignored
+export function readAssign(raw) {
+  let o; try { o = JSON.parse(raw || '{}'); } catch { return {}; }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return {};
+  return Object.fromEntries(Object.entries(o).filter(([k, v]) => typeof v === 'string' && v && /^[\w ./-]{1,40}$/.test(k)).map(([k, v]) => [k, v.slice(0, 40)]));
+}
+export function assignJob(map, job, planner, original = '') {
+  const next = { ...map };
+  if (!planner || planner === original) delete next[job]; else next[job] = planner;
+  return next;
+}
+
+// boardView — the board as drawn: planner chips (each with its job count, after assignments), the columns by stage for
+// the chosen planner ('' = everyone), and the Completed column grouped by year, newest first ('Year not in the files' last).
+export const NO_YEAR = 'Year not in the files';
+export function boardView(cards = [], { planner = '', assign = {} } = {}) {
+  const colourOf = {};
+  for (const c of cards) if (c.planner && c.colour) colourOf[c.planner] = c.colour;
+  const all = cards.map((c) => {
+    const p = assign[c.job] || c.planner;
+    return { ...c, planner: p, colour: colourOf[p] || '', moved: Boolean(assign[c.job] && assign[c.job] !== c.planner) };
+  });
+  const count = {};
+  for (const c of all) if (c.planner) count[c.planner] = (count[c.planner] || 0) + 1;
+  const planners = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b))
+    .map((p) => ({ planner: p, colour: colourOf[p] || '', n: count[p], on: p === planner }));
+  const shown = planner ? all.filter((c) => c.planner === planner) : all;
+  const byJob = (a, b) => a.job.localeCompare(b.job, 'en', { numeric: true });
+  const columns = BOARD_STAGES.map((stage) => {
+    const list = shown.filter((c) => (BOARD_STAGES.includes(c.stage) ? c.stage : 'not in the files') === stage).sort(byJob);
+    const col = { stage, n: list.length, cards: list };
+    if (stage === 'Completed') {
+      const years = [...new Set(list.map((c) => c.year || NO_YEAR))].sort((a, b) => (a === NO_YEAR) - (b === NO_YEAR) || b.localeCompare(a));
+      col.years = years.map((y) => ({ year: y, cards: list.filter((c) => (c.year || NO_YEAR) === y) }));
+    }
+    return col;
+  }).filter((c) => c.n || c.stage !== 'not in the files');
+  return { planners, planner, columns, total: shown.length, unassigned: shown.filter((c) => !c.planner).length };
+}
