@@ -19,20 +19,21 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/fireba
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
 import { initializeFirestore, doc, getDoc, onSnapshot, addDoc, collection, query, where, limit, orderBy, limitToLast, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
-import { ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn } from './ask-logic.mjs';
+import { LINK } from './link.mjs';
+import { FIREBASE } from './firebase-config.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn } from './ask-logic.mjs';
 
-const fb = initializeApp({
-  apiKey: 'AIzaSyBHs-CAjmEtccqlzAaQ0zpgEKv32RX76Ko', authDomain: 'cleo2-1812b.firebaseapp.com', projectId: 'cleo2-1812b',
-  storageBucket: 'cleo2-1812b.firebasestorage.app', messagingSenderId: '333138022489', appId: '1:333138022489:web:754cafbfba335a0f856148',
-});
+// the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
+const fb = initializeApp(FIREBASE);
 const db = initializeFirestore(fb, { experimentalForceLongPolling: true }); // same transport as index.html
 const $ = (id) => document.getElementById(id);
 const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
 
 const roomId = roomOfLocation(location.hash, location.search);
-const room = roomId ? ASK_ROOMS[roomId] : null;
+const open = linkOpen(LINK, Date.now());   // a link past its end date shows one closed line and nothing else
+const room = roomId && open ? ASK_ROOMS[roomId] : null;
 if (!room) {
-  $('msg').textContent = 'This page is not available.';
+  $('msg').textContent = open ? 'This page is not available.' : LINK_CLOSED_LINE;
 } else {
   for (const [k, v] of Object.entries(cssVars(room))) document.documentElement.style.setProperty(k, v);
   document.title = room.title; $('title').textContent = room.title;
@@ -398,5 +399,5 @@ if (room?.chat && room.prepared) {
     let c0 = ''; try { c0 = sessionStorage.getItem(`prep:${roomId}`) || ''; } catch { /* none kept */ }
     if (c0) openChatPrepared(c0).catch(() => { try { sessionStorage.removeItem(`prep:${roomId}`); } catch { /* none kept */ } tryRoomCode(); });
     else tryRoomCode();
-  }).catch(() => { $('gerr').textContent = 'The job board and pricing cannot be opened right now.'; });
+  }).catch(() => { $('gerr').textContent = 'These tabs cannot be opened right now.'; });
 }
