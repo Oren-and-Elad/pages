@@ -21,7 +21,7 @@ import { initializeFirestore, doc, getDoc, updateDoc, onSnapshot, addDoc, collec
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
 import { LINK } from './link.mjs';
 import { FIREBASE } from './firebase-config.mjs';
-import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
 const fb = initializeApp(FIREBASE);
@@ -74,7 +74,7 @@ onAuthStateChanged(auth, async (user) => {
     try { g = user.emailVerified && user.email ? (await getDoc(doc(db, 'elad-oren-guests', user.email.toLowerCase()))).data() || null : null; } catch { g = null; }
     const access = guestAccess(g, roomId, Date.now(), roomDoc || { guestsOff: true });
     if (access === 'ask') { me = { user, name: g.name.trim(), guest: true }; me.realName = await askName(user, g); }
-    else { $('msg').textContent = access === 'closed' ? CLOSED_LINE : DENIED_LINE; return; }
+    else { $('msg').textContent = access === 'closed' ? CLOSED_LINE : (wrongLinkLine(g, roomId) || DENIED_LINE); return; }
   }
   if (!me) { $('msg').textContent = room.chat ? DENIED_LINE : 'This account cannot ask here.'; return; }
   showInventory(inventoryOf(roomDoc || {}));
@@ -233,7 +233,11 @@ function fbOpen(t) {
 const fbPart = (t) => t.closest('.card, .echo, .ans h2, .cov, .lead, .strip, .bar, .tools, .earlier, .ans, nav#tabs button, #topbar, #scope, #prepared, header, form#ask, #list') || t;
 if (room?.feedback) {
   $('fbgo').onclick = (e) => { e.stopPropagation(); document.body.classList.toggle('picking'); };
-  document.addEventListener('contextmenu', (e) => { if (me && !me.guest && !e.target.closest('dialog')) { e.preventDefault(); fbOpen(fbPart(e.target)); } });
+  document.addEventListener('contextmenu', (e) => {
+    if (!me || e.target.closest('dialog')) return;
+    e.preventDefault();
+    if (me.guest) guestOnPart(fbPart(e.target)); else fbOpen(fbPart(e.target));
+  });
   document.addEventListener('click', (e) => {
     if (!document.body.classList.contains('picking') || !me || me.guest || e.target.closest('dialog, #fbgo')) return;
     e.preventDefault(); e.stopPropagation(); fbOpen(fbPart(e.target));
@@ -315,14 +319,20 @@ document.addEventListener('keydown', (e) => {
 
 // ── a guest's feedback (ADR-2611030930gc) ──
 let gfb = { rating: 'note', about: '' };
+// a guest's right-click (Halina, 9 Nov 2026: it did nothing on her link): the same note, about the part she clicked
+function guestOnPart(t) {
+  const on = (t.innerText || t.title || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+  guestOpen('note', null); gfb.on = on; fbMark(t);
+  if (on) $('fbon').textContent = `Your feedback on: “${on}”`;
+}
 function guestOpen(rating, a) {
-  gfb = { rating, about: a?.id || '' };
+  gfb = { rating, about: a?.id || '', on: '' };
   $('fbon').textContent = rating === 'note' ? 'Your feedback on this trial chat' : `${rating === 'up' ? '👍 Useful' : '👎 Not useful'}${a?.answer ? `: “${String(a.answer).split('\n')[0].slice(0, 120)}”` : ''}`;
   $('fbnote').placeholder = rating === 'note' ? 'What worked, what did not, what you would like it to do' : 'Anything to add? (optional)';
   $('fbnote').value = ''; $('fberr').textContent = ''; $('fb').showModal(); $('fbnote').focus();
 }
 async function guestSend() {
-  const msg = me?.guest ? feedbackMessage({ name: me.name, uid: me.user.uid, email: me.user.email, rating: gfb.rating, note: $('fbnote').value, about: gfb.about, realName: me.realName }) : null;
+  const msg = me?.guest ? feedbackMessage({ name: me.name, uid: me.user.uid, email: me.user.email, rating: gfb.rating, note: gfb.on && $('fbnote').value.trim() ? `On “${gfb.on}”: ${$('fbnote').value}` : $('fbnote').value, about: gfb.about, realName: me.realName }) : null;
   if (!msg) { $('fberr').textContent = 'Write a note first.'; return; }
   $('fbsend').disabled = true;
   try {

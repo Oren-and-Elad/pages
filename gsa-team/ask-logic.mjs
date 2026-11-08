@@ -207,6 +207,14 @@ export function linkOpen(link, now) {
 export const LINK_CLOSED_LINE = 'This link has closed. Thank you for trying it.';
 export const CLOSED_LINE = 'This trial chat has closed. Thank you for trying it.';
 export const DENIED_LINE = 'This account cannot use this chat.';
+// wrongLinkLine — a guest signed in on the other trial link (Elliott, 9 Nov 2026: a gsa-N login on the team link only
+// read "cannot use this chat"): name the link their username belongs to. '' when the doc lists no other open room.
+export function wrongLinkLine(guestDoc, roomId) {
+  const rooms = Array.isArray(guestDoc?.rooms) ? guestDoc.rooms.filter((r) => typeof r === 'string' && r !== roomId) : [];
+  const other = rooms.find((r) => /^gsa-(chat|team)$/.test(r));
+  if (!other) return '';
+  return `This username belongs to the other link: ${other === 'gsa-team' ? 'the team link' : 'the link with Pricing'}, https://oren-and-elad.github.io/pages/${other}/ . Please sign in there.`;
+}
 
 // askMessage — the one message a question becomes (index.html sendMsg's shape, with the verified identity
 // firestore.rules binds): a guest's also says `guest: true`, and a follow-up carries its conversation's `threadId`.
