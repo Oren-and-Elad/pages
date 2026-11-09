@@ -24,7 +24,8 @@ import { FIREBASE } from './firebase-config.mjs';
 import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, ownKey, ownThreads, addOwn, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
-const fb = initializeApp(FIREBASE);
+// each link keeps its own sign-in: both links share one site, so a shared default app let one link's login take over the other
+const fb = initializeApp(FIREBASE, LINK.name || '[DEFAULT]');
 const db = initializeFirestore(fb, { experimentalForceLongPolling: true }); // same transport as index.html
 const $ = (id) => document.getElementById(id);
 const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
