@@ -149,6 +149,20 @@ export function chatThreads(items = [], { mine = '' } = {}) {
   return [...by.values()].filter((t) => !me || t.email === me);
 }
 
+// Each person sees only their own conversations (Elad, 9 Nov 2026: "when Elliott signs in, Elliott sees what Elliott
+// wrote"): several people may share one trial username, so the conversations a person started are kept in their own
+// browser under the username AND the name they entered. ownThreads keeps those; a director (no key) sees every one.
+export const ownKey = (email, realName) => `gsa-own:${String(email || '').toLowerCase()}:${String(realName || '').trim().toLowerCase()}`;
+export function ownThreads(threads = [], ids = null) {
+  if (!Array.isArray(ids)) return threads;
+  const keep = new Set(ids);
+  return threads.filter((t) => keep.has(t.id));
+}
+export function addOwn(ids, id) {
+  const list = Array.isArray(ids) ? ids.filter((x) => typeof x === 'string') : [];
+  return !id || list.includes(id) ? list : [...list, id].slice(-200);
+}
+
 // The answerer's "Understood as: …" first line (kernel2/answerer-logic.mjs replyOf, a resolved follow-up): change both
 // together; console-ask-page.spec round-trips it.
 const UNDERSTOOD_HEAD = 'Understood as: ';
