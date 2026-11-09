@@ -2,7 +2,7 @@
 export const LINK = Object.freeze({
   "name": "decision",
   "only": null,
-  "until": "2026-11-20T23:59:00+11:00",
+  "until": "2026-12-04T23:59:00+11:00",
   "prepared": "https://oren-and-elad.github.io/pages/gsa-trial/answers/",
   "tabs": [
     {
