@@ -21,7 +21,7 @@ import { initializeFirestore, doc, getDoc, updateDoc, onSnapshot, addDoc, collec
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
 import { LINK } from './link.mjs';
 import { FIREBASE } from './firebase-config.mjs';
-import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, ownKey, ownThreads, addOwn, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
 const fb = initializeApp(FIREBASE);
@@ -122,7 +122,7 @@ $('ask').addEventListener('submit', async (ev) => {
   if (!text || !me) return;
   $('go').disabled = true;
   try {
-    if (room.chat) { const id = await send(text, chat.thread || undefined); if (!chat.thread) { chat.thread = id; chat.fresh = false; } chat.follow = true; render(); }
+    if (room.chat) { const id = await send(text, chat.thread || undefined); if (!chat.thread) { chat.thread = id; chat.fresh = false; ownSave(id); } chat.follow = true; render(); }
     else await send(text);
     $('q').value = '';
   } catch (e) { $('msg').textContent = `Not sent: ${e.message}`; } finally { $('go').disabled = false; $('q').focus(); }
@@ -346,9 +346,12 @@ async function guestSend() {
 // same thread (threadId = the conversation's first question); "New conversation" starts a fresh one; "Earlier
 // conversations" lists this account's others (a director sees everyone's) ──
 const chat = { thread: '', fresh: false, follow: true, list: false };
+// this person's own conversations, in this browser (ask-logic.mjs ownThreads): a guest sees only the ones they started
+const ownLoad = () => { try { return JSON.parse(localStorage.getItem(ownKey(me?.user?.email, me?.realName)) || '[]'); } catch { return []; } };
+const ownSave = (id) => { if (!me?.guest) return; try { localStorage.setItem(ownKey(me.user.email, me.realName), JSON.stringify(addOwn(ownLoad(), id))); } catch { /* private mode */ } };
 function renderChatRoom() {
   const items = conversation(rows, directors, { chat: true });
-  const threads = chatThreads(items, { mine: me && me.guest ? me.user.email : '' });
+  const threads = ownThreads(chatThreads(items, { mine: me && me.guest ? me.user.email : '' }), me?.guest ? ownLoad() : null);
   if (!chat.thread && !chat.fresh && threads.length) chat.thread = [...threads].sort((a, b) => b.at - a.at)[0].id; // resume the latest
   const t = threads.find((x) => x.id === chat.thread);
   const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 80;
