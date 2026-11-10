@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>איך הצ'אט עונה: היום ומה שמוצע</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Arial,sans-serif;background:#f4f6f9;color:#1d2733}
+header{padding:18px 16px 6px;text-align:center}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#5b6775;font-size:15px}
+.tabs{display:flex;gap:8px;justify-content:center;margin:14px 8px;flex-wrap:wrap}
+.tabs button{border:0;border-radius:22px;padding:10px 16px;font-size:16px;background:#dfe5ec;color:#1d2733;cursor:pointer}
+.tabs button.on{background:#0b3d6e;color:#fff}
+.stage{position:relative;max-width:760px;height:430px;margin:0 auto;background:#fff;border-radius:18px;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);overflow:hidden}
+.cap{max-width:760px;margin:12px auto 30px;padding:0 14px;font-size:18px;line-height:1.5;text-align:center;min-height:60px}
+.cap b{color:#0b3d6e}
+.box{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  border-radius:14px;font-size:15px;padding:8px;transition:all .6s}
+.emoji{font-size:42px;line-height:1}
+.q{position:absolute;background:#0b3d6e;color:#fff;border-radius:16px;padding:8px 12px;font-size:14px;max-width:210px;
+  transition:all 1.4s ease-in-out;opacity:0}
+.ans{position:absolute;border-radius:12px;padding:8px 12px;font-size:15px;opacity:0;transition:opacity .6s}
+.bad{background:#fde8e8;color:#9b1c1c}
+.good{background:#e3f6e8;color:#14532d}
+.note{position:absolute;width:74px;height:46px;background:#fff6c2;border:1px solid #e6d77a;border-radius:4px;font-size:10px;
+  padding:4px;transition:all .6s}
+.page{position:absolute;width:34px;height:44px;background:#fff;border:1px solid #c9d2dc;border-radius:3px;transition:all 1s}
+.page.hit{background:#dbeafe;border-color:#3b82f6;box-shadow:0 0 0 3px #bfdbfe}
+.page::after{content:"";position:absolute;left:5px;right:5px;top:8px;height:2px;background:#d5dce4;box-shadow:0 7px 0 #d5dce4,0 14px 0 #d5dce4,0 21px 0 #d5dce4}
+.lens{position:absolute;font-size:46px;transition:all 1.2s ease-in-out;opacity:0}
+.funnel{position:absolute;left:50%;transform:translateX(-50%);top:110px;width:0;height:0;border-left:170px solid transparent;
+  border-right:170px solid transparent;border-top:190px solid #e8eef5}
+.chip{position:absolute;font-size:24px;transition:all 1.6s ease-in;opacity:0}
+.ctrl{text-align:center;margin-top:8px}
+.ctrl button{border:0;background:#fff;border-radius:20px;padding:8px 16px;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>איך הצ'אט עונה על שאלה</h1>
+  <div class="sub">שלוש תמונות קצרות. כל אחת רצה לבד, בלולאה.</div>
+</header>
+<div class="tabs">
+  <button data-s="0" class="on">1. היום: פתקים</button>
+  <button data-s="1">2. המוצע: אינדקס</button>
+  <button data-s="2">3. מה עושים עם 2 טרה</button>
+</div>
+<div class="stage" id="stage"></div>
+<div class="ctrl"><button id="again">▶ להריץ שוב</button></div>
+<div class="cap" id="cap"></div>
+
+<script>
+const S = document.getElementById('stage'), C = document.getElementById('cap');
+let timers = [];
+const at = (ms, f) => timers.push(setTimeout(f, ms));
+const el = (cls, html, css) => { const d = document.createElement('div'); d.className = cls; d.innerHTML = html || '';
+  Object.assign(d.style, css || {}); S.appendChild(d); return d; };
+const cap = h => C.innerHTML = h;
+function clear(){ timers.forEach(clearTimeout); timers = []; S.innerHTML = ''; }
+
+function today(){
+  clear();
+  el('box', '<div class="emoji">🗄️</div>המסמכים', {left:'30px', top:'40px', width:'140px', height:'120px', background:'#eef2f6'});
+  const notes = [];
+  for (let i = 0; i < 6; i++) notes.push(el('note', 'מועצה ✓<br>גובה ✓<br>מי אישר ✓',
+    {left:(70 + (i%3)*82)+'px', top:(200 + Math.floor(i/3)*56)+'px', opacity:0}));
+  el('box', '<div class="emoji">🧑‍💼</div>הלקוח', {right:'24px', top:'40px', width:'120px', height:'110px', background:'#eef2f6'});
+  const q1 = el('q', 'אילו תיקים חרגו בגובה?', {right:'24px', top:'165px'});
+  const a1 = el('ans good', '✓ יש תשובה: בפתק כתוב "גובה"', {left:'330px', top:'250px'});
+  const q2 = el('q', 'חריגה בקו בניין אחורי בגלל צורת המגרש?', {right:'24px', top:'165px'});
+  const a2 = el('ans bad', '✗ אין תשובה: את זה לא רשמנו בפתק', {left:'330px', top:'330px'});
+  cap('כשקראנו את התיקים, <b>כתבנו על כל אחד פתק</b> עם כמה פרטים קבועים.');
+  notes.forEach((n, i) => at(500 + i*250, () => n.style.opacity = 1));
+  at(2400, () => { cap('הלקוח שואל. הצ\'אט <b>מסתכל רק בפתקים</b>, לא במסמכים.'); q1.style.opacity = 1; });
+  at(3200, () => { q1.style.right = '400px'; q1.style.top = '200px'; });
+  at(4800, () => { q1.style.opacity = 0; a1.style.opacity = 1; cap('על מה שכתוב בפתק <b>יש תשובה</b>.'); });
+  at(6800, () => { q2.style.opacity = 1; cap('אבל שאלה על משהו שלא רשמנו...'); });
+  at(7600, () => { q2.style.right = '400px'; q2.style.top = '200px'; });
+  at(9200, () => { q2.style.opacity = 0; a2.style.opacity = 1;
+    cap('<b>חוזרת ריקה</b>. וכל יום אנחנו מוסיפים לפתק עוד שורה: זה הטלאי. ככה זה לא ייגמר.'); });
+  at(13500, today);
+}
+
+function proposed(){
+  clear();
+  const pages = [];
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 9; c++)
+    pages.push(el('page', '', {left:(30 + c*42)+'px', top:(150 + r*54)+'px'}));
+  el('box', '<div class="emoji">🧑‍💼</div>הלקוח', {right:'24px', top:'30px', width:'120px', height:'100px', background:'#eef2f6'});
+  const q = el('q', 'חריגה בקו בניין אחורי בגלל צורת המגרש?', {right:'24px', top:'140px'});
+  const lens = el('lens', '🔍', {left:'20px', top:'90px'});
+  const bot = el('box', '<div class="emoji">🤖</div>המודל', {right:'40px', top:'250px', width:'110px', height:'90px',
+    background:'#eef2f6', opacity:0});
+  const a = el('ans good', '✓ תשובה + ציטוט מהמסמך + קישור', {right:'20px', top:'360px'});
+  el('box', '<b>כל הדפים של כל המסמכים</b>', {left:'30px', top:'110px', width:'370px', height:'30px', background:'transparent'});
+  cap('במקום פתקים: <b>אינדקס על כל הדפים</b>, כמו אינדקס בסוף ספר.');
+  at(1500, () => { q.style.opacity = 1; cap('הלקוח שואל שאלה שלא חשבנו עליה מראש.'); });
+  at(2600, () => { lens.style.opacity = 1; cap('האינדקס <b>מחפש בכל הדפים</b>: מילים, וגם רעיון דומה במילים אחרות.'); });
+  const hits = [3, 13, 20, 29, 34];
+  [[60,150],[300,200],[150,260],[380,310],[90,300]].forEach(([x,y], i) =>
+    at(3000 + i*500, () => { lens.style.left = x+'px'; lens.style.top = (y-30)+'px'; }));
+  at(5800, () => { hits.forEach(i => pages[i].classList.add('hit')); cap('הוא מוצא <b>רק את הדפים המתאימים</b>.'); });
+  at(7200, () => { bot.style.opacity = 1; hits.forEach((i, k) => {
+    pages[i].style.left = (520 + k*8)+'px'; pages[i].style.top = (200 + k*6)+'px'; });
+    cap('המודל <b>קורא רק אותם</b>, לא את כל הארכיון. מהיר וזול.'); });
+  at(9200, () => { a.style.opacity = 1;
+    cap('והתשובה מגיעה <b>עם ציטוט וקישור למסמך</b>. גם על שאלה שלא חשבנו עליה.'); });
+  at(13500, proposed);
+}
+
+function tb(){
+  clear();
+  el('box', '<div class="emoji">💾</div><b>2 טרה</b><br>כל הארכיון', {left:'50%', top:'14px', width:'170px', height:'90px',
+    background:'#eef2f6', transform:'translateX(-50%)'});
+  el('funnel');
+  const items = ['📐','🖼️','📐','📄','🖼️','📐','📄','🖼️','📐','📐','🖼️','📄'];
+  const chips = items.map((e, i) => el('chip', e, {left:(250 + (i%6)*48)+'px', top:'100px'}));
+  const trash = el('box', '<div class="emoji">🗑️</div>שרטוטים, תמונות, כפילויות', {left:'20px', top:'250px', width:'170px',
+    height:'110px', background:'#fdf0f0', opacity:0});
+  const idx = el('box', '<div class="emoji">🔍</div>נכנס לאינדקס', {left:'50%', top:'318px', width:'170px', height:'100px',
+    background:'#e3f6e8', transform:'translateX(-50%)', opacity:0});
+  cap('הארכיון כולו: <b>2 טרה</b>. נשמע ענק.');
+  at(1500, () => { chips.forEach(c => c.style.opacity = 1); cap('אבל רובו <b>שרטוטים, תמונות וכפילויות</b>.'); });
+  at(3200, () => { trash.style.opacity = 1; chips.forEach((c, i) => {
+    if (items[i] !== '📄') { c.style.left = (60 + (i%4)*25)+'px'; c.style.top = '300px'; c.style.opacity = .35; }
+    else { c.style.left = (360 + (i%3)*14)+'px'; c.style.top = '270px'; } });
+    cap('את אלה <b>זורקים</b>. הצ\'אט לא צריך אותם כדי לענות.'); });
+  at(6200, () => { idx.style.opacity = 1;
+    cap('נשאר <b>רק הטקסט</b>: דוחות, בקשות, החלטות, פסקי דין. חלק קטן מ־2 הטרה, והוא נכנס לאינדקס.'); });
+  at(9500, () => cap('<b>הבנייה בתשלום:</b> סינון, אינדקס על כל הארכיון, ועבודה בתוך הסביבה של הלקוח. הקבצים לא יוצאים משם.'));
+  at(14000, tb);
+}
+
+const scenes = [today, proposed, tb];
+let cur = 0;
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); cur = +b.dataset.s; scenes[cur](); });
+document.getElementById('again').onclick = () => scenes[cur]();
+today();
+</script>
+</body>
+</html>
