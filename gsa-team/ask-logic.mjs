@@ -259,7 +259,7 @@ export function feedbackMessage({ name, uid, email, rating, note = '', about = '
 // firestore.rules lets them read) as one list, each message once.
 export function mergeRows(...lists) {
   const by = new Map();
-  for (const l of lists) for (const r of l || []) if (r && r.id) by.set(r.id, r);
+  for (const l of lists) for (const r of l || []) if (r && r.id && !r.board) by.set(r.id, r); // a board call is not a chat line
   return [...by.values()];
 }
 
@@ -568,4 +568,27 @@ export function boardView(cards = [], { planner = '', assign = {} } = {}) {
     return col;
   }).filter((c) => c.n || c.stage !== 'not in the files');
   return { planners, planner, columns, total: shown.length, unassigned: shown.filter((c) => !c.planner).length };
+}
+
+// boardMessage — one call to the shared potential-jobs board (11 Nov 2026, Michelle's idea): a room message Cleo's relay
+// passes to the GSA server (no model call). kind 'get' reads the board; 'change' carries one change object.
+export const BOARD_MAX = 4096; // the relay reads at most this much of a board call
+export function boardMessage({ name, realName, uid, email, guest }, kind, change) {
+  const text = kind === 'get' ? '{}' : JSON.stringify(change ?? {});
+  if (text.length > BOARD_MAX) throw new Error('that is too long to save; please shorten the note'); // never cut JSON mid-way
+  return { type: 'text', from: name, text, images: [], relayed: false,
+    fromUid: uid, fromEmail: email, guest: !!guest, board: kind, byName: String(realName || name || '').trim().slice(0, 60) || 'Someone' };
+}
+// widerWindow — the next size for a messages listener: board calls share the room's messages and are dropped on the page, so
+// when a full window leaves fewer than CHAT_MIN chat lines it doubles (up to WINDOW_MAX); otherwise it stays as it is.
+export const CHAT_MIN = 200; export const WINDOW_MAX = 4800;
+export function widerWindow(n, got, kept) {
+  return got >= n && kept < CHAT_MIN && n < WINDOW_MAX ? Math.min(n * 2, WINDOW_MAX) : n;
+}
+// pipelineView — the shared board cut for the page: jobs by stage (newest first), filtered to one planner when chosen.
+export function pipelineView(board, planner = '') {
+  const jobs = (board?.jobs || []).filter((j) => j && (!planner || j.planner === planner))
+    .map((j) => ({ ...j, notes: Array.isArray(j.notes) ? j.notes.filter((n) => n && n.text) : [] })); // a job with no notes still draws
+  return { stages: (board?.stages || []).map((s) => ({ ...s, jobs: jobs.filter((j) => j.stage === s.id) })),
+    architects: board?.architects || [], total: jobs.length };
 }
