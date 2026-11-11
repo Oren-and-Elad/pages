@@ -21,7 +21,7 @@ import { initializeFirestore, doc, getDoc, updateDoc, onSnapshot, addDoc, collec
 import { renderLive, renderChat, newUi, renderJobs } from './ask-view.js';
 import { LINK } from './link.mjs';
 import { FIREBASE } from './firebase-config.mjs';
-import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, ownKey, ownThreads, addOwn, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY } from './ask-logic.mjs';
+import { linkOpen, LINK_CLOSED_LINE, ASK_ROOMS, roomOfLocation, guestAccess, askMessage, feedbackMessage, mergeRows, chatThreads, ownKey, ownThreads, addOwn, chatTabs, CLOSED_LINE, DENIED_LINE, wrongLinkLine, cssVars, conversation, preparedBlobOf, preparedTabs, preparedScope, preparedDoc, stepOrder, feedbackText, PREPARED_SANDBOX, inventoryOf, trustLine, presenterSteps, presenterTurn, cleanName, nameKey, savedName, boardOf, boardView, readAssign, assignJob, BOARD_KEY, boardMessage, pipelineView, widerWindow } from './ask-logic.mjs';
 
 // the sign-in project's web settings are written into each built link by web/build.mjs (never kept in this repo)
 // each link keeps its own sign-in: both links share one site, so a shared default app let one link's login take over the other
@@ -83,17 +83,28 @@ onAuthStateChanged(auth, async (user) => {
   if (room.chat) { $('newchat').hidden = false; $('gfbgo').hidden = !me.guest; }
   if (room.chat && room.tabs) { drawChatTabs(); chatTab('chat'); roomCode = typeof roomDoc?.preparedCode === 'string' ? roomDoc.preparedCode.trim() : ''; tryRoomCode(); }
   const msgs = collection(db, 'elad-oren-rooms', roomId, 'messages');
+  if (room.chat && room.tabs) watchShared();
   const failed = (e) => { $('msg').textContent = me.guest ? CLOSED_LINE : `Cannot read this room: ${e.message}`; };
   if (me.guest) {
     // a guest's own side only (firestore.rules guestOwnsMsg): equality queries, no orderBy, so no composite index
     const part = { asked: [], answered: [] };
-    const take = (k) => (s) => { part[k] = s.docs.map((d) => ({ id: d.id, ...d.data() })); rows = mergeRows(part.asked, part.answered); $('msg').textContent = ''; render(); };
-    onSnapshot(query(msgs, where('fromUid', '==', me.user.uid), limit(500)), take('asked'), failed);
-    onSnapshot(query(msgs, where('askerUid', '==', me.user.uid), limit(500)), take('answered'), failed);
+    const take = (k) => (all) => { part[k] = all; rows = mergeRows(part.asked, part.answered); $('msg').textContent = ''; render(); };
+    watchWindow((n) => query(msgs, where('fromUid', '==', me.user.uid), limit(n)), 500, take('asked'), failed);
+    watchWindow((n) => query(msgs, where('askerUid', '==', me.user.uid), limit(n)), 500, take('answered'), failed);
   } else {
-    onSnapshot(query(msgs, orderBy('createdAt'), limitToLast(200)), (s) => { rows = s.docs.map((d) => ({ id: d.id, ...d.data() })); $('msg').textContent = ''; render(); }, failed);
+    watchWindow((n) => query(msgs, orderBy('createdAt'), limitToLast(n)), 600, (all) => { rows = all.filter((r) => !r.board); $('msg').textContent = ''; render(); }, failed);
   }
 });
+// watchWindow — a messages listener whose window widens (widerWindow) when board calls crowd out the chat lines
+function watchWindow(q, n, onRows, failed) {
+  let stop = null;
+  const sub = (size) => { if (stop) stop(); stop = onSnapshot(q(size), (s) => {
+    const all = s.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const next = widerWindow(size, all.length, all.filter((r) => !r.board).length);
+    if (next > size) sub(next); else onRows(all);
+  }, failed); };
+  sub(n);
+}
 
 // askName — a guest's first sign-in asks "Your name" once per username (ask-logic.mjs savedName); later sign-ins skip it
 async function askName(user, g) {
@@ -451,7 +462,67 @@ function drawBoard() {
       ...(bplanner ? [el('button', { type: 'button', className: 'clr', onclick: () => { bplanner = ''; drawBoard(); } }, `✕ Show everyone`)] : []),
       ...(moved ? [el('button', { type: 'button', className: 'clr', onclick: () => { saveAssign({}); drawBoard(); } }, `Reset ${moved} assignment${moved > 1 ? 's' : ''}`)] : [])),
     el('p', { className: 'muted' }, `${v.total} jobs${bplanner ? ` for ${bplanner}` : ''}. Drag a job onto a planner to assign it; this is kept in this browser only.`),
-    el('div', { className: 'bcols' }, ...v.columns.map(col))));
+    el('div', { className: 'bcols' }, ...v.columns.map(col)), drawPipeline(v.planners.map((p) => p.planner))));
+}
+// the shared potential-jobs board (11 Nov 2026, Michelle's idea via Halina): everyone on both links sees the same copy,
+// kept on GSA's server; a change is a room message Cleo's relay passes on (no model call), its result written back on it
+let shared = null; let sharedNote = ''; let openNotes = new Set();
+function watchShared() {
+  let asked = false;
+  onSnapshot(doc(db, 'elad-oren-rooms', roomId, 'board', 'current'), (s) => {
+    try { shared = s.exists() ? JSON.parse(s.data().json) : shared; } catch { /* a bad copy: keep the last */ }
+    if (!s.exists() && !asked) { asked = true; boardCall('get'); } // ask the server only when there is no shared copy yet
+    if (ctab === 'J1' && prep) drawBoard();
+  }, () => { sharedNote = 'The shared board cannot be read right now.'; if (ctab === 'J1' && prep) drawBoard(); });
+}
+const BOARD_WAIT_MS = 30000;
+async function boardCall(kind, change) {
+  try {
+    const ref = await addDoc(collection(db, 'elad-oren-rooms', roomId, 'messages'), { ...boardMessage({ name: me.name, realName: me.realName,
+      uid: me.user.uid, email: me.user.email, guest: me.guest }, kind, change), createdAt: serverTimestamp() });
+    if (kind === 'get') return;
+    sharedNote = 'Saving…'; if (ctab === 'J1' && prep) drawBoard();
+    const late = setTimeout(() => { stop(); sharedNote = 'No answer from the server yet; refresh in a minute to see if it saved.';
+      if (ctab === 'J1' && prep) drawBoard(); }, BOARD_WAIT_MS); // never leave 'Saving…' up for good
+    const stop = onSnapshot(ref, (s) => { const r = s.data()?.boardResult; if (!r) return; clearTimeout(late); stop();
+      sharedNote = r.ok ? '' : (r.error === 'busy' ? 'Too many changes this hour; try again later.' : r.error === 'closed' ? CLOSED_LINE : `Not saved: ${r.error}`);
+      if (ctab === 'J1' && prep) drawBoard(); }, () => {});
+  } catch (e) { sharedNote = `Not saved: ${e.message}`; if (ctab === 'J1' && prep) drawBoard(); }
+}
+function drawPipeline(plannerNames) {
+  const v = pipelineView(shared, bplanner);
+  const inp = (ph, w) => el('input', { placeholder: ph, style: `width:${w}` });
+  const f = { client: inp('Client', '22%'), address: inp('Address', '26%'), architect: inp('Architect', '20%'), text: inp('First note (optional)', '24%') };
+  const add = el('form', { className: 'padd', onsubmit: (e) => { e.preventDefault();
+    const c = Object.fromEntries(Object.entries(f).map(([k, i]) => [k, i.value.trim()]));
+    if (!c.client && !c.address) { sharedNote = 'Please fill in the client or the address.'; drawBoard(); return; }
+    boardCall('change', { op: 'add', ...c, planner: bplanner }); } }, ...Object.values(f), el('button', { type: 'submit' }, '+ Add enquiry'));
+  const when = (t) => new Date(t * 1000).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+  const card = (j) => {
+    const sel = el('select', { onchange: () => boardCall('change', { op: 'assign', job: j.id, planner: sel.value }) },
+      el('option', { value: '' }, 'Unallocated'), ...[...new Set([...plannerNames, j.planner].filter(Boolean))].map((p) => el('option', { value: p, selected: p === j.planner }, p)));
+    const moves = { potential: [['loi', 'LOI sent'], ['engaged', 'Engaged'], ['lost', 'Not proceeding']], loi: [['engaged', 'Engaged'], ['lost', 'Not proceeding'], ['potential', 'Back to potential']],
+      engaged: [['potential', 'Back to potential']], lost: [['potential', 'Reopen']] }[j.stage] || [];
+    const note = el('input', { placeholder: 'Add a status note…' });
+    const all = openNotes.has(j.id); j.notes = j.notes || []; const shown = all ? j.notes : j.notes.slice(-2);
+    return el('div', { className: 'bc' },
+      el('b', {}, j.client || j.address), ...(j.client && j.address ? [el('div', {}, j.address)] : []),
+      ...(j.architect ? [el('div', { className: 'muted' }, `Architect: ${j.architect}`)] : []), el('div', {}, 'Planner: ', sel),
+      el('div', { className: 'pn' }, ...shown.map((n) => el('div', {}, el('span', { className: 'muted' }, `${when(n.at)} ${n.by}: `), n.text)),
+        ...(j.notes.length > 2 ? [el('a', { href: '#', onclick: (e) => { e.preventDefault(); all ? openNotes.delete(j.id) : openNotes.add(j.id); drawBoard(); } }, all ? 'Show less' : `All ${j.notes.length} notes`)] : [])),
+      el('form', { onsubmit: (e) => { e.preventDefault(); if (note.value.trim()) boardCall('change', { op: 'note', job: j.id, text: note.value.trim() }); } }, note),
+      el('div', { className: 'pmv' }, ...moves.map(([s, label]) => el('button', { type: 'button', onclick: () => boardCall('change', { op: 'stage', job: j.id, stage: s }) }, label))));
+  };
+  const arch = v.architects.filter((a) => a.architect !== '(no architect)');
+  return el('div', { className: 'pipe' },
+    el('h3', {}, `Potential jobs${bplanner ? ` · ${bplanner}` : ''}`),
+    el('p', { className: 'muted' }, shared ? 'Shared with everyone in the office: a change here shows for all.' : 'Loading the shared board…'),
+    ...(sharedNote ? [el('p', { className: 'muted' }, sharedNote)] : []), add,
+    el('div', { className: 'bcols' }, ...v.stages.map((s) => el('div', { className: 'bcol' }, el('h3', {}, `${s.name} · ${s.jobs.length}`), ...s.jobs.map(card)))),
+    ...(arch.length ? [el('h3', {}, 'Where the work comes from'), el('table', { className: 'parch' },
+      el('tr', {}, ...['Architect', 'Enquiries', 'LOIs', 'Engaged', 'Not proceeding', 'Open'].map((h) => el('th', {}, h))),
+      ...arch.map((a) => el('tr', {}, el('td', {}, a.architect, ...(a.loi_never_proceed ? [el('span', { className: 'muted' }, ' · asks for LOIs, has not proceeded')] : [])),
+        ...[a.enquiries, a.loi, a.engaged, a.lost, a.open].map((n) => el('td', {}, String(n))))))] : []));
 }
 async function openChatPrepared(code) {
   const d = await decryptPrepared(cblob, code);
