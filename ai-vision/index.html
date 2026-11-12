@@ -3,640 +3,770 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Future Vision — You Have a Plan</title>
+<title>AI Future Vision</title>
 <meta name="robots" content="noindex">
 <style>
+  /* Fonts are vendored next to the page (SIL OFL, see fonts/): nothing loads from outside this folder. */
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 400; font-display: swap; src: url(fonts/schibsted-grotesk-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 500; font-display: swap; src: url(fonts/schibsted-grotesk-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 600; font-display: swap; src: url(fonts/schibsted-grotesk-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 700; font-display: swap; src: url(fonts/schibsted-grotesk-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 400; font-display: swap; src: url(fonts/dm-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 500; font-display: swap; src: url(fonts/dm-mono-latin-500-normal.woff2) format("woff2"); }
+
+  /* Layout: one picture of the whole system (people + agents / AI Hub / data) that the deck travels across.
+     The caption panel sits left (whole-picture scenes) or on top (one-layer scenes); the camera fits the scene's
+     region of the picture into the space that is left. Tokens from the keel ai operating-model piece. */
   :root {
-    /* theme tokens taken from the keel ai operating-model piece: paper on canvas, one blue accent, hairlines, square corners */
-    --canvas:#f6f7f9; --paper:#ffffff; --deep:#e7eaee;
-    --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
-    --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e;
-    --hair:rgba(21,23,28,.12);
-    --card: var(--paper); --line: var(--hair); --soft: var(--ink2); --dim: var(--muted);
-    --steer: var(--ink); --coord: var(--warn); --teams: var(--pos); --data: var(--accent);
+    --canvas:#f6f7f9; --paper:#ffffff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f0f2f5;
+    --accent:#2b5fd9; --accent-soft:#eaf0fd; --neg:#c8463d; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.12);
+    --l3: var(--pos); --l2: var(--warn); --l1: var(--accent); --ans: var(--pos);
+    --shadow: 0 1px 1px rgba(21,23,28,.04), 0 2px 4px rgba(21,23,28,.04), 0 16px 36px -20px rgba(21,23,28,.28);
     --sans: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-    --display: var(--sans);
+    --cam: 1.1s cubic-bezier(.65, 0, .35, 1);
   }
-  @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --deep:#15171c;
-    --ink:#eef0f3; --ink2:#c5cad1; --muted:#9aa1ad; --rule:#565d68; --fill:#15171c;
-    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --pos:#3fbf86; --warn:#d9a052;
-    --hair:rgba(238,240,243,.14); color-scheme:dark; } }
+  @media (prefers-color-scheme: dark) { :root { --canvas:#15171c; --paper:#1d2027; --ink:#eef0f3; --ink2:#c5cad1; --muted:#8b93a0; --rule:#4a505b; --fill:#23262e;
+    --accent:#7ea2ee; --accent-soft:rgba(126,162,238,.14); --neg:#ef6b62; --pos:#3fbf86; --warn:#d9a052; --hair:rgba(238,240,243,.14);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.7); color-scheme:dark; } }
+
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; color: var(--ink);
-    background: var(--canvas);
-    font-family: var(--sans); }
-  body { overflow: hidden; }
-  /* a sideways swipe changes slide: the browser must not take it as back/forward */
-  html, body { overscroll-behavior-x: none; touch-action: pan-y; }
-  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
-    padding: 6vh 7vw 12vh; opacity: 0; visibility: hidden; transform: translateY(18px);
-    transition: opacity .5s ease, transform .5s ease, visibility 0s linear .5s; }
-  .slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s ease, transform .5s ease; }
-  .kicker { font-family: var(--mono); font-size: clamp(11px, 1.05vw, 14px); letter-spacing: .08em; text-transform: uppercase; color: var(--ink2);
-    margin: 0 0 1.6vh; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-  .kicker::before, .mark .dia, .brand .dia { content: ""; width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; display: inline-block; }
-  h1 { font-family: var(--display); font-size: clamp(30px, 4.6vw, 66px); line-height: 1.04; margin: 0 0 2vh;
-    font-weight: 600; letter-spacing: -.01em; }
-  .big { font-size: clamp(44px, 8vw, 116px); color: var(--ink); }
-  .lead { font-size: clamp(16px, 1.8vw, 24px); color: var(--soft); margin: 0 0 5vh; max-width: 52ch; line-height: 1.45; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 4px; }
+  html, body { margin: 0; height: 100%; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; line-height: 1.4; }
+  html, body { overscroll-behavior: none; touch-action: pan-y; }
+  button { font: inherit; color: inherit; }
 
-  /* flow of cards with drawn connectors */
-  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; max-width: 1200px; }
-  .side { flex: 1; min-width: 150px; padding: 3.2vh 1.6vw; font-family: var(--display); font-weight: 600;
-    font-size: clamp(16px, 1.9vw, 26px); position: relative; overflow: hidden; }
-  .side::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 4px; background: var(--c); }
-  .side small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .62em; margin-top: 1vh; line-height: 1.4; }
-  .arrow { align-self: center; width: clamp(28px, 3.5vw, 56px); height: 2px; margin: 0 .6vw; position: relative;
-    background: var(--rule); font-size: 0; }
-  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--rule); border-right: 0; }
+  /* ---- stage: 1600 x 900 (or 900 x 1600 on a phone held upright), scaled to fill the window ---- */
+  #deck { position: fixed; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; overflow: hidden; }
+  .mark { position: absolute; top: 38px; left: 96px; z-index: 6; display: flex; align-items: center; gap: 10px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .1em; font-size: 13px; font-weight: 500; }
+  .mark .by { color: var(--muted); text-transform: none; letter-spacing: .02em; font-weight: 400; }
+  #deck:is([data-scene="title"], [data-scene="close"]) .mark { visibility: hidden; } /* these have the big lockup */
+  .mark img { width: 20px; height: 20px; object-fit: cover; clip-path: inset(2.5% round 21%); }
+  .dia { width: 9px; height: 9px; background: var(--accent); transform: rotate(45deg); border-radius: 1px; flex: none; display: inline-block; }
+  nav { position: absolute; top: 28px; right: 96px; z-index: 6; display: flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: var(--ink2); }
+  nav button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--hair); background: var(--paper); border-radius: 10px; cursor: pointer; font-size: 18px; padding: 0; }
+  nav button:hover { background: var(--fill); }
+  nav button:disabled { opacity: .35; cursor: default; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #count { min-width: 76px; text-align: center; } #count b { color: var(--ink); font-weight: 500; }
 
-  .col { display: flex; flex-direction: column; gap: 1vh; flex: 1; min-width: 150px; justify-content: center; }
-  .chip { border-radius: 3px; padding: 1.3vh 1vw; font-size: clamp(13px, 1.3vw, 17px); background: var(--card);
-    border: 1px solid var(--line); color: var(--dim); }
-  .col .chip { color: var(--ink); }
-  .chip.live { border-color: var(--teams); background: color-mix(in srgb, var(--pos) 10%, var(--paper)); color: var(--ink); font-weight: 600; }
-  .chip.src { border-left: 3px solid var(--data); }
-  .hub { flex: 1.2; min-width: 180px; align-self: center; text-align: center; padding: 3.4vh 1.4vw; border-radius: 4px;
-    background: var(--accent-soft); border: 1px solid var(--data);
-    font-family: var(--display); font-weight: 700; font-size: clamp(16px, 1.9vw, 26px);  }
-  .hub small, .road small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; line-height: 1.4; }
-  .road { flex: .9; min-width: 140px; align-self: center; text-align: center; border-radius: 3px; padding: 2.2vh 1.2vw;
-    background: var(--paper); border: 1px solid var(--coord);
-    font-family: var(--display); font-weight: 700; font-size: clamp(14px, 1.5vw, 20px); }
+  /* where the camera may place the picture: set per layout, read by fit() */
+  #view { position: absolute; pointer-events: none; }
+  #deck.left #view { left: 556px; top: 96px; width: 1004px; height: 784px; }
+  #deck.top #view { left: 96px; top: 318px; width: 1408px; height: 556px; }
+  #deck.portrait #view { left: 36px; top: 760px; width: 828px; height: 800px; }
 
-  /* rollout */
-  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; max-width: 1200px; }
-  .stage h3 { font-family: var(--display); margin: 0 0 1.4vh; font-size: clamp(15px, 1.6vw, 22px); }
-  .stage h3 span { color: var(--soft); font-weight: 400; }
-  .chips { display: flex; flex-direction: column; gap: .9vh; }
+  /* ---- the picture ---- */
+  #world { position: absolute; left: 0; top: 0; width: 1440px; height: 940px; transform-origin: 0 0; transition: transform var(--cam), opacity .6s ease; }
+  .L { position: absolute; left: 0; width: 1440px; border-radius: 22px; transition: opacity .6s ease; }
+  .L::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: color-mix(in srgb, var(--c) 5%, transparent); border: 1px solid color-mix(in srgb, var(--c) 16%, transparent); }
+  .L3 { --c: var(--l3); top: 0; height: 470px; } .L2 { --c: var(--l2); top: 486px; height: 154px; } .L1 { --c: var(--l1); top: 656px; height: 284px; }
+  .ltag { position: absolute; left: 34px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); transform-origin: center; white-space: nowrap;
+    font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+  .ltag b { color: var(--ink); font-weight: 500; }
+  #deck.top .ltag { opacity: 0; }
+  /* the layer in focus stays bright; the others recede */
+  #world[data-focus="l1"] :is(.L2, .L3, .y2, .y3), #world[data-focus="l2"] :is(.L1, .L3, .y1, .y3), #world[data-focus="l3"] :is(.L1, .L2, .y1, .y2) { opacity: .25; }
+  /* level of detail: .d2 only shows when the camera is on that layer */
+  .d2 { opacity: 0; visibility: hidden; transition: opacity .5s ease .35s, visibility 0s linear .85s; }
+  #world[data-focus="l1"] :is(.y1 .d2, .d2.y1), #world[data-focus="l2"] .y2 .d2, #world[data-focus="l3"] .y3 .d2 { opacity: 1; visibility: visible; transition: opacity .5s ease .45s, visibility 0s; }
 
-  /* functions */
-  .fns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4vw; max-width: 1200px; }
-  .fn { padding: 2.4vh 1.4vw; }
-  .fn h3 { margin: 0 0 1.2vh; font-family: var(--display); font-size: clamp(15px, 1.6vw, 21px); }
-  .fn h3::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: .6em; vertical-align: middle; }
-  .fn p { margin: 0; color: var(--soft); font-size: clamp(12px, 1.2vw, 16px); line-height: 1.5; }
-  .fine { margin-top: 3vh; font-size: clamp(12px, 1.2vw, 15px); color: var(--dim); }
+  .n { position: absolute; border-radius: 12px; background: var(--paper); border: 1px solid var(--hair); box-shadow: var(--shadow); transition: opacity .4s ease, border-color .4s ease, box-shadow .4s ease, background .4s ease; }
+  .n b { font-weight: 600; }
+  .n small { display: block; color: var(--ink2); font-size: 13px; line-height: 1.35; }
+  .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
+  .fig { width: 30px; height: 30px; fill: currentColor; flex: none; }
+  .ic { width: 1.1em; height: 1.1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* architecture */
-  .arch { display: grid; grid-template-columns: 1.1fr auto 1.1fr auto .9fr auto 1.5fr; align-items: center; max-width: 1300px; gap: 0; }
-  .arch .layer { padding: 2vh 1.1vw; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-  .arch .tag { font-size: clamp(10px, .95vw, 13px); letter-spacing: .14em; text-transform: uppercase; color: var(--soft); margin: 0 0 1vh; font-weight: 600; }
-  .arch .chip { padding: .9vh .8vw; font-size: clamp(11px, 1.1vw, 15px); }
-  .arch .col { gap: .7vh; min-width: 0; }
-  .arch .hub, .arch .road { align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-  .arch .hub ul { list-style: none; padding: 0; margin: 1.4vh 0 0; font-family: var(--sans); font-weight: 500; font-size: .58em; color: var(--ink); }
-  .arch .hub li { padding: .5vh 0; border-top: 1px solid var(--line); }
-  .agents { display: flex; flex-direction: column; gap: .8vh; }
-  .agents .chip { color: var(--ink); }
-  .agents .cos { border-color: var(--steer); background: var(--fill); font-weight: 600; }
-  .agents .head { border-color: var(--coord); background: color-mix(in srgb, var(--warn) 10%, var(--paper)); font-weight: 600; }
-  .agents .work { border-color: var(--teams); background: color-mix(in srgb, var(--pos) 8%, var(--paper)); }
-  .agents .labchip { border-style: dashed; border-color: var(--teams); color: var(--soft); margin-top: .6vh; }
+  .exec { left: 499px; top: 16px; width: 200px; height: 58px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; font-size: 19px; }
+  .exec .fig { color: var(--ink); }
+  .engine { left: 120px; top: 16px; width: 280px; height: 58px; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .engine > .ic { width: 30px; height: 30px; padding: 6px; border-radius: 8px; color: var(--paper); background: var(--ink); stroke-width: 1.8; }
+  .engine b { display: block; font-size: 17px; } .engine .mono { color: var(--ink2); }
+  .cos { left: 120px; top: 98px; width: 958px; height: 72px; background: var(--ink); color: var(--paper); border-color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
+  .cos b { font-size: 22px; display: block; letter-spacing: -.01em; }
+  .cos .mono { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
+  .cos .on { color: #3fbf86; }
+  .cos .acts { display: flex; gap: 10px; }
+  .cos .acts span { border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent); border-radius: 7px; padding: 6px 10px; font-size: 13px; }
+  .cos .acts i { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
 
-  /* freedoms / gate / lab */
-  .free { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8vw; max-width: 1150px; }
-  .free .side b { display: block; font-size: 2.2em; color: var(--c); line-height: 1; margin-bottom: 1.2vh; }
-  .gate { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3vw; max-width: 900px; }
-  .gate .side { text-align: center; }
-  .lock { width: clamp(80px, 10vw, 136px); height: clamp(80px, 10vw, 136px); border-radius: 4px; border: 1px solid var(--accent);
-    background: var(--accent-soft); color: var(--ink); display: flex; align-items: center;
-    justify-content: center; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(12px, 1.3vw, 17px); line-height: 1.2;
-     }
-  .points { list-style: none; padding: 0; margin: 5vh 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4vh 2.4vw;
-    font-size: clamp(14px, 1.45vw, 19px); max-width: 1150px; line-height: 1.4; }
-  .points li::before { content: "✓ "; color: var(--teams); font-weight: 700; }
-  .lab { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3vw; align-items: center; max-width: 950px; }
-  .labbox, .livebox { border-radius: 4px; padding: 4.4vh 2vw; text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(16px, 2vw, 28px); }
-  .labbox { border: 2px dashed var(--teams); background: color-mix(in srgb, var(--pos) 6%, var(--paper)); }
-  .livebox { border: 1px solid var(--line); background: var(--card); }
-  .labbox small, .livebox small { display: block; font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; margin-top: 1vh; }
-  .wall { width: 6px; height: 22vh; background: var(--ink); border-radius: 4px; justify-self: center; }
-  .note { margin-top: 4vh; font-size: clamp(13px, 1.4vw, 17px); color: var(--soft); max-width: 70ch; line-height: 1.5;
-    border-left: 3px solid var(--coord); padding-left: 1em; }
+  .fn { top: 200px; width: 212px; height: 260px; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .fn .fh { display: flex; justify-content: space-between; align-items: baseline; }
+  .fn .fh b { font-size: 20px; letter-spacing: -.01em; }
+  .fn .fh .mono { color: var(--ink2); }
+  .team { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--fill); font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .team .fig { width: 24px; height: 24px; color: var(--ink2); }
+  .team small { font-size: 12px; font-weight: 400; }
+  .head { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; padding: 2px 4px; }
+  .dmd { width: 16px; height: 16px; background: var(--l3); transform: rotate(45deg); border-radius: 3px; flex: none; margin: 0 3px; }
+  .ags { display: flex; flex-direction: column; gap: 6px; padding-left: 14px; border-left: 2px solid color-mix(in srgb, var(--l3) 35%, transparent); margin-left: 10px; }
+  .ag { font-size: 14px; font-weight: 500; padding: 6px 10px; line-height: 1.3; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--l3) 45%, transparent); background: color-mix(in srgb, var(--l3) 8%, var(--paper)); }
+  .tool { display: flex; align-items: center; gap: 8px; font-size: 14px; white-space: nowrap; font-weight: 600; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--pos) 12%, var(--paper)); }
+  .tool .tk { width: 18px; height: 18px; border-radius: 50%; background: var(--pos); color: #fff; display: grid; place-items: center; font-size: 11px; }
+  .tool em { margin-left: auto; font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--pos); }
+  .fn.later { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); }
+  .fn.later .fh b, .fn.later .head { color: var(--ink2); }
+  .fn.later .dmd { background: var(--muted); }
+  .fn.later p { margin: 4px 0 0; font-size: 14px; color: var(--ink2); line-height: 1.4; }
+  /* the lab: a container like the functions, kept apart from the live business */
+  .fn.lab { top: 98px; height: 362px; border: 1.5px dashed color-mix(in srgb, var(--pos) 70%, transparent); background: color-mix(in srgb, var(--pos) 5%, var(--paper)); box-shadow: none; }
+  .fn.lab .fh b { display: flex; align-items: center; gap: 8px; } .fn.lab .fh .ic { color: var(--pos); width: 22px; height: 22px; }
+  .fn.lab .golive { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 999px; background: var(--pos); color: #fff; font-size: 14px; font-weight: 600; }
+  #world[data-focus="lab"] :is(#n-exec, #n-cos, #n-retail, #n-merch, #n-buying, #n-more) { opacity: .35; }
+  #world[data-focus="lab"] #n-lab { box-shadow: 0 0 0 5px color-mix(in srgb, var(--pos) 22%, transparent); }
 
-  /* keel ai mark on every slide; the Cleopatra credit stays quieter */
-  .mark { position: absolute; top: 3.2vh; right: 3.4vw; display: flex; align-items: center; gap: 10px; font-family: var(--mono);
-    text-transform: uppercase; letter-spacing: .08em; font-size: clamp(10px, .9vw, 12px); color: var(--ink); }
-  .mark .by { color: var(--muted); text-transform: none; letter-spacing: .02em; font-size: .92em; }
-  .brand { display: flex; flex-direction: column; gap: 1.4vh; margin: 0 0 4vh; }
-  .brand .wm { font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; font-size: clamp(16px, 1.9vw, 26px); font-weight: 500;
-    color: var(--ink); display: flex; align-items: center; gap: 14px; }
-  .brand .wm .dia { width: 12px; height: 12px; }
-  .brand .co { display: flex; align-items: center; gap: 14px; font-family: var(--sans); font-size: clamp(16px, 1.9vw, 26px); font-weight: 600; color: var(--ink); }
-  .brand .co small { font-family: var(--mono); font-size: .5em; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); }
-  .brand .co img, .mark img { object-fit: cover; clip-path: inset(2.5% round 21%); filter: drop-shadow(0 0 1px var(--hair)); }
-  .brand .co img { width: 1.9em; height: 1.9em; }
-  .mark img { width: 20px; height: 20px; }
-  .slide:first-of-type .mark { display: none; }
-  nav { position: fixed; left: 0; right: 0; bottom: 3vh; display: flex; justify-content: center; align-items: center; gap: 1.2em; }
-  nav button { border: 1px solid var(--line); background: var(--paper); border-radius: 3px; padding: .6em 1.2em; font-size: 14px;
-    cursor: pointer; color: var(--ink); font-family: inherit; }
-  nav .dots { display: flex; gap: 8px; }
-  nav .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all .3s; }
-  nav .dots i.on { background: var(--accent); width: 22px; border-radius: 4px; }
+  .hub { left: 120px; top: 504px; width: 1200px; height: 130px; overflow: hidden; display: grid; grid-template-columns: 4fr 8fr; grid-template-rows: 36px 1fr; border-color: color-mix(in srgb, var(--l2) 55%, transparent); }
+  .check { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; background: color-mix(in srgb, var(--l2) 14%, var(--paper)); border-bottom: 1px solid color-mix(in srgb, var(--l2) 35%, transparent); font-size: 16px; font-weight: 600; transition: background .4s ease; }
+  .check .ic { color: var(--l2); }
+  .check small { display: inline; margin-left: 6px; }
+  .cell { padding: 18px 18px 12px; display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; } /* top-aligned: both titles share a line */
+  .cell + .cell { border-left: 1px solid var(--hair); }
+  .cell > b { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  .cell > b .ic { color: var(--l2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 13px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background: var(--fill); border: 1px solid var(--hair); transition: opacity .4s ease; }
 
-  /* ---- bold diagrams: drawn symbols, wordmark badges, people, motion ---- */
-  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
-  .ic.lg { display: block; width: clamp(30px, 3vw, 48px); height: clamp(30px, 3vw, 48px); margin: 0 0 1.4vh; color: var(--c, var(--accent)); stroke-width: 1.6; }
-  .hub > .ic.lg, .road > .ic.lg, .gate .side > .ic.lg, .labbox > .ic.lg, .livebox > .ic.lg { margin-left: auto; margin-right: auto; }
-  .fig { width: clamp(28px, 2.6vw, 42px); height: clamp(28px, 2.6vw, 42px); flex: none; fill: currentColor; color: var(--accent); }
-  .side, .hub, .road, .labbox, .livebox, .lock, .fn, .layer, .free .side { box-shadow: 0 1px 2px rgba(21,23,28,.06), 0 14px 32px -16px rgba(21,23,28,.28); }
-  .side { padding: 3.8vh 1.8vw; font-size: clamp(18px, 2.2vw, 32px); background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--c) 6%, var(--paper))); }
-  .side::before { height: 6px; }
-  .flow { max-width: 1320px; }
-  .hub { position: relative; border-width: 2px; font-size: clamp(18px, 2.3vw, 34px);
-    background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent) 20%, var(--paper)), var(--accent-soft)); }
-  .hub::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; pointer-events: none; animation: pulse 3.2s ease-in-out infinite; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent); } 60% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--accent) 0%, transparent); } }
-  .road { border-width: 2px; font-size: clamp(15px, 1.7vw, 24px); background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--warn) 12%, var(--paper))); }
-  .road .ic.lg { color: var(--warn); }
-  .arrow { height: 4px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 18px);
-    background-size: 18px 4px; animation: stream .9s linear infinite; }
-  .arrow::after { top: -4px; border-left-color: var(--accent); }
-  @keyframes stream { to { background-position: 18px 0; } }
-  .chip { font-weight: 500; }
-  .bdgs { display: flex; flex-wrap: wrap; gap: .7vh .45vw; }
-  .bdg { display: inline-flex; align-items: center; gap: .45em; padding: .5em .75em; border-radius: 3px; background: var(--ink); color: var(--paper);
-    font-weight: 600; font-size: clamp(11px, 1.02vw, 15px); white-space: nowrap; line-height: 1.1; }
-  .bdg .ic { width: 1.05em; height: 1.05em; color: var(--accent); }
-  .bdg.lt { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
-  .hub .bdgs, .road .bdgs { justify-content: center; margin-top: 1.4vh; }
-  .ppl { display: flex; align-items: center; gap: .7em; font-size: clamp(12px, 1.15vw, 17px); font-weight: 600; color: var(--ink); line-height: 1.2; font-family: var(--sans); }
-  .ppl small { display: block; font-weight: 400; color: var(--soft); font-size: .86em; margin-top: .2em; }
-  .ppl.who { font-size: clamp(11px, 1vw, 15px); padding: 0 0 1.4vh; margin: 0 0 1.8vh; border-bottom: 1px dashed var(--rule); color: var(--ink2); }
-  .ppl.who .fig { width: clamp(22px, 2vw, 32px); height: clamp(22px, 2vw, 32px); color: var(--c); }
-  .pcol { display: flex; flex-direction: column; gap: 1.8vh; flex: 1; min-width: 170px; justify-content: center; }
-  .layer .ppl + .bdgs, .layer .ppl + .chip { margin-top: 1.4vh; }
-  .layer.up, .layer.down { gap: 1.4vh; }
-  .layer.down { background: linear-gradient(180deg, var(--paper), var(--accent-soft)); border-color: var(--accent); }
-  .layer.down .fig, .pcol .fig { color: var(--ink); }
-  .agents .chip { display: flex; align-items: center; gap: .55em; }
-  .agents .chip .ic { color: var(--c, var(--ink2)); }
-  .arch { grid-template-columns: 1.25fr auto 1fr auto .95fr auto 1.15fr auto 1.15fr; max-width: 1440px; }
-  .arch .layer { padding: 2.2vh 1vw; }
-  .arch .hub, .arch .road { padding: 2.4vh .9vw; }
-  .arch .hub { font-size: clamp(15px, 1.6vw, 26px); } .arch .road { font-size: clamp(13px, 1.35vw, 21px); }
-  .arch .chip { font-size: clamp(11px, 1.02vw, 15px); }
-  .gate .side, .labbox, .livebox { padding-top: 3.6vh; }
-  .lock { flex-direction: column; gap: .8vh; width: clamp(96px, 11vw, 150px); height: clamp(96px, 11vw, 150px); border-width: 2px; }
-  .lock .ic { width: 42%; height: 42%; color: var(--accent); }
-  /* each diagram builds in, in order, when its slide arrives */
-  .slide.on .seq > * { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
-  .slide.on .seq > .arrow { animation: rise .7s both, stream .9s linear infinite; }
-  .slide.on .seq > *:nth-child(2) { animation-delay: .1s; } .slide.on .seq > *:nth-child(3) { animation-delay: .2s; }
-  .slide.on .seq > *:nth-child(4) { animation-delay: .3s; } .slide.on .seq > *:nth-child(5) { animation-delay: .4s; }
-  .slide.on .seq > *:nth-child(6) { animation-delay: .5s; } .slide.on .seq > *:nth-child(7) { animation-delay: .6s; }
-  .slide.on .seq > *:nth-child(8) { animation-delay: .7s; } .slide.on .seq > *:nth-child(9) { animation-delay: .8s; }
-  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  .gov { left: 120px; top: 676px; width: 1200px; height: 110px; border: 1.5px solid color-mix(in srgb, var(--l1) 60%, transparent);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--l1) 12%, var(--paper)), color-mix(in srgb, var(--l1) 4%, var(--paper))); }
+  .gov .gt { position: absolute; left: 20px; top: 12px; display: flex; align-items: center; gap: 12px; }
+  .gov .gt .ic { width: 34px; height: 34px; padding: 7px; border-radius: 9px; background: var(--l1); color: var(--paper); stroke-width: 1.8; }
+  .gov .gt b { font-size: 20px; display: block; letter-spacing: -.01em; }
+  .gov .gt small { font-size: 13px; }
+  .slice { position: absolute; top: 70px; height: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 0 9px;
+    border-radius: 6px; background: var(--paper); border: 1px solid color-mix(in srgb, var(--l1) 40%, transparent); white-space: nowrap; }
+  .slice i { width: 8px; height: 8px; border-radius: 2px; background: var(--l1); }
+  .slice.ex { background: var(--l1); color: var(--paper); border-color: var(--l1); } .slice.ex i { background: var(--paper); }
+  .slice.fut { background: transparent; border-style: dashed; color: var(--ink2); } .slice.fut i { background: var(--muted); }
+  .slice.lb { border-color: color-mix(in srgb, var(--pos) 60%, transparent); } .slice.lb i { background: var(--pos); }
+  .gov .note { position: absolute; right: 20px; top: 14px; font-size: 13px; color: var(--ink2); text-align: right; line-height: 1.35; }
+  .src { top: 846px; width: 136px; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 11px; font-size: 15px; font-weight: 600; line-height: 1.15; }
+  .src .ic { color: var(--l1); width: 18px; height: 18px; }
+  .src.fut { background: transparent; box-shadow: none; border: 1.5px dashed var(--rule); color: var(--ink2); font-weight: 500; }
+  .srcnote { position: absolute; left: 120px; top: 914px; width: 1200px; text-align: center; color: var(--ink2); }
 
-  @media screen and (max-width: 760px) {
-    body { overflow: auto; }
-    .slide { padding: 8vh 6vw 14vh; justify-content: flex-start; display: none; transform: none; }
-    .slide.on { display: flex; }
-    .stages, .free, .lab, .fns, .gate { grid-template-columns: 1fr; }
-    .flow, .arch { flex-direction: column; display: flex; align-items: stretch; }
-    .arrow { width: 4px; height: 26px; margin: .8vh auto; background: repeating-linear-gradient(180deg, var(--accent) 0 8px, transparent 8px 14px); background-size: 4px 14px; animation: none; }
-    .slide.on .seq > .arrow { animation: none; }
-    .arrow::after { right: -5px; top: auto; bottom: -1px; border: 6px solid transparent; border-top: 9px solid var(--accent); border-bottom: 0; }
-    .wall { width: 60%; height: 6px; }
-    .gate { justify-items: center; } .gate .side { width: 100%; }
+  /* the drawn connections, and the dots that travel them */
+  #wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  #wires .w { stroke: var(--rule); stroke-width: 2; fill: none; }
+  #wires .w.up { marker-end: url(#tip); }
+  #wires .dot { fill: var(--accent); }
+  #wires .dot.back { fill: var(--ans); }
+  #wires .dot.flow, #wires .dot.data { fill: var(--l1); }
+  /* the AI Hub scene: requests drawn on top of the boxes, each checked (tick or cross) on the access check */
+  #fx { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  #fx .rq { fill: var(--accent); } #fx .rq.no { fill: var(--neg); }
+  #fx .mk .ok { fill: var(--pos); } #fx .mk .no { fill: var(--neg); }
+  #fx .mk path { stroke: #fff; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .chip.act { background: var(--l2); border-color: var(--l2); color: #fff; } /* a tool taking action (no transition: it is instant) */
+  .lit { border-color: var(--accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow); }
+  .cos.lit { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), var(--shadow); }
+  .check.lit { background: color-mix(in srgb, var(--l2) 32%, var(--paper)); }
+  .done { border-color: var(--ans) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--ans) 22%, transparent), var(--shadow); }
+
+  /* milestones: only the boxes the chosen step builds are solid; the tools show here too */
+  [data-ms].gh { opacity: .22; filter: grayscale(1); }
+  #world[data-focus="ms"] #n-tools .d2 { opacity: 1; visibility: visible; transition: opacity .5s ease .45s, visibility 0s; }
+
+  /* ---- caption panels: one per scene, crossfaded ---- */
+  .panel { position: absolute; z-index: 4; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
+  .panel.on { opacity: 1; visibility: visible; transition: opacity .45s ease .35s, visibility 0s; }
+  .panel.left { left: 96px; top: 110px; width: 430px; bottom: 50px; display: flex; flex-direction: column; justify-content: center; }
+  .panel.top { left: 96px; right: 96px; top: 104px; height: 200px; }
+  #deck::before { content: ""; position: absolute; z-index: 3; pointer-events: none; transition: opacity .5s ease; }
+  #deck.left::before { left: 0; top: 0; bottom: 0; width: 560px; background: linear-gradient(90deg, var(--canvas) 88%, transparent); }
+  #deck.top::before { left: 0; right: 0; top: 0; height: 312px; background: linear-gradient(180deg, var(--canvas) 92%, transparent); }
+  .kicker { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin: 0 0 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+  .kicker::before { content: ""; width: 8px; height: 8px; background: var(--c, var(--accent)); transform: rotate(45deg); border-radius: 1px; flex: none; }
+  h1 { font-size: 46px; line-height: 1.05; margin: 0 0 18px; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; }
+  .panel.top h1 { font-size: 44px; margin-bottom: 20px; }
+  .lead { font-size: 20px; color: var(--ink2); margin: 0 0 28px; line-height: 1.45; text-wrap: pretty; }
+  .pts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 0; padding: 0; list-style: none; }
+  .pts li { border-left: 2px solid var(--c); padding: 2px 0 2px 16px; font-size: 17px; line-height: 1.42; text-wrap: pretty; }
+  .pts li b { font-weight: 600; }
+  .pts.one { grid-template-columns: 1fr; gap: 14px; }
+  .fine { font-size: 13px; color: var(--ink2); margin: 10px 0 0 18px; }
+
+  /* title */
+  .brand { display: flex; align-items: center; gap: 16px; margin: 0 0 44px; flex-wrap: wrap; }
+  .brand .wm { font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+  .brand .co { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; padding-left: 16px; border-left: 1px solid var(--rule); }
+  .brand .co small { font-family: var(--mono); font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); }
+  .brand img { width: 30px; height: 30px; object-fit: cover; clip-path: inset(2.5% round 21%); }
+  .s-title h1 { font-size: 64px; letter-spacing: -.03em; }
+  .legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend button { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--hair);
+    background: var(--paper); cursor: pointer; font-size: 17px; font-weight: 600; }
+  .legend button:hover { border-color: var(--rule); }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+  .legend small { font-family: var(--mono); font-size: 11px; color: var(--ink2); letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
+
+  /* one question */
+  .q { font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -.01em; margin: 0 0 22px; text-wrap: balance; }
+  .q small { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: 8px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; counter-reset: s; }
+  .steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 10px; font-size: 16px; color: var(--muted); padding: 7px 0; transition: color .3s ease; counter-increment: s; }
+  .steps li::before { content: counter(s); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--rule); font-family: var(--mono); font-size: 12px; transition: all .3s ease; }
+  .steps li.now { color: var(--ink); } .steps li.now::before { border-color: var(--accent); background: var(--accent); color: var(--paper); }
+  .steps li.past { color: var(--ink2); } .steps li.past::before { border-color: var(--accent); color: var(--accent); }
+  .steps li.back.now::before { border-color: var(--ans); background: var(--ans); }
+  .answer { display: none; }
+  .s-question.answered .steps { display: none; }
+  .s-question.answered .answer { display: block; animation: none; }
+  .answer .sum { font-size: 17px; line-height: 1.45; margin: 0 0 14px; }
+  .cause { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--hair); }
+  .cause > span { font-family: var(--mono); font-size: 12px; color: var(--ans); padding-top: 3px; }
+  .cause b { display: block; font-size: 16px; }
+  .cause small { display: block; font-size: 13px; color: var(--ink2); margin-top: 2px; }
+  .checked { font-size: 13px; color: var(--ink2); border-top: 1px solid var(--hair); padding-top: 10px; margin: 2px 0 0; }
+  .checked b { color: var(--ans); font-weight: 600; }
+  .illus { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  /* the night run: steps, then the morning brief, then the plan sent */
+  .s-night .q { margin-bottom: 14px; }
+  .s-night .steps li { padding: 4px 0; font-size: 15px; }
+  .brief { display: none; margin-top: 14px; }
+  .s-night.morning .brief { display: block; }
+  .brief > .mono { color: var(--ink2); margin: 0 0 4px; }
+  .opp { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: start; padding: 8px 0; border-top: 1px solid var(--hair); }
+  .opp > span { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 2px; }
+  .opp b { display: block; font-size: 15px; line-height: 1.3; } .opp small { display: block; font-size: 12px; color: var(--ink2); margin-top: 2px; }
+  .opp em { visibility: hidden; font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; padding: 3px 7px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
+  .s-night.picked #opp1 { background: var(--accent-soft); margin: 0 -8px; padding: 8px; border-radius: 8px; border-top-color: transparent; } .s-night.picked #opp1 em { visibility: visible; }
+  .s-night.sent #opp1 em { background: color-mix(in srgb, var(--ans) 14%, var(--paper)); color: var(--ans); }
+  .sentline { display: none; } .s-night.sent .sentline { display: block; }
+  .replay { margin-top: 18px; align-self: flex-start; display: inline-flex; gap: 8px; align-items: center; padding: 9px 14px; border-radius: 9px; border: 1px solid var(--hair); background: var(--paper); cursor: pointer; font-size: 14px; font-weight: 600; }
+  .replay:hover { background: var(--fill); }
+
+  /* milestones */
+  .msbtn { display: flex; flex-direction: column; gap: 6px; margin: 0 0 18px; }
+  .msbtn button { display: grid; grid-template-columns: 34px 1fr; align-items: center; text-align: left; gap: 6px; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--hair); background: var(--paper); cursor: pointer; font-size: 17px; font-weight: 600; color: var(--ink2); }
+  .msbtn button span { font-family: var(--mono); font-size: 12px; color: var(--muted); font-weight: 500; }
+  .msbtn button { grid-template-columns: 34px 1fr auto; }
+  .msbtn em { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+  .msbtn em.dn { background: color-mix(in srgb, var(--pos) 14%, var(--paper)); color: var(--pos); }
+  .msbtn button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--accent); }
+  .msbtn button[aria-pressed="true"] span { color: var(--accent); }
+  .mslist { list-style: none; margin: 0; padding: 0; font-size: 15px; line-height: 1.4; }
+  .mslist li { padding: 8px 0 8px 22px; border-top: 1px solid var(--hair); position: relative; }
+  .mslist li::before { content: "+"; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+  .mslist[hidden] { display: none; }
+  .msnote { font-size: 13px; color: var(--ink2); margin: 14px 0 0; }
+
+  /* phone held upright: caption on top, the picture underneath */
+  #deck.portrait .mark { left: 48px; top: 40px; font-size: 18px; }
+  #deck.portrait nav { right: 48px; top: 30px; transform: scale(1.4); transform-origin: right top; }
+  #deck.portrait .panel.left, #deck.portrait .panel.top { left: 48px; right: 48px; width: auto; top: 120px; bottom: auto; height: 620px; display: block; }
+  #deck.portrait::before { left: 0; right: 0; top: 0; height: 750px; width: auto; bottom: auto; background: linear-gradient(180deg, var(--canvas) 94%, transparent); }
+  #deck.portrait h1, #deck.portrait .s-title h1 { font-size: 54px; }
+  #deck.portrait .lead, #deck.portrait .pts li, #deck.portrait .steps li, #deck.portrait .answer .sum { font-size: 26px; }
+  #deck.portrait .pts { grid-template-columns: 1fr; gap: 14px; }
+  #deck.portrait .brand { margin-bottom: 26px; }
+  #deck.portrait .legend, #deck.portrait .msnote, #deck.portrait .fine { display: none; }
+  #deck.portrait .s-question .q { font-size: 34px; }
+  #deck.portrait .s-question.answered .cause:nth-of-type(n+2), #deck.portrait .checked:not(.sentline), #deck.portrait .opp:not(#opp1) { display: none; }
+  #deck.portrait .msbtn { flex-direction: row; } #deck.portrait .msbtn button { font-size: 22px; }
+  #deck.portrait .mslist { font-size: 24px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #world, .L, .n, .d2, .panel, .panel.on, .steps li, .steps li::before { transition: none !important; }
   }
-  @media print {
-    @page { size: A4 landscape; margin: 0; }
-    :root { --canvas:#fff; --paper:#fff; --ink:#15171c; --ink2:#565d68; --muted:#9aa1ad; --rule:#c5cad1; --fill:#f2f4f6;
-      --accent:#2b5fd9; --accent-soft:#eaf0fd; --pos:#1f8a5b; --warn:#b97e2e; --hair:rgba(21,23,28,.14); color-scheme:light; }
-    html, body { height: auto; overflow: visible; background: #fff; }
-    .slide { opacity: 1; visibility: visible; transform: none; transition: none; display: flex !important; position: relative; inset: auto;
-      width: 297mm; height: 210mm; overflow: hidden; padding: 14mm 18mm; justify-content: center; page-break-after: always; break-after: page; }
-    .slide:last-of-type { page-break-after: auto; break-after: auto; }
-    .big { color: var(--ink); background: none; }
-    .hub, .road, .lock { box-shadow: none; }
-    .card { backdrop-filter: none; }
-    .stages, .free { grid-template-columns: repeat(3, 1fr); } .fns { grid-template-columns: repeat(3, 1fr); }
-    .gate, .lab { grid-template-columns: 1fr auto 1fr; }
-    .chip { padding: 2mm 3mm; font-size: 10.5pt; } .arch .chip { padding: 1.2mm 2mm; font-size: 8.5pt; }
-    .lead { margin-bottom: 8mm; }
-    .slide .seq > *, .slide.on .seq > *, .arrow, .slide.on .seq > .arrow, .hub::after { animation: none !important; }
-    .arrow { background: var(--accent); }
-    .side, .hub, .road, .labbox, .livebox, .lock, .fn, .layer { box-shadow: none !important; }
-    .flow { flex-wrap: nowrap; } .pcol { min-width: 0; }
-    .bdg { font-size: 7.5pt; } .ppl { font-size: 8.5pt; } .arch .chip { font-size: 8pt; }
-    nav { display: none; }
-    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-  @media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; }
-    .slide.on .seq > *, .slide.on .seq > .arrow, .arrow, .hub::after { animation: none !important; } }
-
-  /* ---- five-slide storyline: three layers, a locator, problem/value strips, slices, promotion ---- */
-  .layers3 { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; max-width: 1240px; }
-  .layers3 .side { display: flex; flex-direction: column; }
-  .layers3 .side .num, .tag.num { font-family: var(--mono); font-size: .42em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: .8vh; }
-  .layers3 .bdgs { margin-top: 1.6vh; }
-  .loc { display: flex; gap: 6px; margin: 0 0 1.4vh; font-family: var(--mono); font-size: clamp(10px, .85vw, 12px); text-transform: uppercase; letter-spacing: .08em; }
-  .loc span { padding: .45em .9em; border: 1px solid var(--rule); border-radius: 3px; color: var(--muted); background: var(--paper); }
-  .loc span.here { background: var(--accent); border-color: var(--accent); color: var(--paper); }
-  .loc i { align-self: center; color: var(--muted); font-style: normal; }
-  .z h1 { font-size: clamp(26px, 3.4vw, 50px); margin-bottom: 1.4vh; }
-  .z { padding-top: 5vh; padding-bottom: 10vh; }
-  .pv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vw; max-width: 1320px; margin: 0 0 2.6vh; }
-  .pv div { border-left: 3px solid var(--c); padding: .2vh 0 .2vh .9em; font-size: clamp(12px, 1.15vw, 16px); line-height: 1.4; color: var(--ink); }
-  .pv b { display: block; font-family: var(--mono); font-weight: 500; font-size: .78em; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); margin-bottom: .4vh; }
-  .zd { display: grid; grid-template-columns: 1.1fr auto 1fr auto 1.3fr; align-items: center; max-width: 1320px; }
-  .zd .layer { padding: 2vh 1vw; }
-  .zd .tag { font-size: clamp(10px, .9vw, 12px); letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin: 0 0 1vh; font-weight: 600; }
-  .zd .tag + .tag, .zd .bdgs + .tag, .zd .agents + .tag, .zd .ppl + .tag { margin-top: 1.6vh; }
-  .zd .hub { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: 2.4vh 1vw; font-size: clamp(16px, 1.8vw, 28px); }
-  .zd .road { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: 2.4vh 1vw; font-size: clamp(15px, 1.6vw, 24px); }
-  .bdg.fut { background: transparent; color: var(--muted); border: 1px dashed var(--rule); font-weight: 500; }
-  .slices { display: flex; flex-direction: column; gap: .8vh; }
-  .slice { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .7em; padding: .9vh .8vw; border: 1px solid var(--line); border-left: 4px solid var(--c);
-    border-radius: 3px; background: var(--paper); font-size: clamp(11px, 1.02vw, 15px); font-weight: 600; line-height: 1.25; }
-  .slice small { display: block; font-weight: 400; color: var(--soft); font-size: .88em; }
-  .slice .ic { color: var(--c); }
-  .slice .tbl { display: flex; gap: 3px; }
-  .slice .tbl i { width: 9px; height: 14px; border-radius: 1px; background: var(--deep); border: 1px solid var(--rule); }
-  .slice .tbl i.y { background: var(--c); border-color: var(--c); }
-  .claims { list-style: none; padding: 0; margin: 2.4vh 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: .8vh 2vw; max-width: 1320px;
-    font-size: clamp(11px, 1.05vw, 15px); line-height: 1.35; color: var(--ink); }
-  .claims li { display: flex; gap: .5em; } .claims li .ic { color: var(--pos); }
-  .claims li.q { color: var(--soft); }
-  .free3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vw; max-width: 1320px; margin-top: 2.4vh; }
-  .free3 div { padding: 1.6vh 1vw; border-top: 4px solid var(--c); background: var(--paper); border-radius: 3px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-    font-weight: 600; font-size: clamp(13px, 1.3vw, 18px); box-shadow: 0 1px 2px rgba(21,23,28,.06), 0 14px 32px -16px rgba(21,23,28,.28); }
-  .free3 b { color: var(--c); font-size: 1.4em; margin-right: .3em; }
-  .free3 small { display: block; font-weight: 400; color: var(--soft); font-size: .8em; margin-top: .6vh; line-height: 1.4; }
-  .promo { display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: center; gap: 1vw; max-width: 1100px; }
-  .gatecol { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.2vh; text-align: center; }
-  .gatecol .wall { height: 20vh; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 6px; }
-  .gatecol .lift { position: relative; z-index: 1; display: flex; align-items: center; gap: .6em; padding: 1.1vh 1vw; background: var(--pos); color: var(--paper);
-    border-radius: 3px; font-weight: 700; font-size: clamp(13px, 1.3vw, 18px); white-space: nowrap; }
-  .gatecol .lift::after { content: ""; border: 8px solid transparent; border-left: 11px solid var(--paper); border-right: 0; }
-  .gatecol small { position: relative; z-index: 1; background: var(--canvas); padding: .2em .5em; color: var(--soft); font-size: clamp(11px, 1.05vw, 14px); }
-  .zd .layer.down { display: flex; flex-direction: column; gap: 1.6vh; } .zd .layer.down .tag { margin: 0; }
-  .nexttag { margin: 4vh 0 1.6vh; }
-  .next3 { margin-top: 0; } .next3 .side { padding: 2.4vh 1.4vw; font-size: clamp(15px, 1.7vw, 24px); }
-  @media screen and (max-width: 760px) {
-    .layers3, .zd, .promo { display: flex; flex-direction: column; align-items: stretch; }
-    .pv, .claims, .free3 { grid-template-columns: 1fr; }
-    .gatecol .wall { display: none; } .gatecol { margin: 2vh 0; }
-    .gatecol .lift::after { transform: rotate(90deg); }
-  }
-  @media print {
-    .z { padding: 10mm 16mm; } .zd .layer, .zd .hub, .zd .road, .slice, .free3 div { box-shadow: none !important; }
-    .pv div { font-size: 8.5pt; } .claims { font-size: 8pt; } .slice { font-size: 8pt; padding: 1.2mm 2mm; } .free3 div { font-size: 9.5pt; }
-    .zd .hub { font-size: 14pt; } .zd .road { font-size: 12pt; } .loc { font-size: 7pt; } .z h1 { font-size: 22pt; }
-    .gatecol small { background: #fff; }
-  }
-  @media (prefers-reduced-motion: reduce) { .slide.on .seq > * { animation: none !important; } }
-
-  /* ---- vertical stack: AI + UI on top, AI Hub in the middle, Data at the bottom ---- */
-  .vstack { display: flex; flex-direction: column; max-width: 980px; }
-  .band { display: grid; grid-template-columns: auto minmax(9em, 13em) 1fr; align-items: center; gap: 1.6vw; padding: 2vh 1.8vw;
-    border-left: 6px solid var(--c); font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2.2vw, 32px);
-    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 8%, var(--paper)), var(--paper));
-    box-shadow: 0 1px 2px rgba(21,23,28,.06), 0 14px 32px -16px rgba(21,23,28,.28); }
-  .band .ic.lg { margin: 0; }
-  .band .num { display: block; font-family: var(--mono); font-size: .42em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); font-weight: 500; margin-bottom: .5vh; }
-  .band small { font-family: var(--sans); font-weight: 400; color: var(--soft); font-size: .6em; line-height: 1.4; }
-  .vlink { width: 4px; height: 3.4vh; margin-left: calc(1.8vw + 6px + clamp(15px, 1.5vw, 24px) - 2px); border-radius: 2px;
-    background: repeating-linear-gradient(0deg, var(--accent) 0 8px, transparent 8px 14px); background-size: 4px 14px; animation: rise .7s both, climb .9s linear infinite; }
-  @keyframes climb { to { background-position: 0 -14px; } }
-
-  /* ---- zoomed layer: the neighbouring layers stay visible as cropped strips at the edges ---- */
-  .slide.z { padding-top: 10vh; padding-bottom: 13vh; }
-  .z .mark { top: 7.4vh; }
-  .edge { position: absolute; left: 0; right: 0; height: 6vh; display: flex; align-items: center; gap: 1.4vw; padding: 0 7vw;
-    font-family: var(--mono); font-size: clamp(10px, .85vw, 12px); text-transform: uppercase; letter-spacing: .08em; color: var(--ink2); }
-  .edge.top { top: 0; border-bottom: 2px dashed var(--c); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 18%, var(--paper)), color-mix(in srgb, var(--c) 6%, var(--paper))); }
-  .edge.bot { bottom: 0; border-top: 2px dashed var(--c); background: linear-gradient(0deg, color-mix(in srgb, var(--c) 18%, var(--paper)), color-mix(in srgb, var(--c) 6%, var(--paper))); }
-  .edge .en { font-family: var(--sans); text-transform: none; letter-spacing: 0; font-weight: 700; font-size: 1.35em; color: var(--ink); white-space: nowrap; }
-  .edge .en em { font-family: var(--mono); font-style: normal; font-weight: 500; font-size: .7em; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); margin-right: .7em; }
-  .edge .cx { display: flex; flex-wrap: wrap; gap: .5em; align-items: center; }
-  .edge .cx b { position: relative; font-weight: 500; text-transform: none; letter-spacing: 0; font-family: var(--sans); font-size: 1.15em; color: var(--ink);
-    background: var(--paper); border: 1px solid var(--c); border-radius: 3px; padding: .3em .7em; }
-  .edge.top .cx b::after, .edge.bot .cx b::after { content: ""; position: absolute; left: 50%; margin-left: -6px; border: 6px solid transparent; }
-  .edge.top .cx b::after { top: 100%; border-top: 8px solid var(--c); border-bottom: 0; }
-  .edge.bot .cx b::after { bottom: 100%; border-bottom: 8px solid var(--c); border-top: 0; }
-  .ztag { font-family: var(--mono); font-size: clamp(10px, .85vw, 12px); letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin: 0 0 1vh; }
-  .tools { max-width: 1320px; margin-top: 2vh; padding: 1.4vh 1vw; border: 1px solid var(--line); border-left: 4px solid var(--coord); border-radius: 3px; background: var(--paper); }
-  .tools .bdg small { font-weight: 400; opacity: .75; margin-left: .3em; }
-  .z .free3 { margin-top: 1.8vh; } .z .free3 div { padding: 1.2vh 1vw; }
-  /* a slide with a layer below keeps the nav clear of the bottom strip */
-  body:has(.slide.on .edge.bot) nav { bottom: 7.6vh; }
-  .slide.z:has(.edge.bot) { padding-bottom: 15vh; }
-  .z .pv { margin-bottom: 1.8vh; } .z .free3 small { margin-top: .3vh; }
-
-  /* ---- zoom transition between slides: zoom out of one layer, into the next ---- */
-  #zoomfx { position: fixed; inset: 0; z-index: 40; background: var(--canvas); overflow: hidden; pointer-events: none; opacity: 0; visibility: hidden; }
-  #zoomfx.run { visibility: visible; }
-  #zoomfx .zin { position: absolute; inset: 6vh 12vw; display: flex; flex-direction: column; gap: 1.6vh; transform-origin: 50% 50%; }
-  #zoomfx .zb { flex: 1; display: flex; align-items: center; justify-content: center; gap: .6em; border: 1px solid var(--line); border-left: 6px solid var(--c); border-radius: 4px;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 10%, var(--paper)), var(--paper)); font-weight: 600; font-size: clamp(18px, 2.4vw, 34px); }
-  #zoomfx .zb span { font-family: var(--mono); font-weight: 500; font-size: .45em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
-
-  /* ---- milestones: only one department's boxes are solid, the rest are ghosted ---- */
-  .ms h1 { font-size: clamp(26px, 3.4vw, 50px); margin-bottom: 2vh; }
-  .msctl { display: flex; flex-wrap: wrap; gap: 1.2vh 2vw; align-items: center; margin: 0 0 2vh; }
-  .steps { display: flex; gap: 4px; flex-wrap: wrap; }
-  .steps button { display: flex; gap: 8px; align-items: baseline; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer;
-    border: 1px solid var(--line); background: var(--paper); color: var(--ink2); border-radius: 3px; }
-  .steps button .mono, .added .mono { font-family: var(--mono); color: var(--muted); }
-  .steps button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
-  .steps button[aria-pressed="true"] .mono { color: var(--accent); }
-  .steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .msnote { font-size: clamp(12px, 1.1vw, 15px); color: var(--soft); }
-  .msgrid { display: grid; grid-template-columns: 1fr minmax(220px, .36fr); gap: 1.6vw; max-width: 1320px; align-items: start; }
-  .mstack { display: flex; flex-direction: column; gap: 0; }
-  .mrow { display: grid; grid-template-columns: 8.5em 1fr; gap: 1vw; align-items: center; padding: 1.4vh 1vw; border: 1px solid var(--line); border-left: 6px solid var(--c);
-    border-radius: 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 7%, var(--paper)), var(--paper)); }
-  .mrow + .vlink { height: 2vh; }
-  .mrow .ml { font-weight: 700; font-size: clamp(14px, 1.4vw, 19px); }
-  .mrow .ml .num { display: block; font-family: var(--mono); font-weight: 500; font-size: .62em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
-  .bxs { display: flex; flex-wrap: wrap; gap: .7vh .45vw; }
-  .bx { position: relative; padding: .55em .8em; border-radius: 3px; border: 1px solid var(--c); background: var(--paper); color: var(--ink);
-    font-weight: 600; font-size: clamp(11px, 1vw, 14px); line-height: 1.15; transition: opacity .35s, border-color .35s, background .35s, color .35s; }
-  .bx:not(.gh) { background: color-mix(in srgb, var(--c) 14%, var(--paper)); box-shadow: 0 6px 16px -10px rgba(21,23,28,.4); }
-  .bx.gh { border: 1px dashed var(--rule); color: var(--muted); font-weight: 500; background: transparent; }
-  .bx.gh::after { content: attr(data-lbl); margin-left: .6em; font-family: var(--mono); font-size: .78em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .added { padding: 1.8vh 1.2vw; }
-  .added .mono { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-  .added ul { list-style: none; padding: 0; margin: 1.2vh 0 0; font-size: clamp(12px, 1.1vw, 15px); line-height: 1.4; }
-  .added li { padding: .7vh 0; border-top: 1px solid var(--line); }
-  .added li::before { content: "+ "; color: var(--accent); font-weight: 700; }
-  .added ul[hidden] { display: none; }
-  .added h4 { display: none; }
-
-  @media screen and (max-width: 760px) {
-    .band { grid-template-columns: auto 1fr; } .band small { grid-column: 1 / -1; }
-    .vlink { margin-left: 26px; }
-    .slide.z { padding-top: 0; padding-bottom: 14vh; }
-    .edge { position: static; height: auto; flex-wrap: wrap; padding: 1.4vh 6vw; margin: 0 -6vw; }
-    .edge.top { margin-bottom: 3vh; } .edge.bot { margin-top: 3vh; }
-    .z .mark { position: static; margin-top: 2vh; }
-    .msgrid { grid-template-columns: 1fr; } .mrow { grid-template-columns: 1fr; }
-    .tools .bdg { white-space: normal; } body:has(.slide.on .edge.bot) nav { bottom: 3vh; }
-  }
-  @media print {
-    .slide.z { padding-top: 16mm; padding-bottom: 16mm; } .z .mark { top: 12mm; }
-    .edge { height: 10mm; font-size: 6.5pt; } .edge .en { font-size: 10pt; } .edge .cx b { font-size: 7.5pt; }
-    .band { font-size: 15pt; padding: 3mm 5mm; box-shadow: none; } .band small { font-size: 9pt; }
-    .vlink { animation: none !important; background: var(--accent); height: 5mm; margin-left: 9mm; }
-    .tools .bdg { font-size: 7pt; } .tools { padding: 2mm 3mm; margin-top: 3mm; }
-    #zoomfx { display: none; }
-    .msgrid { grid-template-columns: 1fr 60mm; } .mrow { padding: 2mm 3mm; }
-    .bx, .bx.gh { font-size: 7.5pt; border: 1px solid var(--c); color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--c) 10%, #fff); box-shadow: none; }
-    .bx::after, .bx.gh::after { content: attr(data-first); margin-left: .5em; font-family: var(--mono); font-size: .8em; color: var(--ink2); }
-    .added ul[hidden] { display: block; } .added h4 { display: block; margin: 2mm 0 0; font-size: 8pt; }
-    .added ul { font-size: 7.5pt; margin-top: 1mm; } .added li { padding: .6mm 0; }
-    .steps, .added > .mono { display: none; }
-  }
-  @media (prefers-reduced-motion: reduce) { .vlink { animation: none !important; } .bx { transition: none; } }
+  @media print { nav { display: none; } }
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 15v3"/></symbol>
   <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v7L4.5 19A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.8-3L14 9V2"/><path d="M7 15h10"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4M12 16V8M17 16v-6"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5M9 13h7M9 17h7"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><path d="M7.5 12H20"/><path d="M15 7l5 5-5 5"/></symbol>
-  <symbol id="i-agent" viewBox="0 0 24 24"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/><circle cx="12" cy="12" r="3"/></symbol>
-  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></symbol>
-  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3 18l3 3 6.2-6.2a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
   <symbol id="i-person" viewBox="0 0 32 32"><circle cx="16" cy="9" r="5.6"/><path d="M5 30c0-7 4.9-11.6 11-11.6S27 23 27 30z"/></symbol>
   <symbol id="i-team" viewBox="0 0 44 32"><circle cx="10" cy="11" r="4.2"/><path d="M1.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="34" cy="11" r="4.2"/><path d="M25.5 30c0-5.6 3.7-9.4 8.5-9.4s8.5 3.8 8.5 9.4z"/><circle cx="22" cy="9" r="5.2"/><path d="M11.5 31c0-7 4.6-11.4 10.5-11.4S32.5 24 32.5 31z"/></symbol>
 </svg>
 
-<section class="slide on" data-z="all">
-  <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
-  <p class="kicker">AI future vision</p>
-  <h1>You have a plan — in three layers.</h1>
-  <p class="lead">One architecture, built on what you already own. Each layer does one job and can change without rebuilding the others.</p>
-  <div class="vstack seq">
-    <div class="band card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-agent"/></svg><span><span class="num">Layer 3</span>AI + UI</span><small>Agents doing real work, with people steering from the screens they use.</small></div>
-    <div class="vlink" aria-hidden="true"></div>
-    <div class="band card" style="--c:var(--coord)"><svg class="ic lg"><use href="#i-link"/></svg><span><span class="num">Layer 2</span>AI Hub</span><small>One standard road in — any AI tool, any agent, any model. And the tools agents use to act.</small></div>
-    <div class="vlink" aria-hidden="true"></div>
-    <div class="band card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg><span><span class="num">Layer 1</span>Data</span><small>Every source in one governed centre — each agent sees only its slice.</small></div>
-  </div>
-</section>
+<main id="deck" class="left">
+  <div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>
+  <div id="view"></div>
 
-<section class="slide z" data-z="data">
-  <div class="edge top" style="--c:var(--coord)"><span class="en"><em>Layer 2 · above</em>AI Hub</span><span class="cx"><b>MotherDuck MCP Server reads this layer</b><b>Read-only shares · one slice per agent</b></span></div>
-  <p class="kicker">Layer 1 · Data</p>
-  <h1>One governed centre — each agent sees only its slice</h1>
-  <div class="pv">
-    <div style="--c:var(--warn)"><b>The problem</b>Numbers scattered across systems, and no clean way to let AI near them safely.</div>
-    <div style="--c:var(--accent)"><b>The value</b>One governed layer every agent reads from — the same numbers, built on Qlik's logic.</div>
-    <div style="--c:var(--pos)"><b>The flexibility</b>New sources plug in later; new roles get their own slice without touching the rest.</div>
-  </div>
-  <div class="zd seq">
-    <div class="layer card"><p class="tag">Sources today</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Qlik Sense</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Dayforce</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>POS sales</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Store traffic counters</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Stock &amp; operations feeds</span><span class="bdg lt"><svg class="ic"><use href="#i-db"/></svg>Finance</span></div>
-      <p class="tag">Later</p><div class="bdgs"><span class="bdg fut">+ future source</span><span class="bdg fut">+ future source</span><span class="bdg fut">+ future source</span></div></div>
-    <div class="arrow">→</div>
-    <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>one governed central layer · hosted in Sydney (AWS ap-southeast-2)</small>
-      <div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense stays beside it</span></div></div>
-    <div class="arrow">→</div>
-    <div class="layer card"><p class="tag">Who sees what · read-only shares</p><div class="slices">
-      <div class="slice" style="--c:var(--pos)"><svg class="ic"><use href="#i-agent"/></svg><span>Merchandising agent<small>only the tables its share names</small></span><span class="tbl"><i class="y"></i><i class="y"></i><i></i><i></i><i></i></span></div>
-      <div class="slice" style="--c:var(--warn)"><svg class="ic"><use href="#i-agent"/></svg><span>Store Operations agent<small>Secure Views filter its rows</small></span><span class="tbl"><i></i><i class="y"></i><i class="y"></i><i></i><i></i></span></div>
-      <div class="slice" style="--c:var(--accent)"><svg class="ic"><use href="#i-agent"/></svg><span>Finance agent<small>Secure Views mask columns</small></span><span class="tbl"><i></i><i></i><i></i><i class="y"></i><i class="y"></i></span></div>
-      <div class="slice" style="--c:var(--ink)"><svg class="ic"><use href="#i-team"/></svg><span>Executives<small>every query visible and traceable</small></span><span class="tbl"><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i></span></div>
-    </div></div>
-  </div>
-  <ul class="claims">
-    <li><svg class="ic"><use href="#i-shield"/></svg>Shares are read-only by design — an agent on a share cannot write</li>
-    <li><svg class="ic"><use href="#i-shield"/></svg>A share exposes only the tables you name — the agent does not see that other tables exist</li>
-    <li><svg class="ic"><use href="#i-shield"/></svg>Secure Views filter rows and hide or mask columns</li>
-    <li><svg class="ic"><use href="#i-shield"/></svg>Every query the agent writes is visible and traceable</li>
-    <li><svg class="ic"><use href="#i-shield"/></svg>Data resident in Sydney (AWS ap-southeast-2)</li>
-    <li class="q">Replacing Qlik is only a future option. The implications are not known today, and nothing here commits to it.</li>
-  </ul>
-</section>
+  <!-- ===== the picture: the whole system, top to bottom ===== -->
+  <div id="world" data-focus="all" aria-hidden="true">
+    <div class="L L3"><span class="ltag">Layer 3 · <b>AI + people</b></span></div>
+    <div class="L L2"><span class="ltag">Layer 2 · <b>AI Hub</b></span></div>
+    <div class="L L1"><span class="ltag">Layer 1 · <b>Data</b></span></div>
 
-<section class="slide z" data-z="hub">
-  <div class="edge top" style="--c:var(--teams)"><span class="en"><em>Layer 3 · above</em>AI + UI</span><span class="cx"><b>Agents read through the road</b><b>Agents act through the tools</b></span></div>
-  <p class="kicker">Layer 2 · AI Hub</p>
-  <h1>One standard road in — never locked in</h1>
-  <div class="pv">
-    <div style="--c:var(--warn)"><b>The problem</b>A separate integration for every tool, and one vendor's choices locked in for years.</div>
-    <div style="--c:var(--accent)"><b>The value</b>Agents never reach into systems directly. Every tool uses the same road, under the same rules.</div>
-    <div style="--c:var(--pos)"><b>The flexibility</b>Change the AI tool, the agent or the model — nothing above or below has to be rebuilt.</div>
-  </div>
-  <p class="ztag">MCP connectors · how agents read the data</p>
-  <div class="zd seq" style="grid-template-columns:1.2fr auto 1fr auto 1fr">
-    <div class="layer card"><p class="tag">Any MCP client</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Claude</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>ChatGPT</span><span class="bdg"><svg class="ic"><use href="#i-spark"/></svg>Cursor</span><span class="bdg fut">+ other MCP clients</span></div>
-      <p class="tag">Any agent</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>In-house agents</span><span class="bdg lt"><svg class="ic"><use href="#i-agent"/></svg>Another provider's agents</span></div></div>
-    <div class="arrow">→</div>
-    <div class="road"><svg class="ic lg"><use href="#i-link"/></svg>MotherDuck MCP Server<small>one standard road · works with Claude, ChatGPT, Cursor and other MCP clients</small></div>
-    <div class="arrow">→</div>
-    <div class="hub"><svg class="ic lg"><use href="#i-shield"/></svg>MotherDuck<small>the governed data layer</small></div>
-  </div>
-  <div class="tools"><p class="ztag">Tools the agents can use · how they act</p><div class="bdgs">
-    <span class="bdg lt"><svg class="ic"><use href="#i-mail"/></svg>Mail</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Office 365 suite</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>SharePoint</span><span class="bdg lt"><svg class="ic"><use href="#i-search"/></svg>Contracts search</span><span class="bdg lt"><svg class="ic"><use href="#i-chat"/></svg>Chat</span><span class="bdg lt"><svg class="ic"><use href="#i-link"/></svg>Downstream systems<small>e.g. Dayforce ingestion · order entry into downstream systems</small></span>
-  </div></div>
-  <div class="free3 seq">
-    <div style="--c:var(--data)"><b>1</b>Swap the model<small>Claude today. If token costs rise or a model stops fitting, the model swaps underneath and nothing above changes.</small></div>
-    <div style="--c:var(--teams)"><b>2</b>Plug in any agent<small>In-house or another provider's, under the same rules.</small></div>
-    <div style="--c:var(--coord)"><b>3</b>Bring in other AIs' work<small>Outputs from other AI tools flow in through the same road.</small></div>
-  </div>
-  <div class="edge bot" style="--c:var(--data)"><span class="en"><em>Layer 1 · below</em>Data</span><span class="cx"><b>The road reads MotherDuck</b><b>Read-only shares · one slice per agent</b></span></div>
-</section>
+    <svg id="wires" width="1440" height="940" viewBox="0 0 1440 940">
+      <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--rule)"/></marker></defs>
+      <g id="wireset"></g><g id="dots"></g>
+    </svg>
 
-<section class="slide z" data-z="ui">
-  <p class="kicker">Layer 3 · AI + UI</p>
-  <h1>Agents do the work — people steer</h1>
-  <div class="pv">
-    <div style="--c:var(--warn)"><b>The problem</b>Insight sits in dashboards; turning it into rosters, buys and actions is still manual work.</div>
-    <div style="--c:var(--accent)"><b>The value</b>Agents take on real work in each function, and people approve, direct and act on it.</div>
-    <div style="--c:var(--pos)"><b>The flexibility</b>Start with one function's agents and add the next when it proves out. Today's screens stay.</div>
-  </div>
-  <div class="zd seq" style="grid-template-columns:1fr auto 1.15fr auto 1fr">
-    <div class="layer card down"><p class="tag">People steer</p>
-      <div class="ppl"><svg class="fig"><use href="#i-team"/></svg><span>Executives<small>steer and approve</small></span></div>
-      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Function leads<small>direct their head agent</small></span></div>
-      <div class="ppl"><svg class="fig"><use href="#i-person"/></svg><span>Store managers<small>receive rosters and insights</small></span></div></div>
-    <div class="arrow">→</div>
-    <div class="layer card"><p class="tag">The agents</p><div class="agents">
-      <div class="chip cos" style="--c:var(--ink)"><svg class="ic"><use href="#i-agent"/></svg>Chief-of-staff agent · always on, for the executives</div>
-      <div class="chip head" style="--c:var(--warn)"><svg class="ic"><use href="#i-agent"/></svg>Head agent · one per function</div>
-      <div class="chip work" style="--c:var(--pos)"><svg class="ic"><use href="#i-agent"/></svg>Worker agents · inside each function's own container</div></div></div>
-    <div class="arrow">→</div>
-    <div class="layer card"><p class="tag">The screens</p><div class="bdgs"><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Dashboards, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-chart"/></svg>Qlik Sense, as today</span><span class="bdg lt"><svg class="ic"><use href="#i-doc"/></svg>Reports</span></div>
-      <p class="tag">New, beside them</p><div class="bdgs"><span class="bdg"><svg class="ic"><use href="#i-agent"/></svg>Agent surfaces</span><span class="bdg"><svg class="ic"><use href="#i-doc"/></svg>Rosters and insights</span></div></div>
-  </div>
-  <div class="edge bot" style="--c:var(--coord)"><span class="en"><em>Layer 2 · below</em>AI Hub</span><span class="cx"><b>Agents read through the MotherDuck MCP Server</b><b>Agents act through the hub's tools</b></span></div>
-</section>
+    <!-- Layer 3: the executives' line runs straight down the middle (x 599); the function containers sit either side; the lab sits apart on the right -->
+    <div class="n y3 engine" id="n-engine" data-ms="3"><svg class="ic"><use href="#i-moon"/></svg><div><b>Proactive engine</b><span class="mono" id="engst">Runs overnight</span></div></div>
+    <div class="n y3 exec" id="n-exec"><svg class="fig"><use href="#i-team"/></svg><div><b>Executives</b><small class="d2">ask in plain words</small></div></div>
+    <div class="n y3 cos" id="n-cos" data-ms="2 3"><div><span class="mono"><span class="on">●</span> Always on · for the executives</span><b>Chief of staff agent</b></div>
+      <div class="acts d2"><span><i>Ask</i>Cross-function questions, in context</span><span><i>Act</i>Sends each plan to the right head</span></div></div>
+    <div class="n y3 fn" id="n-retail" data-ms="1 2 3" style="left:120px"><div class="fh"><b>Retail</b><span class="mono">Store ops</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Retail team<small class="d2">area &amp; store managers</small></div></div>
+      <div class="tool" data-ms="1 2 3"><span class="tk">✓</span>Rostering tool<em>live</em></div>
+      <div class="head" data-ms="2 3"><span class="dmd"></span>Head agent</div>
+      <div class="ags" data-ms="2 3"><span class="ag">Rostering agent</span></div></div>
+    <div class="n y3 fn" id="n-merch" data-ms="2 3" style="left:347px"><div class="fh"><b>Merch</b><span class="mono">Merchandising</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Merch team<small class="d2">merchandise planners</small></div></div>
+      <div class="head"><span class="dmd"></span>Head agent</div>
+      <div class="ags"><span class="ag">Call-in agent</span><span class="ag">Sales insight agent</span></div></div>
+    <div class="n y3 fn" id="n-buying" data-ms="3" style="left:639px"><div class="fh"><b>Buying</b><span class="mono">Range</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Buying team<small class="d2">buyers</small></div></div>
+      <div class="head"><span class="dmd"></span>Head agent</div>
+      <div class="ags"><span class="ag">Its own agents</span></div></div>
+    <div class="n y3 fn later" id="n-more" data-ms="3" style="left:866px"><div class="fh"><b>Every function</b></div>
+      <div class="head"><span class="dmd"></span>A head agent each</div>
+      <p>Marketing, Finance, Logistics, HR and IT, one container at a time.</p></div>
+    <div class="n y3 fn lab" id="n-lab" data-ms="3" style="left:1108px"><div class="fh"><b><svg class="ic"><use href="#i-flask"/></svg>Lab</b><span class="mono">Sandbox</span></div>
+      <div class="team"><svg class="fig"><use href="#i-team"/></svg><div>Anyone with an idea<small class="d2">from any function</small></div></div>
+      <div class="head"><span class="dmd"></span>Lab agents</div>
+      <div class="ags"><span class="ag">Built and shaped by your people</span><span class="ag">Tested on the same data</span></div>
+      <div class="golive">Proven agents go live ›</div></div>
 
-<section class="slide ms" data-z="all">
-  <p class="kicker">Milestones</p>
-  <h1>Build only the boxes one department needs — then the next.</h1>
-  <div class="msctl">
-    <div class="steps" role="group" aria-label="Milestone">
-      <button type="button" data-m="1" aria-pressed="true"><span class="mono">01</span>Merchandising</button>
-      <button type="button" data-m="2" aria-pressed="false"><span class="mono">02</span>Store Operations</button>
-      <button type="button" data-m="3" aria-pressed="false"><span class="mono">03</span>Every function</button>
+    <!-- Layer 2 -->
+    <div class="n y2 hub" id="n-hub">
+      <div class="check" id="n-check" data-ms="2 3"><svg class="ic"><use href="#i-shield"/></svg>Access check<small class="d2">every request, against who is asking · every exchange logged</small></div>
+      <div class="cell" id="n-road" data-ms="2 3"><b><svg class="ic"><use href="#i-link"/></svg>One standard road in</b><small class="d2">MCP: any AI tool, agent or model. Claude today, swappable.</small></div>
+      <div class="cell" id="n-tools"><b><svg class="ic"><use href="#i-tool"/></svg>Tools agents act with</b>
+        <div class="chips d2"><span class="chip" id="t-contracts" data-ms="1 2 3">Contracts search</span><span class="chip" id="t-dayforce" data-ms="2 3">Write to Dayforce · Retail</span><span class="chip" id="t-callin" data-ms="2 3">Call in · Merch</span><span class="chip" id="t-mail" data-ms="2 3">Mail</span><span class="chip" data-ms="3">Chat</span><span class="chip" data-ms="3">Office 365</span></div></div>
     </div>
-    <span class="msnote">Merchandising first — the order after it is illustrative. A sequence, not a schedule.</span>
-  </div>
-  <div class="msgrid">
-    <div class="mstack" id="mstack">
-      <div class="mrow" style="--c:var(--teams)"><span class="ml"><span class="num">Layer 3</span>AI + UI</span><div class="bxs"><span class="bx" data-ms="3">Chief-of-staff agent</span><span class="bx" data-ms="1 3">Merchandising agent</span><span class="bx" data-ms="2 3">Store Operations agent</span><span class="bx" data-ms="3">Finance agent</span><span class="bx" data-ms="1 2 3">Agent surfaces</span><span class="bx" data-ms="2 3">Rosters and insights</span></div></div>
-      <div class="vlink" aria-hidden="true"></div>
-      <div class="mrow" style="--c:var(--coord)"><span class="ml"><span class="num">Layer 2</span>AI Hub</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck MCP Server</span><span class="bx" data-ms="1 3">Downstream systems · order entry</span><span class="bx" data-ms="2 3">Downstream systems · Dayforce ingestion</span><span class="bx" data-ms="2 3">Chat</span><span class="bx" data-ms="3">Mail</span><span class="bx" data-ms="3">Office 365 suite</span><span class="bx" data-ms="3">SharePoint</span><span class="bx" data-ms="3">Contracts search</span></div></div>
-      <div class="vlink" aria-hidden="true"></div>
-      <div class="mrow" style="--c:var(--data)"><span class="ml"><span class="num">Layer 1</span>Data</span><div class="bxs"><span class="bx" data-ms="1 2 3">MotherDuck · governed layer</span><span class="bx" data-ms="1 3">Qlik Sense</span><span class="bx" data-ms="1 2 3">POS sales</span><span class="bx" data-ms="1 3">Stock &amp; operations feeds</span><span class="bx" data-ms="2 3">Dayforce</span><span class="bx" data-ms="2 3">Store traffic counters</span><span class="bx" data-ms="3">Finance</span></div></div>
+
+    <!-- Layer 1: each slice sits under its own wire -->
+    <div class="n y1 gov" id="n-gov" data-ms="2 3">
+      <div class="gt"><svg class="ic"><use href="#i-shield"/></svg><div><b>Governed data layer</b><small>MotherDuck · your definitions</small></div></div>
+      <div class="note d2">Agents only read here. Any change goes through an approved tool.<br>Your Qlik dashboards keep running as they do today.</div>
+      <span class="slice d2" id="sl-retail" data-ms="2 3" style="left:106px"><i></i>Retail slice</span>
+      <span class="slice d2" id="sl-merch" data-ms="2 3" style="left:333px"><i></i>Merch slice</span>
+      <span class="slice d2 ex" id="sl-exec" data-ms="2 3" style="left:479px"><i></i>Executives: all</span>
+      <span class="slice d2" id="sl-buying" data-ms="3" style="left:625px"><i></i>Buying slice</span>
+      <span class="slice d2 fut" id="sl-more" data-ms="3" style="left:852px"><i></i>One slice each</span>
+      <span class="slice d2 lb" id="sl-lab" data-ms="3" style="left:1094px"><i></i>Lab slice</span>
     </div>
-    <div class="card added" aria-live="polite"><div class="mono" id="msStep">In this milestone · 01</div>
-      <h4>01 · Merchandising</h4><ul data-for="1"><li>The Merchandising agent, on its own agent surface</li><li>POS sales, stock &amp; operations feeds and Qlik Sense in the governed layer</li><li>The MCP road in, and order entry into downstream systems</li></ul>
-      <h4>02 · Store Operations</h4><ul data-for="2" hidden><li>The Store Operations agent: rosters and insights</li><li>Dayforce and store traffic counters in the governed layer</li><li>Dayforce ingestion and chat through the AI Hub</li><li>Reuses the governed layer and the road from 01</li></ul>
-      <h4>03 · Every function</h4><ul data-for="3" hidden><li>Each function gets its own agents — Finance shown</li><li>The chief-of-staff agent, always on, for the executives</li><li>Mail, Office 365 suite, SharePoint and contracts search</li><li>Finance data in the governed layer</li></ul>
+    <div class="n y1 src" id="s-statelake" data-ms="1 2 3" style="left:120px"><svg class="ic"><use href="#i-db"/></svg>Statelake / RDS</div>
+    <div class="n y1 src" id="s-wms" data-ms="2 3" style="left:272px"><svg class="ic"><use href="#i-db"/></svg>WMS</div>
+    <div class="n y1 src" id="s-dayforce" data-ms="1 2 3" style="left:424px"><svg class="ic"><use href="#i-db"/></svg>Dayforce</div>
+    <div class="n y1 src" id="s-bc" data-ms="3" style="left:576px"><svg class="ic"><use href="#i-db"/></svg>Business Central</div>
+    <div class="n y1 src" id="s-sharepoint" data-ms="3" style="left:728px"><svg class="ic"><use href="#i-db"/></svg>SharePoint</div>
+    <div class="n y1 src" id="s-qlik" data-ms="2 3" style="left:880px"><svg class="ic"><use href="#i-db"/></svg>Qlik</div>
+    <div class="n y1 src" id="s-dolfin" data-ms="3" style="left:1032px"><svg class="ic"><use href="#i-db"/></svg>Dolfin</div>
+    <div class="n y1 src fut" style="left:1184px">+ future source</div>
+    <div class="srcnote y1 mono d2">Sources connected as each project needs them</div>
+    <svg id="fx" width="1440" height="940" viewBox="0 0 1440 940"></svg>
+  </div>
+
+  <!-- ===== caption panels, one per scene ===== -->
+  <section class="panel left s-title" data-scene="title">
+    <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="Cleopatra logo">Cleopatra</span></div>
+    <p class="kicker">AI future vision</p>
+    <h1>You have a plan.</h1>
+    <p class="lead">One architecture in three layers, built on what you already own. Each layer does one job and can change without rebuilding the others.</p>
+    <div class="legend">
+      <button type="button" data-goto="4" style="--c:var(--l3)"><i></i>AI + people<small>Layer 3</small></button>
+      <button type="button" data-goto="3" style="--c:var(--l2)"><i></i>AI Hub<small>Layer 2</small></button>
+      <button type="button" data-goto="2" style="--c:var(--l1)"><i></i>Data<small>Layer 1</small></button>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="slide z">
-  <p class="kicker">The lab + the path</p>
-  <h1>Experiment in the lab. What proves out goes live.</h1>
-  <p class="lead" style="margin-bottom:3vh">The lab is the same architecture — same data layer, same road. People build and shape their own agents there, kept apart from the live business.</p>
-  <div class="promo seq">
-    <div class="labbox"><svg class="ic lg"><use href="#i-flask"/></svg>The lab<small>build and shape your own agents</small></div>
-    <div class="gatecol"><div class="wall" aria-label="separated"></div><span class="lift">Deploy to prod</span><small>only proven agents cross over</small></div>
-    <div class="livebox"><svg class="ic lg"><use href="#i-chart"/></svg>Live business<small>the same three layers, in production</small></div>
-  </div>
-  <p class="kicker nexttag">The sensible next step</p>
-  <div class="flow seq next3">
-    <div class="side card" style="--c:var(--steer)"><svg class="ic lg"><use href="#i-target"/></svg>Choose one function<small>Merchandising first</small></div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--data)"><svg class="ic lg"><use href="#i-db"/></svg>Connect its data</div><div class="arrow">→</div>
-    <div class="side card" style="--c:var(--teams)"><svg class="ic lg"><use href="#i-chart"/></svg>Prove it works<small>then decide what's next</small></div>
-  </div>
-</section>
+  <section class="panel left s-question" data-scene="question">
+    <p class="kicker">One question, end to end</p>
+    <p class="q"><small>An executive asks</small>“Why has our flagship store taken such a conversion hit last month?”</p>
+    <ol class="steps" id="steps">
+      <li>The chief of staff splits it by function</li>
+      <li>Head agents, and the chief of staff directly, pass the access check</li>
+      <li>Each reads only its own slice of the governed data</li>
+      <li class="back">The answer is checked, then sent back</li>
+    </ol>
+    <div class="answer">
+      <p class="sum">Conversion fell from 14.2% to 11.6%. Two causes inside your control explain most of it. A promotion explains the rest.</p>
+      <div class="cause"><span>01</span><div><b>Staffing on peak days</b><small>Retail · Dayforce, traffic, sales</small></div></div>
+      <div class="cause"><span>02</span><div><b>Size gaps in top footwear</b><small>Merch · Qlik, WMS stock</small></div></div>
+      <div class="cause"><span>03</span><div><b>Promotion brought browsers, not buyers</b><small>Buying · no action needed</small></div></div>
+      <p class="checked"><b>Checked before sending:</b> recomputed from raw sales and traffic, every figure linked to its source.</p>
+      <p class="illus">Illustrative figures</p>
+    </div>
+    <button type="button" class="replay" id="replay"><svg class="ic"><use href="#i-play"/></svg>Play the question</button>
+  </section>
 
-<div id="zoomfx" aria-hidden="true"><div class="zin">
-  <div class="zb" style="--c:var(--teams)"><span>Layer 3</span>AI + UI</div>
-  <div class="zb" style="--c:var(--coord)"><span>Layer 2</span>AI Hub</div>
-  <div class="zb" style="--c:var(--data)"><span>Layer 1</span>Data</div>
-</div></div>
+  <section class="panel top" data-scene="l1" style="--c:var(--l1)">
+    <p class="kicker">Layer 1 · Data</p>
+    <h1>One governed centre. Each agent sees only its slice.</h1>
+    <ul class="pts" style="--c:var(--l1)">
+      <li><b>Every source lands in one place</b>, on your definitions, so every agent reads the same numbers.</li>
+      <li><b>Each agent reads only its own slice.</b> It cannot change data here, or see tables it is not given.</li>
+      <li><b>Every query is visible and traceable</b>, back to the source it came from.</li>
+    </ul>
+  </section>
 
-<nav>
-  <button id="prev" aria-label="Previous slide">← Back</button>
-  <div class="dots" id="dots"></div>
-  <button id="next" aria-label="Next slide">Next →</button>
-</nav>
+  <section class="panel top" data-scene="l2" style="--c:var(--l2)">
+    <p class="kicker">Layer 2 · AI Hub</p>
+    <h1>One standard road in. Never locked in.</h1>
+    <ul class="pts" style="--c:var(--l2)">
+      <li><b>Agents never reach into systems directly.</b> Every request passes the access check and is logged.</li>
+      <li><b>Any AI tool, agent or model</b> uses the same road. Claude today; swap it and nothing else changes.</li>
+      <li><b>Agents act only through approved tools:</b> write to Dayforce, call in stock, mail, contracts search.</li>
+    </ul>
+  </section>
+
+  <section class="panel top" data-scene="l3" style="--c:var(--l3)">
+    <p class="kicker">Layer 3 · AI + people</p>
+    <h1>Agents do the work. People steer.</h1>
+    <ul class="pts" style="--c:var(--l3)">
+      <li><b>An always-on chief of staff</b> answers the executives, with its own straight line to the AI Hub.</li>
+      <li><b>Each function gets its own container:</b> a head agent over the agents that do the work, like Merch's call-in and sales insight agents.</li>
+      <li><b>People approve and direct.</b> Today's dashboards and Qlik stay; agents sit beside them.</li>
+    </ul>
+  </section>
+
+  <section class="panel left s-ms" data-scene="ms">
+    <p class="kicker">Milestones</p>
+    <h1>Build one function at a time. Each step reuses the last.</h1>
+    <div class="msbtn" role="group" aria-label="Milestone">
+      <button type="button" data-m="1" aria-pressed="true"><span>01</span>Retail rostering<em class="dn">Done</em></button>
+      <button type="button" data-m="2" aria-pressed="false"><span>02</span>Retail agent + Merch<em>Next</em></button>
+      <button type="button" data-m="3" aria-pressed="false"><span>03</span>Every function</button>
+    </div>
+    <ul class="mslist" data-for="1"><li>Rostering tool live for the Retail team</li><li>Built on Dayforce, sales and traffic data</li><li>Logins and roles: each person sees only their stores</li><li>Contracts search tool</li></ul>
+    <ul class="mslist" data-for="2" hidden><li>Retail gets its agent, which writes rosters back to Dayforce</li><li>Merch joins with its agents from day one: call-in and sales insight</li><li>The governed data layer, the AI Hub, the access check and mail</li><li>Chief of staff, always on, for the executives</li></ul>
+    <ul class="mslist" data-for="3" hidden><li>A container for each function, Buying next</li><li>The lab: your people build and test their own agents</li><li>Proactive engine: opportunities every morning</li><li>Chat and Office 365</li><li>Business Central, SharePoint and Dolfin in the governed layer</li></ul>
+    <p class="msnote">Each step reuses what the last one built. The order after Merch is illustrative.</p>
+  </section>
+
+  <section class="panel left s-night" data-scene="night">
+    <p class="kicker" id="nclock">02:00 · Overnight</p>
+    <p class="q"><small>Nobody asked</small>The engine finds the opportunities overnight.</p>
+    <ol class="steps" id="nsteps">
+      <li>Overnight, the engine runs queries through every head agent</li>
+      <li>It collects them into one brief for the chief of staff</li>
+      <li>An executive says: “Send the call-in plan to the Head of Merch”</li>
+      <li class="back">Merch's head agent puts it in front of the Head of Merch</li>
+    </ol>
+    <div class="brief">
+      <p class="mono">07:00 · This morning's opportunities</p>
+      <div class="opp" id="opp1"><span>01</span><div><b>Win back footwear sales at 6 stores</b><small>Merch · Call in 14 sizes · Track: sell-through</small></div><em>→ Head of Merch</em></div>
+      <div class="opp"><span>02</span><div><b>Catch the Saturday 2 to 5 pm peak</b><small>Retail · Move 12 hours · Track: conversion</small></div></div>
+      <div class="opp"><span>03</span><div><b>Get ahead of Christmas in kids' footwear</b><small>Merch · Call in early · Track: weeks of cover</small></div></div>
+      <p class="checked sentline"><b>Sent:</b> the call-in plan is in front of the Head of Merch, ready to approve.</p>
+      <p class="illus">Illustrative figures</p>
+    </div>
+    <button type="button" class="replay" id="nreplay"><svg class="ic"><use href="#i-play"/></svg>Play the night</button>
+  </section>
+
+  <section class="panel left s-lab" data-scene="lab" style="--c:var(--pos)">
+    <p class="kicker">The lab</p>
+    <h1>Experiment in the lab. What proves out goes live.</h1>
+    <p class="lead">The lab sits beside the functions, on the same AI Hub and the same governed data, kept apart from the live business.</p>
+    <ul class="pts one" style="--c:var(--pos)">
+      <li><b>Anyone with an idea</b> builds and shapes their own agents.</li>
+      <li><b>Agents are tested on the same data</b> the live business uses.</li>
+      <li><b>Proven agents move into a function</b> and go live.</li>
+    </ul>
+  </section>
+
+  <section class="panel left s-title s-close" data-scene="close">
+    <div class="brand"><span class="wm"><span class="dia"></span>keel ai</span><span class="co"><small>powered by</small><img src="cleo.jpg" alt="">Cleopatra</span></div>
+    <h1>AI in your business, for every function.</h1>
+  </section>
+
+  <nav aria-label="Slides">
+    <button id="prev" type="button" aria-label="Previous slide">←</button>
+    <span id="count" aria-live="polite"></span>
+    <button id="next" type="button" aria-label="Next slide">→</button>
+  </nav>
+</main>
 
 <script>
-  const slides = [...document.querySelectorAll('.slide')];
-  const dots = document.getElementById('dots');
-  slides.forEach(s => {
-    dots.appendChild(document.createElement('i'));
-    s.insertAdjacentHTML('beforeend', '<div class="mark"><span class="dia"></span>keel ai<span class="by">· powered by</span><img src="cleo.jpg" alt=""><span class="by">Cleopatra</span></div>');
-  });
-  // zoom out of the layer you are on, then into the next slide's layer (skipped for reduced motion)
-  const fx = document.getElementById('zoomfx'), zin = fx.firstElementChild;
+  const deck = document.getElementById('deck'), world = document.getElementById('world'), view = document.getElementById('view');
   const still = matchMedia('(prefers-reduced-motion: reduce)');
-  const LAYER = { ui: 0, hub: 1, data: 2 };
-  const at = z => z in LAYER ? `scale(2.6) translateY(${(1 - LAYER[z]) * 33.333}%)` : 'none';
-  let runs = [];
-  function zoom(a, b) {
-    if (!a || !b || a === b || still.matches) return;
-    runs.forEach(r => r.cancel());
-    fx.classList.add('run');
-    runs = [
-      fx.animate([{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .78 }, { opacity: 0 }], { duration: 1150, easing: 'ease' }),
-      zin.animate([{ transform: at(a) }, { transform: 'none', offset: .45 }, { transform: at(b), offset: .85 }, { transform: at(b) }], { duration: 1150, easing: 'ease-in-out' })
-    ];
-    runs[0].onfinish = () => fx.classList.remove('run');
-  }
-  // milestones: only the boxes one milestone implements are solid
-  const mbx = [...document.querySelectorAll('#mstack .bx')];
-  mbx.forEach(b => b.dataset.first = '0' + b.dataset.ms[0]);
-  function milestone(m) {
-    mbx.forEach(b => {
-      const set = b.dataset.ms.split(' ').map(Number), first = set[0], on = set.includes(m);
-      b.classList.toggle('gh', !on);
-      b.dataset.lbl = on ? '' : first > m ? (first === m + 1 ? 'Next' : 'Later') : 'From 0' + first;
-    });
-    document.querySelectorAll('.steps [data-m]').forEach(x => x.setAttribute('aria-pressed', +x.dataset.m === m));
-    document.querySelectorAll('.added ul').forEach(u => u.hidden = +u.dataset.for !== m);
-    document.getElementById('msStep').textContent = 'In this milestone · 0' + m;
-  }
-  document.querySelectorAll('.steps [data-m]').forEach(x => x.onclick = () => milestone(+x.dataset.m));
-  milestone(1);
-  let i = 0;
-  function go(n) {
-    const from = slides[i].dataset.z;
-    i = Math.max(0, Math.min(slides.length - 1, n));
-    zoom(from, slides[i].dataset.z);
-    slides.forEach((s, k) => s.classList.toggle('on', k === i));
-    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
-    window.scrollTo(0, 0);
-  }
-  document.getElementById('prev').onclick = () => go(i - 1);
-  document.getElementById('next').onclick = () => go(i + 1);
-  document.addEventListener('keydown', e => {
-    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(i + 1); }
-    if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1); }
+
+  // Each scene: which caption panel, where the camera looks (a region of the 1240 x 940 picture), which layer is in focus.
+  const SCENES = [
+    { id: 'title',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+    { id: 'question', layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+    { id: 'l1',       layout: 'top',  cam: [120, 650, 1200, 290], focus: 'l1' }, // x 120..1320 = the boxes' edges, so they line up
+    { id: 'l2',       layout: 'top',  cam: [120, 470, 1200, 186], focus: 'l2' }, // with the caption's margins
+    { id: 'l3',       layout: 'top',  cam: [120, 0, 1200, 470],   focus: 'l3' },
+    { id: 'ms',       layout: 'left', cam: [0, 0, 1440, 940],     focus: 'ms' },
+    { id: 'night',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+    { id: 'lab',      layout: 'left', cam: [0, 0, 1440, 940],     focus: 'lab' },
+    { id: 'close',    layout: 'left', cam: [0, 0, 1440, 940],     focus: 'all' },
+  ];
+  const panels = [...document.querySelectorAll('.panel')];
+
+  // ---- the drawn connections (also the paths the question travels) ----
+  // Column centres: every container's wire runs straight down into its own slice. The executives' line (MID)
+  // runs from the executives through the chief of staff straight to the AI Hub and the "Executives: all" slice.
+  const X = { retail: 226, merch: 453, buying: 745, more: 972, lab: 1214 }, MID = 599, ENG = 260; // ENG: the proactive engine
+  const COS = 170, FN = 200, FNB = 460, HUB = 504, HUBB = 634, GOV = 676; // box edges (top / bottom) the wires join
+  const SX = [188, 340, 492, 644, 796, 948, 1100, 1252]; // the eight source tiles (the last is "+ future source")
+  const WIRES = [
+    [MID, 74, MID, 98], [ENG, 74, ENG, 98], [MID, COS, MID, HUB], [MID, HUBB, MID, GOV],
+    ...[X.retail, X.merch, X.buying, X.more].map(x => [x, COS, x, FN]),
+    ...Object.values(X).map(x => [x, FNB, x, HUB]),
+    ...Object.values(X).map(x => [x, HUBB, x, GOV]),
+    ...SX.map(x => [x, 846, x, 788, 'up']),
+  ];
+  const NS = 'http://www.w3.org/2000/svg';
+  const wireset = document.getElementById('wireset'), dotsG = document.getElementById('dots');
+  WIRES.forEach(([x1, y1, x2, y2, up]) => {
+    const l = document.createElementNS(NS, 'line');
+    Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => l.setAttribute(k, v));
+    l.setAttribute('class', 'w' + (up ? ' up' : ''));
+    wireset.appendChild(l);
   });
-  let x0 = null;
-  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+
+  // ---- stage + camera ----
+  let portrait = false, scene = 0;
+  function stageFit() {
+    portrait = innerHeight > innerWidth * 1.15;
+    const W = portrait ? 900 : 1600, H = portrait ? 1600 : 900;
+    const s = Math.min(innerWidth / W, innerHeight / H);
+    Object.assign(deck.style, { width: innerWidth / s + 'px', height: innerHeight / s + 'px', transform: `scale(${s})` });
+    deck.classList.toggle('portrait', portrait);
+  }
+  function camera(instant) {
+    const sc = SCENES[scene], [rx, ry, rw, rh] = sc.cam;
+    const vx = view.offsetLeft, vy = view.offsetTop, vw = view.offsetWidth, vh = view.offsetHeight;
+    const s = Math.min(vw / rw, vh / rh);
+    const tx = vx + (vw - rw * s) / 2 - rx * s, ty = vy + (vh - rh * s) / 2 - ry * s;
+    if (instant) world.style.transition = 'none';
+    world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    if (instant) { world.offsetWidth; world.style.transition = ''; }
+  }
+  addEventListener('resize', () => { stageFit(); camera(true); });
+
+  // ---- milestones: only the boxes a step builds are solid ----
+  const msEls = [...world.querySelectorAll('[data-ms]')];
+  let msCur = 1;
+  function milestone(m) {
+    if (m) msCur = m;
+    msEls.forEach(e => e.classList.toggle('gh', m > 0 && !e.dataset.ms.split(' ').map(Number).includes(m)));
+    document.querySelectorAll('.msbtn [data-m]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === msCur));
+    document.querySelectorAll('.mslist').forEach(u => u.hidden = +u.dataset.for !== msCur);
+  }
+  document.querySelectorAll('.msbtn [data-m]').forEach(b => b.onclick = () => milestone(+b.dataset.m));
+
+  // ---- one question: dots travel down to the governed data layer (never past it) and the answer comes back up ----
+  const Q = document.querySelector('.s-question'), stepsLi = [...document.querySelectorAll('#steps li')];
+  const FN3 = [X.retail, X.merch, X.buying];
+  const down = [
+    { step: 0, lit: ['n-exec', 'n-cos'], segs: [[MID, 74, MID, 98]] },
+    { step: 0, lit: ['n-retail', 'n-merch', 'n-buying'], segs: [...FN3.map(x => [MID, COS, x, FN]), [MID, COS, MID, FNB]] },
+    { step: 1, lit: ['n-check'], segs: [...FN3, MID].map(x => [x, FNB, x, HUB]) },
+    { step: 2, lit: ['n-gov'], segs: [...FN3, MID].map(x => [x, HUBB, x, GOV]) },
+  ];
+  const up = down.slice().reverse().map(p => ({ step: 3, segs: p.segs.map(([a, b, c, d]) => [c, d, a, b]) }));
+  let run = 0;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  function travel(segs, cls, ms) {
+    return Promise.all(segs.map(([x1, y1, x2, y2]) => new Promise(res => {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('r', 7); c.setAttribute('class', ('dot ' + cls).trim());
+      dotsG.appendChild(c);
+      const t0 = performance.now();
+      (function tick(t) {
+        const k = Math.min(1, (t - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        c.setAttribute('cx', x1 + (x2 - x1) * e); c.setAttribute('cy', y1 + (y2 - y1) * e);
+        if (k < 1) requestAnimationFrame(tick); else { c.remove(); res(); }
+      })(t0);
+    })));
+  }
+  const N = document.querySelector('.s-night'), nstepsLi = [...document.querySelectorAll('#nsteps li')], nclock = document.getElementById('nclock'), engst = document.getElementById('engst');
+  function resetQuestion() { // resets both played scenes: the question and the night run
+    run++; dotsG.textContent = '';
+    world.querySelectorAll('.lit, .done').forEach(e => e.classList.remove('lit', 'done'));
+    [...stepsLi, ...nstepsLi].forEach(li => li.classList.remove('now', 'past'));
+    Q.classList.remove('answered'); N.classList.remove('morning', 'picked', 'sent'); nclock.textContent = '02:00 · Overnight'; engst.textContent = 'Runs overnight';
+  }
+  function markStep(k, list = stepsLi) { list.forEach((li, j) => { li.classList.toggle('now', j === k); li.classList.toggle('past', j < k); }); }
+  function finishQuestion() {
+    world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
+    Q.classList.add('answered');
+  }
+  async function playQuestion() {
+    resetQuestion();
+    const me = run;
+    if (still.matches) { down.forEach(p => (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'))); finishQuestion(); return; }
+    await wait(1000); // paced for a live room: about 17 seconds end to end
+    for (const p of down) {
+      if (me !== run) return;
+      markStep(p.step); await travel(p.segs, '', 1950);
+      if (me !== run) return;
+      (p.lit || []).forEach(id => document.getElementById(id).classList.add('lit'));
+      await wait(450);
+    }
+    await wait(1200); markStep(3);
+    for (const p of up) { if (me !== run) return; await travel(p.segs, 'back', 1260); }
+    if (me !== run) return;
+    await wait(600); finishQuestion();
+  }
+  document.getElementById('replay').onclick = playQuestion;
+
+  // ---- the night run: the engine fires a burst of queries down the executives' line for five seconds, collects the
+  //      answers, builds the brief and passes it to the chief of staff; then the executive sends the plan to the right head ----
+  function morning() { nclock.textContent = '07:00 · Morning'; engst.textContent = 'Brief ready'; N.classList.add('morning'); }
+  function finishNight() {
+    morning();
+    world.querySelectorAll('.lit').forEach(e => { e.classList.remove('lit'); e.classList.add('done'); });
+    N.classList.add('morning', 'picked', 'sent');
+  }
+  const light = (...ids) => ids.forEach(id => document.getElementById(id).classList.add('lit'));
+  // one query: from the engine into the chief of staff's bar, then down one head agent's column (or the executives' own
+  // line) through the access check into the data, and back. Boxes hide the parts inside them, so a query shows in each gap.
+  const QCOLS = [X.retail, X.merch, X.buying, MID], QSPEED = .55; // px per ms: readable in a room
+  function burst(me, ms) {
+    return new Promise(res => {
+      const t0 = performance.now(); let spawned = 0, live = 0;
+      (function spawn(t) {
+        if (me !== run) return res();
+        if (t - t0 < ms && t - t0 >= spawned * 90) {
+          const x = QCOLS[spawned % QCOLS.length], pts = [[ENG, 74], [ENG, 110], [x, 150], [x, GOV + 14]];
+          const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+          const D = cum[cum.length - 1] / QSPEED, c = document.createElementNS(NS, 'circle'), s0 = t;
+          spawned++; live++; engst.textContent = (spawned * 20).toLocaleString('en-AU') + ' queries run';
+          c.setAttribute('r', 5); dotsG.appendChild(c);
+          (function tick(now) {
+            const k = now - s0;
+            if (k >= 2 * D || me !== run) { c.remove(); live--; return; }
+            const back = k >= D, d = (back ? 2 * D - k : k) * QSPEED;
+            let i = 1; while (i < cum.length - 1 && cum[i] < d) i++;
+            const f = (d - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+            c.setAttribute('class', back ? 'dot back' : 'dot');
+            c.setAttribute('cx', pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f); c.setAttribute('cy', pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f);
+            requestAnimationFrame(tick);
+          })(t);
+        }
+        if (t - t0 < ms || live > 0) requestAnimationFrame(spawn); else res();
+      })(t0);
+    });
+  }
+  async function playNight() {
+    resetQuestion();
+    const me = run;
+    if (still.matches) { light('n-engine', 'n-cos', 'n-exec', 'n-merch'); finishNight(); return; }
+    await wait(1000); if (me !== run) return;
+    const busy = ['n-retail', 'n-merch', 'n-buying', 'n-check', 'n-gov'];
+    markStep(0, nstepsLi); light('n-engine', ...busy);
+    await burst(me, 5000); if (me !== run) return;                 // queries through every head agent, for five seconds
+    busy.forEach(id => document.getElementById(id).classList.remove('lit'));
+    markStep(1, nstepsLi); engst.textContent = 'Building the brief';
+    await wait(1800); if (me !== run) return;                      // collect them all into one brief
+    await travel([[ENG, 74, ENG, 98]], 'back', 2200); if (me !== run) return;
+    light('n-cos'); morning(); await wait(3200); if (me !== run) return;
+    markStep(2, nstepsLi); await travel([[MID, 74, MID, 98]], '', 2200); if (me !== run) return;
+    light('n-exec'); N.classList.add('picked'); await wait(1000); if (me !== run) return;
+    markStep(3, nstepsLi); await travel([[MID, COS, X.merch, FN]], 'back', 2600); if (me !== run) return;
+    light('n-merch'); await wait(800); if (me !== run) return;     // Merch's head agent puts it in front of the Head of Merch
+    finishNight();
+  }
+  document.getElementById('nreplay').onclick = playNight;
+
+  // ---- the AI Hub scene: requests come down from the agents; the access check passes most and blocks some (sent back);
+  //      requests for a tool light that tool up for a second while it acts. Loops while the scene is on screen. ----
+  const fx = document.getElementById('fx'), CHECK = 492, FROM = 400; // decided just above the access check, clear of its label
+  const HUBPLAY = [[0, X.retail, 'tool', 't-dayforce'], [900, X.merch, 'pass'], [1800, X.lab, 'block'], [2700, MID, 'pass'],
+    [3600, X.merch, 'tool', 't-callin'], [4500, X.buying, 'block'], [5400, X.retail, 'pass'], [6300, MID, 'tool', 't-mail'], [7200, X.lab, 'pass']];
+  let hubRun = 0;
+  function tween(me, ms, f) {
+    return new Promise(res => { const t0 = performance.now(); (function tick(t) {
+      if (me !== hubRun) return res(false);
+      const k = Math.min(1, (t - t0) / ms); f(k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+      if (k < 1) requestAnimationFrame(tick); else res(true);
+    })(t0); });
+  }
+  function svgEl(tag, attrs, parent = fx) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+  function centre(id) { // a chip's centre, in picture coordinates
+    const w = world.getBoundingClientRect(), s = w.width / 1440, r = document.getElementById(id).getBoundingClientRect();
+    return [(r.left + r.width / 2 - w.left) / s, (r.top + r.height / 2 - w.top) / s];
+  }
+  async function request(me, x, kind, tool) {
+    const c = svgEl('circle', { r: 6, class: 'rq', cx: x, cy: FROM });
+    const move = (x1, y1, x2, y2, ms) => tween(me, ms, e => { c.setAttribute('cx', x1 + (x2 - x1) * e); c.setAttribute('cy', y1 + (y2 - y1) * e); });
+    if (!await move(x, FROM, x, CHECK, 800)) return c.remove();
+    const ok = kind !== 'block', m = svgEl('g', { class: 'mk', transform: `translate(${x + 20} ${CHECK})` });
+    svgEl('circle', { r: 10, class: ok ? 'ok' : 'no' }, m); svgEl('path', { d: ok ? 'M-4.5 0l3 3 6-6.5' : 'M-4-4l8 8m0-8l-8 8' }, m);
+    if (!ok) c.classList.add('no');
+    await wait(400); setTimeout(() => m.remove(), 700);
+    if (kind === 'block') await move(x, CHECK, x, FROM, 800);       // returned to the agent that asked
+    else if (kind === 'pass') await move(x, CHECK, x, 690, 900);    // on through the road to its slice of the data
+    else {
+      const [tx, ty] = centre(tool);
+      if (await move(x, CHECK, tx, ty, 800)) { const ch = document.getElementById(tool); ch.classList.add('act'); setTimeout(() => ch.classList.remove('act'), 1000); }
+    }
+    c.remove();
+  }
+  async function hub(on) {
+    hubRun++; fx.textContent = ''; document.querySelectorAll('.chip.act').forEach(ch => ch.classList.remove('act'));
+    if (!on || still.matches) return;
+    const me = hubRun;
+    await wait(1300); // once the camera has arrived
+    while (me === hubRun) {
+      HUBPLAY.forEach(([t, x, kind, tool]) => setTimeout(() => { if (me === hubRun) request(me, x, kind, tool); }, t));
+      await wait(9000);
+    }
+  }
+
+  // ---- the data scene: data keeps flowing up from each source into the governed layer while it is on screen ----
+  let flowRun = 0;
+  function flow(on) {
+    flowRun++; dotsG.querySelectorAll('.flow').forEach(c => c.remove());
+    if (!on || still.matches) return;
+    const me = flowRun;
+    // two dots per real source, half a cycle apart; each starts hidden behind its tile and ends hidden behind the layer
+    SX.slice(0, -1).forEach((x, i) => [0, 800].forEach(lag => {
+      const t0 = performance.now() + 900 + i * 230 + lag; // starts once the camera has arrived
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('r', 4.5); c.setAttribute('class', 'dot flow'); c.setAttribute('cx', x); c.setAttribute('cy', 852);
+      dotsG.appendChild(c);
+      (function tick(t) {
+        if (me !== flowRun) return c.remove();
+        if (t >= t0) c.setAttribute('cy', 852 - 70 * (((t - t0) / 1600) % 1));
+        requestAnimationFrame(tick);
+      })(performance.now());
+    }));
+  }
+
+  // ---- moving between scenes ----
+  const count = document.getElementById('count'), pad = n => String(n).padStart(2, '0');
+  function go(n, instant) {
+    scene = Math.max(0, Math.min(SCENES.length - 1, n));
+    const sc = SCENES[scene];
+    deck.dataset.scene = sc.id;
+    deck.classList.toggle('left', sc.layout === 'left'); deck.classList.toggle('top', sc.layout === 'top');
+    panels.forEach(p => p.classList.toggle('on', p.dataset.scene === sc.id));
+    world.dataset.focus = sc.focus;
+    milestone(sc.id === 'ms' ? msCur : 0);
+    if (sc.id === 'question') playQuestion(); else if (sc.id === 'night') playNight(); else resetQuestion();
+    flow(sc.id === 'l1'); hub(sc.id === 'l2');
+    camera(instant || still.matches);
+    count.innerHTML = `<b>${pad(scene + 1)}</b> / ${pad(SCENES.length)}`;
+    document.getElementById('prev').disabled = scene === 0;
+    document.getElementById('next').disabled = scene === SCENES.length - 1;
+  }
+  document.getElementById('prev').onclick = () => go(scene - 1);
+  document.getElementById('next').onclick = () => go(scene + 1);
+  document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(+b.dataset.goto));
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(scene + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(scene - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(SCENES.length - 1); }
+  });
+  let x0 = null, y0 = null;
+  document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
   document.addEventListener('touchend', e => {
     if (x0 === null) return;
-    const dx = e.changedTouches[0].clientX - x0; x0 = null;
-    if (Math.abs(dx) > 50) go(i + (dx < 0 ? 1 : -1));
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(scene + (dx < 0 ? 1 : -1));
   });
-  document.addEventListener('click', e => {
-    if (e.target.closest('nav, .steps')) return;
-    go(i + (e.clientX > innerWidth / 2 ? 1 : -1));
-  });
-  go(0);
+  stageFit();
+  go(0, true);
 </script>
 </body>
 </html>
