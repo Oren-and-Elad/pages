@@ -5,7 +5,7 @@ var he=document.documentElement.lang==='he';
 var WA='https://wa.me/972525424127';
 var T=he?{
  kicker:'חדש · העוזרת החכמה של יעל',h:'שאלו אותי כל דבר, עכשיו.',sub:'אני העוזרת של יעל, ואשמח לענות על מה שמעניין אתכם לפני שפונים אליה.',
- name:'העוזרת של יעל',status:'מחוברת · עונה מיד',note:'עוזרת אוטומטית · לא נשמר כאן שום מידע',
+ name:'העוזרת של יעל',status:'מחוברת · עונה מיד',note:'עוזרת אוטומטית · השאלות נשמרות בלי פרטים מזהים, כדי לשפר את התשובות',
  ph:'כתבו כאן את השאלה שלכם…',send:'שליחה',
  hello:['היי, נעים מאוד 😊','אני העוזרת של יעל. אפשר לשאול אותי כל דבר על הטיפול: למי זה מתאים, איך זה עובד אונליין, איך מתחילים…','מה תרצו לדעת?'],
  chips:['למי זה מתאים?','טיפול אונליין','איך מתחילים?','כמה זה עולה?'],
@@ -33,7 +33,7 @@ var T=he?{
   [['מתאים','למי'],'הטיפול מתאים לילדים, למתבגרים ולמבוגרים, וגם להורים. בין התחומים: רילוקיישן, חרדה, דיכאון, טראומה והדרכת הורים. לא בטוחים? אפשר לשאול אותי על המצב שלכם.']
  ]}:{
  kicker:'New · Yael\'s smart assistant',h:'Ask me anything, right now.',sub:'I\'m Yael\'s assistant, and I\'m happy to answer whatever you\'d like to know before you get in touch with her.',
- name:'Yael\'s assistant',status:'Online · replies straight away',note:'Automated assistant · nothing you type is stored',
+ name:'Yael\'s assistant',status:'Online · replies straight away',note:'Automated assistant · questions are kept without personal details, to improve the answers',
  ph:'Type your question here…',send:'Send',
  hello:['Hi, nice to meet you 😊','I\'m Yael\'s assistant. Ask me anything about therapy with Yael: who it\'s for, how online sessions work, how to start…','What would you like to know?'],
  chips:['Who is it for?','Online therapy','How do I start?','How much does it cost?'],
@@ -95,8 +95,9 @@ function chips(list){bot('',function(){var c=document.createElement('div');c.cla
 function waLink(txt){return function(){var a=document.createElement('a');a.className='ya-w';a.target='_blank';a.rel='noopener';a.dataset.wa='assistant';a.href=WA+'?text='+encodeURIComponent(T.waPre+(txt||''));a.textContent='💬 '+T.waBtn;a.onclick=function(){ev('whatsapp_click',{button:'assistant'})};return a}}
 function norm(s){return ' '+s.toLowerCase().replace(/[?!.,״"׳']/g,' ')+' '}
 function answer(s){var n=norm(s),best=null,score=0;T.kb.forEach(function(e){var k=e[0],sc=0;k.forEach(function(w){if(n.indexOf(w.toLowerCase())>-1)sc+=w.length});if(sc>score){score=sc;best=e[1]}});return best}
+function clean(t){return t.replace(/\S+@\S+/g,'[email]').replace(/\+?\d[\d\s-]{6,}\d/g,'[phone]').slice(0,100)}
 var asked=0;
-function ask(s){s=s.trim();if(!s)return;bub(s,1);asked++;var a=answer(s);ev('assistant_question',{matched:a?'yes':'no'});
+function ask(s){s=s.trim();if(!s)return;bub(s,1);asked++;var a=answer(s);ev('assistant_question',{matched:a?'yes':'no',question:clean(s)});
  if(a==='__thanks'){bot(T.thanks,waLink(''));return}
  if(!a){bot(T.miss[0]);bot(T.miss[1],waLink(s));return}
  bot(a);if(asked%2===0)bot(T.more,waLink(''));else bot(T.more)}
