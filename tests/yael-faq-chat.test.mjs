@@ -73,3 +73,17 @@ test('no letters at all: falls back to the page\'s language', async () => {
 test('"How many sessions" still gets the duration answer, not the location one', async () => {
   assert.match(await (await page('en'))('How many sessions will I need?'), /differs from person to person/);
 });
+
+test('a method Yael does not list goes to Yael, in the question\'s language', async () => {
+  const out = await (await page('en'))('את מכירה גם שיטות של היפנוזה?');
+  assert.match(out, /שאלה טובה/); assert.match(out, /לשלוח את השאלה ליעל בוואטסאפ/);
+  assert.doesNotMatch(out, /משלבת כלים/);
+  for (const q of ['Do you do NLP?', 'Can you prescribe medication?', 'Do you offer reiki?'])
+    assert.match(await (await page('he'))(q), /Good question/, q);
+});
+
+test('her own methods keep the methods answer', async () => {
+  for (const q of ['do you use CBT?', 'Do you use art or drawing?'])
+    assert.match(await (await page('en'))(q), /combines tools from several approaches/, q);
+  assert.match(await (await page('he'))('אתם עובדים עם EMDR?'), /EMDR/);
+});
