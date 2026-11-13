@@ -121,3 +121,9 @@ test('hero on phones shows the whole sea photo (no side crop), face position unc
     assert.match(t, /hero-sea-wide\.jpg\) center 30%\/cover/);
   }
 });
+
+test("Yael's approach quote is in My approach, verbatim, in both languages", () => {
+  const sec = t => t.slice(t.indexOf('id="approach"'), t.indexOf('</section>', t.indexOf('id="approach"')));
+  assert.match(sec(HE), /<blockquote>״אני עוד מעדיפה לחשוב שהבן אדם מטפל בעצמו, ואני רק נמצאת שם כעדות\.״<\/blockquote>/);
+  assert.match(sec(EN), /<blockquote>“I still prefer to think that the person heals themselves, and I am only there as a witness\.”<\/blockquote>/);
+});
