@@ -88,12 +88,36 @@ test('her own methods keep the methods answer', async () => {
   assert.match(await (await page('he'))('אתם עובדים עם EMDR?'), /EMDR/);
 });
 
-// Wording: "clients", never "patients", across both pages and the assistant.
-{
-  const { readFileSync } = await import('node:fs');
-  for (const f of ['yael/site/index.html','yael/site/he/index.html','yael/site/faq-chat.js']) {
-    const t = readFileSync(f,'utf8');
-    if (/patient|מטופל/i.test(t)) { console.error('FAIL patients wording in', f); process.exit(1); }
+// Page content (13 Nov update): read relative to this file so the test runs from any directory.
+const read = f => readFileSync(new URL('../yael/site/' + f, import.meta.url), 'utf8');
+const EN = read('index.html'), HE = read('he/index.html');
+
+test('"clients", never "patients", on both pages and in the assistant', () => {
+  for (const [f, t] of [['index.html', EN], ['he/index.html', HE], ['faq-chat.js', SRC]])
+    assert.doesNotMatch(t, /patient|מטופל/i, f);
+});
+
+test('About carries EMDR, soldiers/Swords of Iron, Defence Ministry and remote work since COVID, in both languages', () => {
+  for (const re of [/EMDR training \(Level 2\)/, /Ministry of Defence/, /Swords of Iron/, /Since the COVID years/]) assert.match(EN, re);
+  for (const re of [/הכשרה ב־EMDR \(שלב 2\)/, /משרד הביטחון/, /חרבות ברזל/, /מאז תקופת הקורונה/]) assert.match(HE, re);
+});
+
+test('EN and HE pages stay aligned: same sections, same WhatsApp buttons, one hero, same assistant and analytics', () => {
+  const ids = t => [...t.matchAll(/<section[^>]*id="([^"]+)"/g)].map(m => m[1]);
+  const wa = t => [...t.matchAll(/data-wa="([^"]+)"[^>]*href="(https:\/\/wa\.me\/\d+)"/g)].map(m => m[1] + m[2]);
+  assert.deepEqual(ids(HE), ids(EN));
+  assert.deepEqual(wa(HE), wa(EN));
+  assert.ok(wa(EN).length > 0);
+  for (const t of [EN, HE]) {
+    assert.equal((t.match(/<header class="hero">/g) || []).length, 1);
+    assert.match(t, /faq-chat\.js/);
+    assert.match(t, /G-L2NNW884NK/);
   }
-  console.log('ok clients wording');
-}
+});
+
+test('hero on phones shows the whole sea photo (no side crop), face position unchanged', () => {
+  for (const t of [EN, HE]) {
+    assert.match(t, /\.hero \.photo\{min-height:0;aspect-ratio:605\/650;order:-1\}/);
+    assert.match(t, /hero-sea-wide\.jpg\) center 30%\/cover/);
+  }
+});
