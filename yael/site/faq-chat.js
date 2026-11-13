@@ -95,7 +95,8 @@ function bot(t,extra){q=q.then(function(){var ty=document.createElement('div');t
 function chips(list){bot('',function(){var c=document.createElement('div');c.className='ya-ch';list.forEach(function(x){var b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=function(){c.remove();ask(x)};c.appendChild(b)});return c})}
 function waLink(txt,L){L=L||T;return function(){var a=document.createElement('a');a.className='ya-w';a.target='_blank';a.rel='noopener';a.dataset.wa='assistant';a.href=WA+'?text='+encodeURIComponent(L.waPre+(txt||''));a.textContent='💬 '+L.waBtn;a.onclick=function(){ev('whatsapp_click',{button:'assistant'})};return a}}
 function norm(s){return ' '+s.toLowerCase().replace(/[?!.,״"׳']/g,' ')+' '}
-function answer(s,L){var n=norm(s),best=null,score=0;L.kb.forEach(function(e){var k=e[0],sc=0;k.forEach(function(w){if(n.indexOf(w.toLowerCase())>-1)sc+=w.length});if(sc>score){score=sc;best=e[1]}});return best}
+var HAND=['היפנוזה','hypno','nlp','דיקור','acupunct','נטורופת','naturopath','מדיטציה','meditat','רייקי','reiki','תרופות','medication','פסיכיאטר','psychiatr','אבחון','diagnos'];
+function answer(s,L){var n=norm(s),best=null,score=0;if(HAND.some(function(w){return n.indexOf(w)>-1}))return null;L.kb.forEach(function(e){var k=e[0],sc=0;k.forEach(function(w){if(n.indexOf(w.toLowerCase())>-1)sc+=w.length});if(sc>score){score=sc;best=e[1]}});return best}
 function clean(t){return t.replace(/\S+@\S+/g,'[email]').replace(/\+?\d[\d\s-]{6,}\d/g,'[phone]').slice(0,100)}
 var asked=0;
 function ask(s){s=s.trim();if(!s)return;bub(s,1);asked++;var L=/[\u0590-\u05FF]/.test(s)?HE:/[a-z]/i.test(s)?EN:T;var a=answer(s,L);ev('assistant_question',{matched:a?'yes':'no',question:clean(s)});
