@@ -4,7 +4,7 @@
 var he=document.documentElement.lang==='he';
 var WA='https://wa.me/972525424127';
 var T=he?{
- kicker:'שאלות? אני כאן',h:'יש לכם שאלה? כתבו לי.',sub:'אני העוזרת של יעל, ואשמח לענות על מה שמעניין אתכם לפני שפונים אליה.',
+ kicker:'חדש · העוזרת החכמה של יעל',h:'שאלו אותי כל דבר, עכשיו.',sub:'אני העוזרת של יעל, ואשמח לענות על מה שמעניין אתכם לפני שפונים אליה.',
  name:'העוזרת של יעל',status:'מחוברת · עונה מיד',note:'עוזרת אוטומטית · לא נשמר כאן שום מידע',
  ph:'כתבו כאן את השאלה שלכם…',send:'שליחה',
  hello:['היי, נעים מאוד 😊','אני העוזרת של יעל. אפשר לשאול אותי כל דבר על הטיפול: למי זה מתאים, איך זה עובד אונליין, איך מתחילים…','מה תרצו לדעת?'],
@@ -32,7 +32,7 @@ var T=he?{
   [['מי','ניסיון','הכשרה','תואר','יעל'],'יעל קריו היא פסיכותרפיסטית עם הכשרה ב־CBT, הכשרה ב־EMDR (שלב 2) ותואר שני בטיפול באומנויות. יש לה יותר מעשרים שנות ניסיון בישראל ובאוסטרליה.'],
   [['מתאים','למי'],'הטיפול מתאים לילדים, למתבגרים ולמבוגרים, וגם להורים. בין התחומים: רילוקיישן, חרדה, דיכאון, טראומה והדרכת הורים. לא בטוחים? אפשר לשאול אותי על המצב שלכם.']
  ]}:{
- kicker:'Questions? I\'m here',h:'Got a question? Ask me.',sub:'I\'m Yael\'s assistant, and I\'m happy to answer whatever you\'d like to know before you get in touch with her.',
+ kicker:'New · Yael\'s smart assistant',h:'Ask me anything, right now.',sub:'I\'m Yael\'s assistant, and I\'m happy to answer whatever you\'d like to know before you get in touch with her.',
  name:'Yael\'s assistant',status:'Online · replies straight away',note:'Automated assistant · nothing you type is stored',
  ph:'Type your question here…',send:'Send',
  hello:['Hi, nice to meet you 😊','I\'m Yael\'s assistant. Ask me anything about therapy with Yael: who it\'s for, how online sessions work, how to start…','What would you like to know?'],
@@ -60,7 +60,7 @@ var T=he?{
   [['who','experience','qualif','degree','yael'],'Yael Kario is a psychotherapist trained in CBT and EMDR (Level 2), with a Master\'s in arts therapy. She has more than twenty years of experience in Israel and Australia.'],
   [['for me','suit','right for','who is'],'Therapy with Yael is for children, teens, adults and parents. Areas include relocation, anxiety, depression, trauma and parent guidance. Not sure? Tell me a little about your situation.']
  ]};
-var css='.ya{padding:90px 0;background:var(--linen,#efe9df)}.ya .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center}'+
+var css='.ya{padding:70px 0;background:linear-gradient(135deg,#3c5338,#4f6b4a);color:#fff}.ya h2,.ya .kicker{color:#fff}.ya p{color:#e8efe4}.ya .rule{background:#d9a99a}.ya .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center}'+
 '.ya h2{font-size:clamp(34px,4vw,52px)}.ya-c{background:#fff;border-radius:22px;box-shadow:0 20px 50px rgba(60,83,56,.12);display:flex;flex-direction:column;height:520px;overflow:hidden}'+
 '.ya-h{display:flex;gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(46,51,44,.1)}.ya-h img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top}.ya-h b{display:block;font-weight:600;font-size:16px}.ya-h small{color:#4f6b4a;font-size:13px}.ya-h small:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#5cb85c;margin:0 6px}'+
 '.ya-m{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:#f7f3ec}.ya-x{max-width:85%;padding:10px 14px;border-radius:16px;background:#fff;font-size:16px;line-height:1.5;box-shadow:0 1px 2px rgba(0,0,0,.05);animation:yaIn .25s ease}'+
@@ -69,6 +69,7 @@ var css='.ya{padding:90px 0;background:var(--linen,#efe9df)}.ya .wrap{display:gr
 '.ya-w{display:inline-block;background:#3f7a4f;color:#fff;text-decoration:none;border-radius:20px;padding:9px 15px;font-weight:600;font-size:15px}'+
 '.ya-f{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(46,51,44,.1)}.ya-f input{flex:1;font:300 16px Assistant,sans-serif;padding:12px 14px;border:1px solid rgba(46,51,44,.15);border-radius:24px;background:#f7f3ec}.ya-f button{background:#4f6b4a;color:#fff;border:0;border-radius:24px;padding:0 18px;font:400 15px Assistant,sans-serif;cursor:pointer}'+
 '.ya-n{font-size:12px;color:#7a7f75;text-align:center;padding:0 0 8px}'+
+'.ya-hero{height:400px;margin:10px 0 6px;max-width:560px}.ya-lab{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600;color:#3c5338;font-size:15px}.ya-lab span{background:linear-gradient(135deg,#4f6b4a,#d9a99a);color:#fff;border-radius:6px;padding:2px 7px;font-size:12px;letter-spacing:.08em}.hero .copy{padding-top:5vh!important;padding-bottom:5vh!important}.hero h1{font-size:clamp(40px,5vw,66px)!important}'+
 '@keyframes yaIn{from{opacity:0;transform:translateY(6px)}}@keyframes yaB{50%{transform:translateY(-4px);opacity:.5}}'+
 '@media(max-width:900px){.ya .wrap{grid-template-columns:1fr;gap:28px}.ya-c{height:500px}}';
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
@@ -77,7 +78,12 @@ var sec=document.createElement('section');sec.className='ya';sec.id='ask';
 sec.innerHTML='<div class="wrap"><div><div class="kicker">'+T.kicker+'</div><div class="rule"></div><h2>'+T.h+'</h2><p>'+T.sub+'</p></div>'+
 '<div class="ya-c"><div class="ya-h">'+(img?'<img src="'+img+'" alt="">':'')+'<div><b>'+T.name+'</b><small>'+T.status+'</small></div></div>'+
 '<div class="ya-m" aria-live="polite"></div><form class="ya-f"><input aria-label="'+T.ph+'" placeholder="'+T.ph+'" autocomplete="off"><button>'+T.send+'</button></form><div class="ya-n">'+T.note+'</div></div></div>';
-var anchor=document.getElementById('contact');anchor.parentNode.insertBefore(sec,anchor);
+var hero=document.querySelector('header.hero .copy');
+var card=sec.querySelector('.ya-c');card.classList.add('ya-hero');card.id='ask';
+var lab=document.createElement('div');lab.className='ya-lab';lab.innerHTML='<span>AI</span>'+T.kicker;
+var ps=hero.querySelectorAll('p');for(var i=1;i<ps.length;i++)ps[i].style.display='none';var pr=hero.querySelector('.promise');if(pr)pr.style.display='none';
+var ctas=hero.querySelector('.ctas');hero.insertBefore(lab,ctas);hero.insertBefore(card,ctas);
+sec=card;
 var m=sec.querySelector('.ya-m'),f=sec.querySelector('form'),inp=f.querySelector('input');
 function ev(n,p){try{p=p||{};p.page_lang=document.documentElement.lang;gtag('event',n,p)}catch(e){}}
 function add(el){m.appendChild(el);m.scrollTop=m.scrollHeight}
@@ -96,6 +102,6 @@ function ask(s){s=s.trim();if(!s)return;bub(s,1);asked++;var a=answer(s);ev('ass
  bot(a);if(asked%2===0)bot(T.more,waLink(''));else bot(T.more)}
 f.onsubmit=function(e){e.preventDefault();m.querySelectorAll('.ya-ch').forEach(function(c){c.remove()});var v=inp.value;inp.value='';ask(v)};
 var started=0;function start(){if(started)return;started=1;T.hello.forEach(function(h){bot(h)});chips(T.chips);ev('assistant_view')}
-if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){start();io.disconnect()}},{threshold:.35});io.observe(sec)}else start();
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){start();io.disconnect()}},{threshold:.05});io.observe(sec)}else start();
 var nav=document.querySelector('.links');if(nav){var l=document.createElement('a');l.href='#ask';l.textContent=he?'שאלות':'Questions';nav.insertBefore(l,nav.lastElementChild)}
 })();
