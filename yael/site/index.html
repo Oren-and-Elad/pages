@@ -220,5 +220,6 @@ if(!/X{4}/.test(GA4_ID)){var s=document.createElement('script');s.async=true;s.s
 document.querySelectorAll('a[data-wa]').forEach(function(a){a.addEventListener('click',function(){gtag('event','whatsapp_click',{button:a.dataset.wa,page_lang:document.documentElement.lang})})});
 if('IntersectionObserver' in window){var seen={};var io=new IntersectionObserver(function(es){es.forEach(function(e){var id=e.target.id;if(e.isIntersecting&&!seen[id]){seen[id]=1;gtag('event','section_view',{section:id,page_lang:document.documentElement.lang});io.unobserve(e.target)}})},{rootMargin:'0px 0px -30% 0px'});document.querySelectorAll('section[id]').forEach(function(s){io.observe(s)})}
 </script>
+<script src="faq-chat.js" defer></script>
 </body>
 </html>
