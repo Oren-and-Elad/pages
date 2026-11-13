@@ -87,3 +87,13 @@ test('her own methods keep the methods answer', async () => {
     assert.match(await (await page('en'))(q), /combines tools from several approaches/, q);
   assert.match(await (await page('he'))('אתם עובדים עם EMDR?'), /EMDR/);
 });
+
+// Wording: "clients", never "patients", across both pages and the assistant.
+{
+  const { readFileSync } = await import('node:fs');
+  for (const f of ['yael/site/index.html','yael/site/he/index.html','yael/site/faq-chat.js']) {
+    const t = readFileSync(f,'utf8');
+    if (/patient|מטופל/i.test(t)) { console.error('FAIL patients wording in', f); process.exit(1); }
+  }
+  console.log('ok clients wording');
+}
