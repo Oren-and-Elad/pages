@@ -57,6 +57,7 @@ section{padding:96px 0}
 .approach{display:grid;grid-template-columns:1fr 1fr;min-height:620px}
 .approach .img{background:url(img/sprout.jpg) center/cover}
 .approach .copy{padding:9vh 6vw;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,var(--paper),#fbf9f4)}
+.approach blockquote{margin:20px 0 0;font:500 22px/1.4 'Cormorant Garamond',serif;color:var(--moss-d);border-left:2px solid var(--blush);padding-left:18px}
 .approach h2{font-size:clamp(38px,4.4vw,58px)}
 .methods{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px}
 .m{text-align:center;width:96px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}.m .c{width:66px;height:66px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:24px}
@@ -78,7 +79,7 @@ textarea{min-height:100px;resize:vertical}
 .price{display:inline-block;margin-top:14px;background:#fff;border-radius:14px;padding:14px 18px;font-size:15px}
 footer{padding:40px 0;border-top:1px solid var(--line);font-size:14px;color:var(--soft)}
 .wa{position:fixed;right:20px;bottom:20px;z-index:30;background:#3f7a4f;color:#fff;border-radius:40px;padding:13px 20px;text-decoration:none;font:400 14px Jost,sans-serif;letter-spacing:.08em;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-@media(max-width:900px){.hero,.borders,.approach,.short .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr}.hero .photo{min-height:60vh;order:-1}.borders .img,.approach .img{min-height:46vh}.links{display:none}.areas{grid-template-columns:1fr 1fr}.area{border-right:0!important;padding-left:0!important}.gallery{grid-template-columns:repeat(3,1fr)}.quote{background-image:none}}
+@media(max-width:900px){.hero,.borders,.approach,.short .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr}.hero .photo{min-height:0;aspect-ratio:605/650;order:-1}.borders .img,.approach .img{min-height:46vh}.links{display:none}.areas{grid-template-columns:1fr 1fr}.area{border-right:0!important;padding-left:0!important}.gallery{grid-template-columns:repeat(3,1fr)}.quote{background-image:none}}
 @media(max-width:560px){.areas,.duo,.creds{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}section{padding:64px 0}}
 .pillars{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--linen)}
 .pillars div{padding:22px 14px;text-align:center;border-left:1px solid var(--line)}.pillars div:first-child{border-left:0}
@@ -183,6 +184,7 @@ if(!/X{4}/.test(GA4_ID)){var s=document.createElement('script');s.async=true;s.s
   <div class="kicker">My approach</div><div class="rule"></div>
   <h2>Every person can change.</h2>
   <p>I draw on tools from different therapeutic approaches, including CBT and EMDR, according to your needs and the goals we set together.</p>
+  <blockquote>“I still prefer to think that the person heals themselves, and I am only there as a witness.”</blockquote>
   <div class="methods">
    <div class="m"><div class="c c1">🌱</div>CBT</div>
    <div class="m"><div class="c c2">👁️</div>EMDR</div>
