@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ניגונים — מבקשים שיר</title>
+<meta name="description" content="כותבים שם של ניגון או שיר, ומקבלים את האקורדים ולינק לשתף בוואטסאפ.">
+<style>
+  :root { --bg:#fbf7f0; --ink:#2b2118; --soft:#7a6a58; --accent:#8a5a2b; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; background:var(--bg); color:var(--ink); }
+  main { max-width:520px; margin:0 auto; padding:32px 20px 48px; }
+  h1 { font-size:1.7rem; margin:0 0 6px; }
+  .sub { color:var(--soft); margin:0 0 24px; }
+  form { display:flex; gap:8px; }
+  input { flex:1; font-size:1.15rem; padding:14px; border:2px solid #e2d6c5; border-radius:12px; background:var(--card); }
+  input:focus { outline:none; border-color:var(--accent); }
+  button, .btn { font-size:1.05rem; padding:14px 18px; border:0; border-radius:12px; background:var(--accent); color:#fff; cursor:pointer; text-decoration:none; display:inline-block; text-align:center; }
+  #result { margin-top:24px; display:none; }
+  .card { background:var(--card); border-radius:16px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .song { font-size:1.3rem; font-weight:600; margin:0 0 14px; }
+  .row { display:flex; flex-direction:column; gap:10px; }
+  .wa { background:#25a35a; }
+  .ghost { background:transparent; color:var(--accent); border:2px solid #e2d6c5; }
+  #recent { margin-top:28px; }
+  #recent h2 { font-size:1rem; color:var(--soft); margin:0 0 8px; }
+  #recent a { display:inline-block; margin:0 0 8px 8px; padding:6px 12px; border-radius:999px; background:#efe5d6; color:var(--ink); text-decoration:none; font-size:.95rem; }
+  footer { margin-top:32px; color:var(--soft); font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🎶 מבקשים ניגון</h1>
+  <p class="sub">כותבים שם של ניגון או שיר, ומקבלים את האקורדים ולינק לשתף בקבוצה.</p>
+  <form id="f">
+    <input id="q" type="search" placeholder="למשל: אבינו מלכנו" autocomplete="off" required>
+    <button type="submit">חפשי</button>
+  </form>
+  <section id="result">
+    <div class="card">
+      <p class="song" id="song"></p>
+      <div class="row">
+        <a class="btn" id="chords" target="_blank" rel="noopener">🎸 לאקורדים</a>
+        <a class="btn wa" id="wa" target="_blank" rel="noopener">שליחה לקבוצה בוואטסאפ</a>
+        <a class="btn ghost" id="yt" target="_blank" rel="noopener">▶️ להאזנה ביוטיוב</a>
+      </div>
+    </div>
+  </section>
+  <section id="recent" hidden>
+    <h2>ביקשו לאחרונה (במכשיר הזה)</h2>
+    <div id="chips"></div>
+  </section>
+  <footer>האקורדים מגיעים מאתר Tab4u. אם הניגון לא נמצא, נסו שם קצר יותר או שם של המבצע.</footer>
+</main>
+<script>
+  const KEY = 'nigunim-recent';
+  const $ = (id) => document.getElementById(id);
+  const enc = encodeURIComponent;
+  const chordsUrl = (s) => 'https://www.tab4u.com/resultsSimple?tab=songs&q=' + enc(s);
+  const ytUrl = (s) => 'https://www.youtube.com/results?search_query=' + enc(s + ' ניגון');
+  const shareUrl = (s) => location.origin + location.pathname + '?q=' + enc(s);
+
+  function recent() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+  function remember(s) {
+    const list = [s, ...recent().filter((x) => x !== s)].slice(0, 8);
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {}
+    drawRecent();
+  }
+  function drawRecent() {
+    const list = recent();
+    $('recent').hidden = !list.length;
+    $('chips').replaceChildren(...list.map((s) => {
+      const a = document.createElement('a');
+      a.href = '?q=' + enc(s); a.textContent = s;
+      a.onclick = (e) => { e.preventDefault(); show(s); };
+      return a;
+    }));
+  }
+  function show(s) {
+    s = s.trim(); if (!s) return;
+    $('q').value = s;
+    $('song').textContent = s;
+    $('chords').href = chordsUrl(s);
+    $('yt').href = ytUrl(s);
+    const msg = '🎶 ' + s + '\nאקורדים: ' + chordsUrl(s) + '\n\nלבקש ניגון: ' + shareUrl(s);
+    $('wa').href = 'https://wa.me/?text=' + enc(msg);
+    $('result').style.display = 'block';
+    history.replaceState(null, '', '?q=' + enc(s));
+    remember(s);
+  }
+  $('f').addEventListener('submit', (e) => { e.preventDefault(); show($('q').value); });
+  const start = new URLSearchParams(location.search).get('q');
+  drawRecent();
+  if (start) show(start);
+</script>
+</body>
+</html>
