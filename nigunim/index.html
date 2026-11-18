@@ -18,7 +18,9 @@
   button, .btn { font-size:1.05rem; padding:14px 18px; border:0; border-radius:12px; background:var(--accent); color:#fff; cursor:pointer; text-decoration:none; display:inline-block; text-align:center; }
   #result { margin-top:24px; display:none; }
   .card { background:var(--card); border-radius:16px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-  .song { font-size:1.3rem; font-weight:600; margin:0 0 14px; }
+  .song { font-size:1.25rem; font-weight:600; margin:0 0 2px; }
+  .artist { color:var(--soft); margin:0 0 14px; }
+  .btns { display:flex; gap:8px; } .btns .btn { flex:1; padding:12px 10px; }
   .row { display:flex; flex-direction:column; gap:10px; }
   .wa { background:#25a35a; }
   .ghost { background:transparent; color:var(--accent); border:2px solid #e2d6c5; }
@@ -37,29 +39,39 @@
     <button type="submit">חפשי</button>
   </form>
   <section id="result">
-    <div class="card">
-      <p class="song" id="song"></p>
-      <div class="row">
-        <a class="btn" id="chords" target="_blank" rel="noopener">🎸 לאקורדים</a>
-        <a class="btn wa" id="wa" target="_blank" rel="noopener">שליחה לקבוצה בוואטסאפ</a>
-        <a class="btn ghost" id="yt" target="_blank" rel="noopener">▶️ להאזנה ביוטיוב</a>
-      </div>
-    </div>
+    <p class="sub" id="msg"></p>
+    <div id="list" class="row"></div>
   </section>
   <section id="recent" hidden>
     <h2>ביקשו לאחרונה (במכשיר הזה)</h2>
     <div id="chips"></div>
   </section>
-  <footer>האקורדים מגיעים מאתר Tab4u. אם הניגון לא נמצא, נסו שם קצר יותר או שם של המבצע.</footer>
+  <footer>בפנים כ-700 שירים חסידיים וניגונים עם אקורדים מאתר Tab4u. אם לא נמצא, נסו מילה אחת מהשם או את שם המבצע.</footer>
 </main>
+<script src="songs.js"></script>
 <script>
   const KEY = 'nigunim-recent';
+  const BASE = 'https://www.tab4u.com/tabs/songs/';
   const $ = (id) => document.getElementById(id);
   const enc = encodeURIComponent;
-  const chordsUrl = (s) => 'https://www.tab4u.com/resultsSimple?tab=songs&q=' + enc(s);
-  const ytUrl = (s) => 'https://www.youtube.com/results?search_query=' + enc(s + ' ניגון');
-  const shareUrl = (s) => location.origin + location.pathname + '?q=' + enc(s);
+  const ent = (t) => t.replace(/&quot;/g, '"').replace(/&#0*(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&');
+  const norm = (t) => ent(t).replace(/[\u0591-\u05C7]/g, '').replace(/["'׳״`’”]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim().toLowerCase();
+  const SONGS = (window.SONGS || []).map(([t, a, p]) => ({ t: ent(t), a: ent(a), u: BASE + p, nt: norm(t), na: norm(a) }));
+  const appUrl = (s) => location.origin + location.pathname + '?q=' + enc(s);
 
+  function find(q) {
+    const nq = norm(q); if (!nq) return [];
+    const words = nq.split(' ');
+    const scored = [];
+    for (const s of SONGS) {
+      const both = s.nt + ' ' + s.na;
+      let sc = 0;
+      if (s.nt === nq) sc = 100; else if (s.nt.startsWith(nq)) sc = 80; else if (s.nt.includes(nq)) sc = 60;
+      else if (words.every((w) => both.includes(w))) sc = 40; else if (s.na.includes(nq)) sc = 30;
+      if (sc) scored.push([sc, s]);
+    }
+    return scored.sort((x, y) => y[0] - x[0]).slice(0, 10).map((x) => x[1]);
+  }
   function recent() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
   function remember(s) {
     const list = [s, ...recent().filter((x) => x !== s)].slice(0, 8);
@@ -76,17 +88,26 @@
       return a;
     }));
   }
-  function show(s) {
-    s = s.trim(); if (!s) return;
-    $('q').value = s;
-    $('song').textContent = s;
-    $('chords').href = chordsUrl(s);
-    $('yt').href = ytUrl(s);
-    const msg = '🎶 ' + s + '\nאקורדים: ' + chordsUrl(s) + '\n\nלבקש ניגון: ' + shareUrl(s);
-    $('wa').href = 'https://wa.me/?text=' + enc(msg);
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  function link(cls, text, href) { const a = el('a', 'btn ' + cls, text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; }
+  function show(q) {
+    q = q.trim(); if (!q) return;
+    $('q').value = q;
+    const hits = find(q);
+    $('msg').textContent = hits.length ? (hits.length === 1 ? 'מצאתי:' : 'מצאתי ' + hits.length + ' — בחרו את הנכון:') : 'לא מצאתי את "' + q + '" ברשימה. נסו מילה אחת מהשם או את שם המבצע.';
+    $('list').replaceChildren(...hits.map((s) => {
+      const c = el('div', 'card');
+      c.append(el('p', 'song', s.t), el('p', 'artist', s.a));
+      const b = el('div', 'btns');
+      const msg = '🎶 ' + s.t + ' — ' + s.a + '\nאקורדים: ' + s.u;
+      b.append(link('', '🎸 לאקורדים', s.u), link('wa', 'לשלוח בוואטסאפ', 'https://wa.me/?text=' + enc(msg)));
+      c.append(b);
+      return c;
+    }));
+    if (!hits.length) $('list').append(link('ghost', 'לחפש באתר האקורדים', 'https://www.tab4u.com/resultsSimple?tab=songs&q=' + enc(q)));
     $('result').style.display = 'block';
-    history.replaceState(null, '', '?q=' + enc(s));
-    remember(s);
+    history.replaceState(null, '', '?q=' + enc(q));
+    if (hits.length) remember(q);
   }
   $('f').addEventListener('submit', (e) => { e.preventDefault(); show($('q').value); });
   const start = new URLSearchParams(location.search).get('q');
