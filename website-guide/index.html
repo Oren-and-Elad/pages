@@ -1,0 +1,89 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>איך בונים אתר ב-2026</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@page{size:A4;margin:16mm 15mm}
+@media screen{body{max-width:820px;margin:0 auto!important;padding:16px}}
+@media print{.dl{display:none}}
+.dl{display:inline-block;margin-top:14px;background:#d8a948;color:#0b1530;font-weight:bold;padding:9px 18px;border-radius:22px;text-decoration:none}
+.offer{border:2px solid #d8a948;border-radius:14px;padding:6px 18px 12px;margin:16px 0;break-inside:avoid}
+body{font-family:"Arial Hebrew","Arial",sans-serif;color:#1c2333;font-size:11.5pt;line-height:1.6;margin:0}
+.hero{background:#0b1530;color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:18px}
+.hero h1{margin:0 0 6px;font-size:26pt;color:#f3d48a}
+.hero p{margin:0;font-size:12.5pt;color:#dfe4ee}
+h2{color:#0b1530;font-size:15pt;margin:20px 0 8px;border-bottom:2px solid #d8a948;padding-bottom:4px}
+.links{background:#f7f8fb;border:1px solid #e3e7ef;border-radius:10px;padding:10px 14px;margin:10px 0}
+.links a{color:#0b1530;font-weight:bold;direction:ltr;unicode-bidi:embed}
+.stats{display:flex;gap:10px;margin:12px 0}
+.stat{flex:1;background:#f7f8fb;border:1px solid #e3e7ef;border-radius:10px;padding:10px;text-align:center;font-size:10pt;color:#55607a}
+.stat b{display:block;font-size:17pt;color:#0b1530}
+.step{display:flex;gap:12px;margin:9px 0;align-items:flex-start;break-inside:avoid}
+.num{flex:0 0 28px;height:28px;border-radius:50%;background:#d8a948;color:#0b1530;font-weight:bold;text-align:center;line-height:28px}
+ul{padding-right:20px;margin:6px 0}li{margin:5px 0}
+.cols{display:flex;gap:12px}.panel{flex:1;background:#f7f8fb;border:1px solid #e3e7ef;border-radius:10px;padding:12px 14px}
+.label{color:#b08520;font-weight:bold;margin-bottom:4px}
+.note{background:#fff8e6;border-right:4px solid #d8a948;padding:10px 14px;border-radius:8px;margin:10px 0}
+.foot{margin-top:22px;color:#55607a;font-size:9.5pt;text-align:center}
+.ltr{direction:ltr;unicode-bidi:embed}
+</style></head><body>
+<div class="hero"><h1>איך בונים אתר ב-2026</h1><p>מדריך קצר לאורן פלדמן, מהניסיון שלנו. בשביל אתר מנעולן חדש, ובשביל שדרוג האתר של מורן.</p><a class="dl" href="guide.pdf" download>⬇ להורדה כ-PDF</a></div>
+
+<h2>בקצרה</h2>
+<p>היום כבר לא צריך מתכנת, וגם לא וורדפרס. בונים אתר בשיחה עם עוזר AI: מספרים לו על העסק, הוא כותב את האתר, ואתם מתקנים במילים עד שזה נראה כמו שאתם רוצים.</p>
+<p>ככה בנינו את האתר של יעל, פסיכותרפיסטית בסידני, בעברית ובאנגלית:</p>
+<div class="links">🇬🇧 <a class="ltr" href="https://yaelcbt.com">yaelcbt.com</a> &nbsp;&nbsp; 🇮🇱 <a class="ltr" href="https://yaelcbt.com/he/">yaelcbt.com/he</a></div>
+<div class="stats"><div class="stat"><b>ימים</b>מטיוטה ראשונה עד אתר באוויר</div><div class="stat"><b class="ltr">A$0</b>אחסון, בתוכנית החינמית</div><div class="stat"><b>2</b>שפות באותו אתר</div></div>
+
+<h2>הדרך, צעד אחרי צעד</h2>
+<div class="step"><div class="num">1</div><div><b>כותבים מה העסק עושה.</b> בשפה שלכם, אפילו בהקלטה קולית: מה אתם מציעים, למי, באיזה אזור, ומה מייחד אתכם. זה החלק הכי חשוב. האתר טוב רק כמו המילים שלו.</div></div>
+<div class="step"><div class="num">2</div><div><b>מבקשים מהעוזר טיוטה.</b> ב-Claude או ב-ChatGPT: "תבנה לי אתר של עמוד אחד, בקוד פשוט (HTML), לעסק כזה". מקבלים קובץ שפותחים בדפדפן ורואים מיד.</div></div>
+<div class="step"><div class="num">3</div><div><b>מתקנים במילים.</b> "הכפתור גדול מדי", "תוסיף תמונה של הרכב", "תכתוב יותר חם". כמה סבבים וזה מוכן.</div></div>
+<div class="step"><div class="num">4</div><div><b>מעלים לאוויר.</b> ב-Netlify או ב-Cloudflare Pages גוררים את התיקייה, והאתר חי. בחינם.</div></div>
+<div class="step"><div class="num">5</div><div><b>מחברים כתובת.</b> קונים דומיין (למשל <span class="ltr">.com.au</span>) ומחברים אותו לאתר. המערכת מסבירה איך, בערך עשר דקות.</div></div>
+<div class="step"><div class="num">6</div><div><b>דואגים שימצאו אתכם.</b> זה הצעד שרוב האנשים מפספסים. פירוט למטה.</div></div>
+
+<h2>מה עשינו אצל יעל, ומה למדנו</h2>
+<ul>
+<li>כפתור "בואו נדבר" שפותח וואטסאפ ישר, לא טופס. אנשים לא ממלאים טפסים.</li>
+<li>הטקסט נכתב בקול שלה, במילים שלה. הגרסה הראשונה הייתה "שיווקית" מדי, והיא תיקנה אותה לעצמה.</li>
+<li>Google Analytics: רואים כמה נכנסו, מאיפה בעולם, ומי לחץ על וואטסאפ.</li>
+<li>כרטיס עסק בגוגל מפות (Google Business Profile). בלי זה גוגל לא יודע שהעסק קיים.</li>
+</ul>
+<div class="note">מה שלמדנו בדרך: אתר יפה לבד לא מביא אנשים. בשבועות הראשונים כמעט כל הכניסות היו של מכרים. מה שמביא לקוחות זה גוגל.</div>
+
+<h2>לאתר של מנעולן: מה הכי חשוב</h2>
+<p>מנעולן הוא עסק של "עכשיו". מישהו נעול בחוץ, מחפש בטלפון <span class="ltr">locksmith near me</span>, ומתקשר לראשון שהוא רואה. לכן:</p>
+<ul>
+<li><b>כרטיס בגוגל מפות קודם לאתר.</b> זה מה שמופיע ראשון בחיפוש. שם, טלפון, אזורי שירות, שעות ותמונות של העבודה. חינם.</li>
+<li><b>ביקורות.</b> אחרי כל עבודה טובה, שולחים ללקוח קישור לביקורת בגוגל. עשר ביקורות טובות שוות יותר מכל עיצוב.</li>
+<li><b>כפתור "התקשר עכשיו" גדול</b> בראש העמוד, שנשאר גלוי גם בגלילה. ולידו וואטסאפ.</li>
+<li><b>עמוד לכל שירות ולכל אזור:</b> פריצה לרכב, החלפת צילינדר, כספות, ובאילו שכונות אתם עובדים. ככה גוגל מבין איפה להציג אתכם.</li>
+<li><b>מהיר בטלפון.</b> אתר פשוט נטען בשנייה, וזה בדיוק מה שהדרך הזו נותנת.</li>
+<li><b>פרסום בגוגל</b> אפשר אחר כך. בתחום המנעולנים הקליקים יקרים, אז כדאי להתחיל מהחינמי ולראות מה עובד.</li>
+</ul>
+
+<h2>לשדרוג אתר קיים (של מורן)</h2>
+<ul>
+<li>מתחילים מהשאלה: מה אמור לקרות כשמישהו נכנס? להתקשר, לקבוע תור, לקנות? כל העמוד צריך להוביל לשם.</li>
+<li>נותנים לעוזר ה-AI את הטקסט הקיים ומבקשים: "תכתוב את זה קצר, חם, בגוף ראשון".</li>
+<li>אם האתר על Wix או וורדפרס, אפשר להשאיר אותו ורק לשפר טקסט ותמונות. אם הוא ישן וכבד, לפעמים פשוט יותר לבנות מחדש בדרך שלמעלה ולהעביר אליו את הכתובת.</li>
+<li>בודקים בטלפון, לא במחשב. רוב הכניסות הן מהטלפון.</li>
+</ul>
+
+<h2>כמה זה עולה</h2>
+<div class="cols">
+<div class="panel"><div class="label">חובה</div>דומיין: בערך <span class="ltr">A$20–30</span> לשנה<br>אחסון: <span class="ltr">A$0</span><br>כרטיס בגוגל מפות: <span class="ltr">A$0</span></div>
+<div class="panel"><div class="label">אופציונלי</div>מנוי לעוזר AI: בערך <span class="ltr">A$30</span> לחודש (US$20), אפשר גם לחודש אחד בלבד<br>פרסום בגוגל: לפי תקציב, לא חובה בהתחלה</div>
+</div>
+
+<div class="offer">
+<h2>רעיון: אתם מעצבים, בלי שום דבר טכני</h2>
+<p>אם הדרך שלמעלה נשמעת כמו יותר מדי עבודה, יש לנו רעיון שהיינו שמחים לנסות איתכם.</p>
+<div class="step"><div class="num">1</div><div><b>פותחים לכם דף משלכם.</b> אפשר להתחיל מאפס, או לכתוב "תעתיקו את האתר שיש לי היום" ולהתחיל ממנו.</div></div>
+<div class="step"><div class="num">2</div><div><b>לוחצים כפתור ימני על כל מקום בדף</b> וכותבים מה לשנות: "תגדיל את הכותרת", "תוסיף כאן את המחירון", "יותר כחול". אפשר להדביק תמונות וקבצים, והם נכנסים לדף.</div></div>
+<div class="step"><div class="num">3</div><div><b>מקבלים גרסה חדשה,</b> ומבקשים עוד שינויים, כמה סבבים שתרצו. אתה ומורן יכולים לעבוד כל אחד על האתר שלו.</div></div>
+<div class="step"><div class="num">4</div><div><b>כשזה מוכן, משחררים לאינטרנט,</b> על הכתובת שלכם.</div></div>
+<p>זה ניסיון גם בשבילנו, אז נשמח לעשות את זה לשני האתרים בחינם או במחיר עלות.</p>
+<p><b>מה מתאים לכם?</b> לבנות לבד לפי המדריך, לנסות את הסביבה הזו, או סתם לשבת יחד לשיחה. תגיד לי.</p>
+</div>
+<p><b>אורן</b></p>
+
+</body></html>
